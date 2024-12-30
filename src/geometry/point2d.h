@@ -31,8 +31,13 @@ class Point2D {
          */
         Point2D(int x = 0, int y = 0);
 
-        Point2D(float x, float y);
-
+        /**
+         * @brief Constructeur initialisant le point avec des valeurs spécifiques pour x et y.
+         * @param x Coordonnée x du point.
+         * @param y Coordonnée y du point.
+         */
+        Point2D(float x = 0, float y = 0);
+        
         /**
          * @brief Constructeur par copie de la classe Point2D.
          * @param other Le point à copier.

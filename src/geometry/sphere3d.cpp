@@ -1,92 +1,127 @@
 #include "sphere3d.h"
+#include <stdexcept>
+#include <cmath>
+#include <iostream>
 
-// Constructeur
-Sphere3D::Sphere3D(const Point3D& center, float radius, int subdivisions)
-    : center_(center), radius_(radius), subdivisions_(subdivisions) {
+// Constructeur par défaut
+Sphere3D::Sphere3D()
+    : center(Point3D()), radius(1), subdivisions(1), color(Couleur()), quads() {
+    generateQuads(50, 50);
+}
+
+// Constructeur avec centre, rayon, subdivisions et couleur RGB
+Sphere3D::Sphere3D(const Point3D& center, float radius, int subdivisions, int rouge, int vert, int bleu)
+    : center(center), radius(radius), subdivisions(subdivisions), color(Couleur(rouge, vert, bleu)) {
     if (radius <= 0) {
-        throw std::invalid_argument("Le rayon doit être positif.");
+        throw std::invalid_argument("Le rayon de la sphère doit être strictement positif.");
     }
     if (subdivisions <= 0) {
-        throw std::invalid_argument("Le nombre de subdivisions doit être supérieur à zéro.");
+        throw std::invalid_argument("Le nombre de subdivisions doit être strictement positif.");
     }
-    generateQuads();
+    generateQuads(50, 50);
 }
 
 // Accesseur pour le centre
 Point3D Sphere3D::getCenter() const {
-    return center_;
+    return center;
 }
 
 // Modificateur pour le centre
-void Sphere3D::setCenter(const Point3D& center) {
-    center_ = center;
-    generateQuads(); // Recalculer les quadrilatères
+void Sphere3D::setCenter(const Point3D& newCenter) {
+    center = newCenter;
+    generateQuads(50, 50);
 }
 
 // Accesseur pour le rayon
 float Sphere3D::getRadius() const {
-    return radius_;
+    return radius;
 }
 
 // Modificateur pour le rayon
-void Sphere3D::setRadius(float radius) {
-    if (radius <= 0) {
-        throw std::invalid_argument("Le rayon doit être positif.");
+void Sphere3D::setRadius(float newRadius) {
+    if (newRadius <= 0) {
+        throw std::invalid_argument("Le rayon de la sphère doit être strictement positif.");
     }
-    radius_ = radius;
-    generateQuads(); // Recalculer les quadrilatères
+    radius = newRadius;
+    generateQuads(50, 50);
 }
 
 // Accesseur pour les quadrilatères
 const std::vector<Quad3D>& Sphere3D::getQuads() const {
-    return quads_;
+    return quads;
 }
 
-// Calcul du volume
+// Modificateur pour la couleur (RVB)
+void Sphere3D::setColor(int rouge, int vert, int bleu) {
+    color.setRouge(rouge);
+    color.setVert(vert);
+    color.setBleu(bleu);
+    for (Quad3D& quad : quads) {
+        quad.setColor(rouge, vert, bleu);
+    }
+}
+
+// Modificateur pour la couleur (objet Couleur)
+void Sphere3D::setColor(const Couleur& newColor) {
+    setColor(newColor.getRouge(), newColor.getVert(), newColor.getBleu());
+}
+
+// Modificateur pour la composante rouge
+void Sphere3D::setColorRouge(int rouge) {
+    setColor(rouge, color.getVert(), color.getBleu());
+}
+
+// Modificateur pour la composante verte
+void Sphere3D::setColorVert(int vert) {
+    setColor(color.getRouge(), vert, color.getBleu());
+}
+
+// Modificateur pour la composante bleue
+void Sphere3D::setColorBleu(int bleu) {
+    setColor(color.getRouge(), color.getVert(), bleu);
+}
+
+// Calcul du volume de la sphère
 float Sphere3D::volume() const {
-    return (4.0f / 3.0f) * static_cast<float>(M_PI) * std::pow(radius_, 3);
+    return (4.0f / 3.0f) * M_PI * std::pow(radius, 3);
 }
 
-// Calcul de la surface
+// Calcul de la surface totale de la sphère
 float Sphere3D::surfaceArea() const {
-    return 4.0f * static_cast<float>(M_PI) * std::pow(radius_, 2);
+    return 4 * M_PI * std::pow(radius, 2);
 }
 
-// Génération des quadrilatères
-void Sphere3D::generateQuads() {
-    quads_.clear();
+void Sphere3D::generateQuads(int numSlices, int numStacks) {
+    quads.clear(); // Efface les quadrilatères existants
+    const float pi = M_PI;
 
-    // Approche basée sur les coordonnées sphériques
-    float dTheta = static_cast<float>(M_PI) / subdivisions_;      // Divisions en latitude
-    float dPhi = 2.0f * static_cast<float>(M_PI) / subdivisions_; // Divisions en longitude
+    for (int i = 0; i < numStacks; ++i) {
+        // Angles de latitude pour deux anneaux consécutifs
+        float theta1 = i * (pi / numStacks);         // Angle du premier anneau
+        float theta2 = (i + 1) * (pi / numStacks);   // Angle du deuxième anneau
 
-    for (int i = 0; i < subdivisions_; ++i) {
-        float theta1 = i * dTheta;
-        float theta2 = (i + 1) * dTheta;
+        for (int j = 0; j < numSlices; ++j) {
+            // Angles de longitude pour deux points consécutifs sur un anneau
+            float phi1 = j * (2 * pi / numSlices);         // Angle du premier point
+            float phi2 = (j + 1) * (2 * pi / numSlices);   // Angle du deuxième point
 
-        for (int j = 0; j < subdivisions_; ++j) {
-            float phi1 = j * dPhi;
-            float phi2 = (j + 1) * dPhi;
+            Point3D p1(center.getX() + radius * sin(theta1) * cos(phi1),
+                       center.getY() + radius * cos(theta1),
+                       center.getZ() + radius * sin(theta1) * sin(phi1));
 
-            // Calcul des sommets des quadrilatères
-            Point3D p1(center_.getX() + radius_ * std::sin(theta1) * std::cos(phi1),
-                       center_.getY() + radius_ * std::sin(theta1) * std::sin(phi1),
-                       center_.getZ() + radius_ * std::cos(theta1));
+            Point3D p2(center.getX() + radius * sin(theta2) * cos(phi1),
+                       center.getY() + radius * cos(theta2),
+                       center.getZ() + radius * sin(theta2) * sin(phi1));
 
-            Point3D p2(center_.getX() + radius_ * std::sin(theta2) * std::cos(phi1),
-                       center_.getY() + radius_ * std::sin(theta2) * std::sin(phi1),
-                       center_.getZ() + radius_ * std::cos(theta2));
+            Point3D p3(center.getX() + radius * sin(theta2) * cos(phi2),
+                       center.getY() + radius * cos(theta2),
+                       center.getZ() + radius * sin(theta2) * sin(phi2));
 
-            Point3D p3(center_.getX() + radius_ * std::sin(theta2) * std::cos(phi2),
-                       center_.getY() + radius_ * std::sin(theta2) * std::sin(phi2),
-                       center_.getZ() + radius_ * std::cos(theta2));
+            Point3D p4(center.getX() + radius * sin(theta1) * cos(phi2),
+                       center.getY() + radius * cos(theta1),
+                       center.getZ() + radius * sin(theta1) * sin(phi2));
 
-            Point3D p4(center_.getX() + radius_ * std::sin(theta1) * std::cos(phi2),
-                       center_.getY() + radius_ * std::sin(theta1) * std::sin(phi2),
-                       center_.getZ() + radius_ * std::cos(theta1));
-
-            // Ajouter le quadrilatère
-            quads_.emplace_back(p1, p2, p3, p4);
+            quads.push_back(Quad3D(p1, p2, p3, p4, color));
         }
     }
 }

@@ -27,15 +27,30 @@ public:
      * 
      * Initialise un quadrilatère vide.
      */
-    Quad3D() = default;
+    Quad3D();
 
     /**
      * @brief Constructeur initialisant un quadrilatère à partir de deux triangles.
      * 
-     * @param firstT Premier triangle du quadrilatère.
-     * @param secondT Deuxième triangle du quadrilatère.
+     * @param triangles_[0] Premier triangle du quadrilatère.
+     * @param triangles_[1] Deuxième triangle du quadrilatère.
+     * @param rouge La composante rouge de la couleur du quadrilatère.
+     * @param vert La composante verte de la couleur du quadrilatère.
+     * @param bleu La composante bleue de la couleur du quadrilatère.
+     * @pre Les triangles ne doivent pas être alignés.
      */
-    Quad3D(const Triangle3D& firstT, const Triangle3D& secondT);
+    Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, int rouge = 0, int vert = 0, int bleu = 0);
+
+    /**
+     * @brief Constructeur initialisant un quadrilatère à partir de deux triangles.
+     * 
+     * @param triangles_[0] Premier triangle du quadrilatère.
+     * @param triangles_[1] Deuxième triangle du quadrilatère.
+     * @param color La couleur du quadrilatère.
+     * @pre Les triangles ne doivent pas être alignés.
+     */
+    Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, const Couleur& color);
+
 
     /**
      * @brief Constructeur par copie de la classe Quad3D.
@@ -46,16 +61,30 @@ public:
 
     /**
      * @brief Constructeur construisant un quadrilatère à partir de quatre points.
-     * 
-     * Les points doivent être donnés dans l'ordre trigonométrique.
-     * 
      * @param p1 Premier sommet du quadrilatère.
      * @param p2 Deuxième sommet du quadrilatère.
      * @param p3 Troisième sommet du quadrilatère.
      * @param p4 Quatrième sommet du quadrilatère.
-     * @pre Les points doivent être coplanaires et non alignés.
+     * @param rouge La composante rouge de la couleur du quadrilatère.
+     * @param vert La composante verte de la couleur du quadrilatère.
+     * @param bleu La composante bleue de la couleur du quadrilatère.
+     * @pre Trois points ne doivents pas être alignés.
      */
-    Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4);
+    Quad3D(const Point3D &p1, const Point3D &p2, const Point3D &p3, const Point3D &p4, int rouge = 0, int vert = 0, int bleu = 0);
+
+    /**
+     * @brief Constructeur construisant un quadrilatère à partir de quatre points.
+     * @param p1 Premier sommet du quadrilatère.
+     * @param p2 Deuxième sommet du quadrilatère.
+     * @param p3 Troisième sommet du quadrilatère.
+     * @param p4 Quatrième sommet du quadrilatère.
+     * @param color La couleur du quadrilatère.
+     * @pre Trois points ne doivents pas être alignés.
+     */
+    Quad3D::Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, const Couleur& color)
+        : triangles_{Triangle3D(p1, p2, p3, color), Triangle3D(p1, p3, p4, color)} {
+    }
+
 
     /**
      * @brief Retourne le premier triangle du quadrilatère.
@@ -70,6 +99,64 @@ public:
      * @return const Triangle3D& Référence constante vers le deuxième triangle.
      */
     const Triangle3D& getSecondTriangle() const noexcept;
+
+/**
+     * @brief Accesseur pour la couleur du quadrilatère.
+     * @return La couleur du quadrilatère.
+     */
+    Couleur getColor() const{return triangles_[0].getColor();}
+
+    /**
+     * @brief Modifie la couleur du quadrilatère.
+     * @param color La nouvelle couleur du quadrilatère.
+     * @return void
+     */
+    void setColor(const Couleur &color){
+        triangles_[0].setColor(color);
+        triangles_[1].setColor(color);
+    }
+
+    /**
+     * @brief Modifie la couleur du quadrilatère.
+     * @param rouge La composante rouge de la couleur du quadrilatère.
+     * @param vert La composante verte de la couleur du quadrilatère.
+     * @param bleu La composante bleue de la couleur du quadrilatère.
+     * @return void
+     */
+    void setColor(int rouge, int vert, int bleu){
+        triangles_[0].setColor(rouge, vert, bleu);
+        triangles_[1].setColor(rouge, vert, bleu);
+    }
+
+    /**
+     * @brief Modifie la composante rouge de la couleur du quadrilatère.
+     * @param rouge La nouvelle composante rouge de la couleur du quadrilatère.
+     * @return void
+     */
+    void setColorRouge(int rouge){
+        triangles_[0].setColorRouge(rouge);
+        triangles_[1].setColorRouge(rouge);
+    }
+
+    /**
+     * @brief Modifie la composante verte de la couleur du quadrilatère.
+     * @param vert La nouvelle composante verte de la couleur du quadrilatère.
+     * @return void
+     */
+    void setColorVert(int vert){
+        triangles_[0].setColorVert(vert);
+        triangles_[1].setColorVert(vert);
+    }
+
+    /**
+     * @brief Modifie la composante bleue de la couleur du quadrilatère.
+     * @param bleu La nouvelle composante bleue de la couleur du quadrilatère.
+     * @return void
+     */
+    void setColorBleu(int bleu){
+        triangles_[0].setColorBleu(bleu);
+        triangles_[1].setColorBleu(bleu);
+    }
 
     /**
      * @brief Calcule la surface totale du quadrilatère.

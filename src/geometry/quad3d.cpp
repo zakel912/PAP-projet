@@ -3,25 +3,26 @@
 #include <stdexcept>
 #include <cmath>
 
-Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT) {
-    triangles_[0] = firstT;
-    triangles_[1] = secondT;
+Quad3D::Quad3D(){
+    Quad3D(Triangle3D(), Triangle3D(Point3D(1,1), Point3D(0,1), Point3D(1,0)));
 }
 
-Quad3D::Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4) {
-    triangles_[0] = Triangle3D(p1, p2, p3);
-    triangles_[1] = Triangle3D(p1, p3, p4);
+// Constructeur avec deux triangles et des composantes RVB
+Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, int rouge, int vert, int bleu)
+    : triangles_{firstT, secondT} {
+    setColor(rouge, vert, bleu);
+}
 
-    Point3D u = p2 - p1;
-    Point3D v = p3 - p1;
-    Point3D w = p4 - p1;
+// Constructeur avec deux triangles et un objet Couleur
+Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, const Couleur& color)
+    : triangles_{firstT, secondT} {
+    setColor(color);
+}
 
-    Point3D cross1 = u.crossProduct(v);
-    float dot = cross1.dotProduct(w);
-
-    if (std::fabs(dot) > 1e-6) {
-        throw std::runtime_error("Les points ne sont pas coplanaires.");
-    }
+// Constructeur avec quatre sommets et des composantes RVB
+Quad3D::Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, int rouge, int vert, int bleu)
+    : triangles_{Triangle3D(p1, p2, p3, rouge, vert, bleu),
+                 Triangle3D(p1, p3, p4, rouge, vert, bleu)} {
 }
 
 const Triangle3D& Quad3D::getFirstTriangle() const noexcept {
@@ -30,6 +31,23 @@ const Triangle3D& Quad3D::getFirstTriangle() const noexcept {
 
 const Triangle3D& Quad3D::getSecondTriangle() const noexcept {
     return triangles_[1];
+}
+
+// Accesseur pour la couleur
+Couleur Quad3D::getColor() const {
+    return triangles_[0].getColor();
+}
+
+// Modificateur pour la couleur avec un objet Couleur
+void Quad3D::setColor(const Couleur& color) {
+    triangles_[0].setColor(color);
+    triangles_[1].setColor(color);
+}
+
+// Modificateur pour la couleur avec des composantes RVB
+void Quad3D::setColor(int rouge, int vert, int bleu) {
+    triangles_[0].setColor(rouge, vert, bleu);
+    triangles_[1].setColor(rouge, vert, bleu);
 }
 
 float Quad3D::surface() const {

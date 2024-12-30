@@ -65,6 +65,10 @@ bool operator==(const Point3D& p1, const Point3D& p2){
     return p1.equals(p2);
 }
 
+bool operator!=(const Point3D& p1, const Point3D& p2){
+    return !p1.equals(p2);
+}
+
 Point3D Point3D::operator+(const Point3D& other) const {
     return Point3D(x + other.x, y + other.y, z + other.z);
 }
