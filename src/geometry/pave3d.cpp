@@ -44,12 +44,16 @@ Couleur Pave3D::getColor() const {
 
 void Pave3D::setColor(const Couleur& newColor) {
     color = newColor;
+    front_quad.setColor(newColor);
+    back_quad.setColor(newColor);
+    left_quad.setColor(newColor);
+    right_quad.setColor(newColor);
+    top_quad.setColor(newColor);
+    bottom_quad.setColor(newColor);
 }
 
 void Pave3D::setColor(int rouge, int vert, int bleu) {
-    color.setRouge(rouge);
-    color.setVert(vert);
-    color.setBleu(bleu);
+    setColor(Couleur(rouge, vert, bleu));
 }
 
 float Pave3D::volume() const {
