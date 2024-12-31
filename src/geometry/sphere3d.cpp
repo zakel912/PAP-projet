@@ -57,6 +57,7 @@ const std::vector<Quad3D>& Sphere3D::getQuads() const {
 
 // Modificateur pour la couleur (RVB)
 void Sphere3D::setColor(int rouge, int vert, int bleu) {
+    if (Couleur(rouge, vert, bleu) == color) return;
     color.setRouge(rouge);
     color.setVert(vert);
     color.setBleu(bleu);
