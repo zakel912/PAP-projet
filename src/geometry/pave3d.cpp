@@ -56,6 +56,18 @@ void Pave3D::setColor(int rouge, int vert, int bleu) {
     setColor(Couleur(rouge, vert, bleu));
 }
 
+void Pave3D::setColorRouge(int rouge) {
+    setColor(rouge, color.getVert(), color.getBleu());
+}
+
+void Pave3D::setColorVert(int vert) {
+    setColor(color.getRouge(), vert, color.getBleu());
+}
+
+void Pave3D::setColorBleu(int bleu) {
+    setColor(color.getRouge(), color.getVert(), bleu);
+}
+
 float Pave3D::volume() const {
     // Supposons que les dimensions du pavé sont définies par la longueur, la largeur et la hauteur :
     float length = front_quad.getFirstTriangle().getP1().distance(front_quad.getFirstTriangle().getP2());

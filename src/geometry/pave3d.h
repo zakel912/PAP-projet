@@ -134,7 +134,25 @@ public:
      * @param vert Composante verte de la couleur (0-255).
      * @param bleu Composante bleue de la couleur (0-255).
      */
-    void setColor(int rouge, int vert, int bleu);
+    void setColor(int rouge=0, int vert=0, int bleu=0);
+
+    /**
+     * @brief Modifie la composante rouge de la couleur du pavé.
+     * @param rouge La nouvelle composante rouge de la couleur (0-255).
+     */
+    void setColorRouge(int rouge);
+
+    /**
+     * @brief Modifie la composante verte de la couleur du pavé.
+     * @param vert La nouvelle composante verte de la couleur (0-255).
+     */
+    void setColorVert(int vert);
+
+    /**
+     * @brief Modifie la composante bleue de la couleur du pavé.
+     * @param bleu La nouvelle composante bleue de la couleur (0-255).
+     */
+    void setColorBleu(int bleu);
 
     /**
      * @brief Calcule le volume du pavé.
