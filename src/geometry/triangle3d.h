@@ -68,7 +68,7 @@ class Triangle3D {
         /**
          * @brief Destructeur de la classe Triangle3D.
          */
-        ~Triangle3D();
+        ~Triangle3D(){}
 
         /**
          * @brief Accesseur pour le premier sommet.

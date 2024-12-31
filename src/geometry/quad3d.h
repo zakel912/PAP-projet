@@ -81,10 +81,11 @@ public:
      * @param color La couleur du quadrilatère.
      * @pre Trois points ne doivents pas être alignés.
      */
-    Quad3D::Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, const Couleur& color)
+    Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, const Couleur& color)
         : triangles_{Triangle3D(p1, p2, p3, color), Triangle3D(p1, p3, p4, color)} {
     }
 
+    ~Quad3D(){}
 
     /**
      * @brief Retourne le premier triangle du quadrilatère.
@@ -104,17 +105,14 @@ public:
      * @brief Accesseur pour la couleur du quadrilatère.
      * @return La couleur du quadrilatère.
      */
-    Couleur getColor() const{return triangles_[0].getColor();}
+    Couleur getColor() const;
 
     /**
      * @brief Modifie la couleur du quadrilatère.
      * @param color La nouvelle couleur du quadrilatère.
      * @return void
      */
-    void setColor(const Couleur &color){
-        triangles_[0].setColor(color);
-        triangles_[1].setColor(color);
-    }
+    void setColor(const Couleur &color);
 
     /**
      * @brief Modifie la couleur du quadrilatère.
@@ -123,11 +121,7 @@ public:
      * @param bleu La composante bleue de la couleur du quadrilatère.
      * @return void
      */
-    void setColor(int rouge, int vert, int bleu){
-        triangles_[0].setColor(rouge, vert, bleu);
-        triangles_[1].setColor(rouge, vert, bleu);
-    }
-
+    void setColor(int rouge, int vert, int bleu);
     /**
      * @brief Modifie la composante rouge de la couleur du quadrilatère.
      * @param rouge La nouvelle composante rouge de la couleur du quadrilatère.

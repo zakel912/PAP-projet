@@ -9,6 +9,8 @@ Point3D::Point3D(float x, float y, float z) : x(x), y(y), z(z) {
 
 Point3D::Point3D(const Point3D& other) : x(other.x), y(other.y), z(other.z) {}
 
+Point3D::~Point3D() {}
+
 float Point3D::getX() const{
     return x;
 }
@@ -61,21 +63,9 @@ bool Point3D::equals(const Point3D& other) const {
            std::fabs(z - other.z) < TOLERANCE;
 }
 
-bool operator==(const Point3D& p1, const Point3D& p2){
-    return p1.equals(p2);
-}
-
-bool operator!=(const Point3D& p1, const Point3D& p2){
-    return !p1.equals(p2);
-}
-
-Point3D Point3D::operator+(const Point3D& other) const {
-    return Point3D(x + other.x, y + other.y, z + other.z);
-}
-
-Point3D Point3D::operator-(const Point3D& other) const {
-    return Point3D(x - other.x, y - other.y, z - other.z);
-}
+    bool operator==(const Point3D& lhs, const Point3D& rhs) {
+        return lhs.equals(rhs);
+    }
 
 std::ostream& operator<<(std::ostream& os, const Point3D& point) {
     os << "(" << point.getX() << ", " << point.getY() << ", " << point.getZ() << ")";

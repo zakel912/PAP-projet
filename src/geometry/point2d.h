@@ -47,7 +47,7 @@ class Point2D {
         /**
          * @brief Destructeur de la classe Point2D.
          */
-        ~Point2D();
+        ~Point2D(){}
 
         /**
          * @brief Accesseur pour la coordonnée x.

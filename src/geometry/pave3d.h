@@ -12,7 +12,7 @@
 
 #include "point3d.h"
 #include "quad3d.h"
-#include "couleur.h"
+#include "../couleur.h"
 
 /**
  * @class Pave3D

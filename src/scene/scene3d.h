@@ -1,8 +1,3 @@
-/**
- * @file Scene3D.h
- * @brief Déclaration de la classe Scene3D pour gérer une scène 3D et la projeter en 2D.
- */
-
 #ifndef SCENE3D_H
 #define SCENE3D_H
 
@@ -78,6 +73,11 @@ public:
      * @param distance La nouvelle distance.
      */
     void setProjectionPlaneDistance(float distance);
+
+    /**
+     * @brief Vide tous les objets de la scène.
+     */
+    void clear();
 };
 
 #endif // SCENE3D_H

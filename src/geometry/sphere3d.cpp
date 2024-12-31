@@ -5,20 +5,24 @@
 
 // Constructeur par défaut
 Sphere3D::Sphere3D()
-    : center(Point3D()), radius(1), subdivisions(1), color(Couleur()), quads() {
-    generateQuads(50, 50);
+    : center(Point3D()), radius(1), subdivisions(1), quads(), color(Couleur()) {
+    generateQuads(subdivisions, subdivisions);
 }
 
 // Constructeur avec centre, rayon, subdivisions et couleur RGB
 Sphere3D::Sphere3D(const Point3D& center, float radius, int subdivisions, int rouge, int vert, int bleu)
     : center(center), radius(radius), subdivisions(subdivisions), color(Couleur(rouge, vert, bleu)) {
-    if (radius <= 0) {
-        throw std::invalid_argument("Le rayon de la sphère doit être strictement positif.");
-    }
-    if (subdivisions <= 0) {
-        throw std::invalid_argument("Le nombre de subdivisions doit être strictement positif.");
-    }
-    generateQuads(50, 50);
+    if (radius <= 0) throw std::invalid_argument("Radius must be positive.");
+    if (subdivisions <= 0) throw std::invalid_argument("Subdivisions must be positive.");
+    generateQuads(subdivisions, subdivisions);
+}
+
+// Constructeur avec centre, couleur, rayon et subdivisions
+Sphere3D::Sphere3D(const Point3D& center, const Couleur& color, float radius, int subdivisions)
+    : center(center), radius(radius), subdivisions(subdivisions), color(color) {
+    if (radius <= 0) throw std::invalid_argument("Radius must be positive.");
+    if (subdivisions <= 0) throw std::invalid_argument("Subdivisions must be positive.");
+    generateQuads(subdivisions, subdivisions);
 }
 
 // Accesseur pour le centre
@@ -29,7 +33,7 @@ Point3D Sphere3D::getCenter() const {
 // Modificateur pour le centre
 void Sphere3D::setCenter(const Point3D& newCenter) {
     center = newCenter;
-    generateQuads(50, 50);
+    generateQuads(subdivisions, subdivisions);
 }
 
 // Accesseur pour le rayon
@@ -40,10 +44,10 @@ float Sphere3D::getRadius() const {
 // Modificateur pour le rayon
 void Sphere3D::setRadius(float newRadius) {
     if (newRadius <= 0) {
-        throw std::invalid_argument("Le rayon de la sphère doit être strictement positif.");
+        throw std::invalid_argument("The radius must be strictly positive.");
     }
     radius = newRadius;
-    generateQuads(50, 50);
+    generateQuads(subdivisions, subdivisions);
 }
 
 // Accesseur pour les quadrilatères
@@ -91,19 +95,18 @@ float Sphere3D::surfaceArea() const {
     return 4 * M_PI * std::pow(radius, 2);
 }
 
+// Génération des quadrilatères
 void Sphere3D::generateQuads(int numSlices, int numStacks) {
-    quads.clear(); // Efface les quadrilatères existants
+    quads.clear();
     const float pi = M_PI;
 
     for (int i = 0; i < numStacks; ++i) {
-        // Angles de latitude pour deux anneaux consécutifs
-        float theta1 = i * (pi / numStacks);         // Angle du premier anneau
-        float theta2 = (i + 1) * (pi / numStacks);   // Angle du deuxième anneau
+        float theta1 = i * (pi / numStacks);
+        float theta2 = (i + 1) * (pi / numStacks);
 
         for (int j = 0; j < numSlices; ++j) {
-            // Angles de longitude pour deux points consécutifs sur un anneau
-            float phi1 = j * (2 * pi / numSlices);         // Angle du premier point
-            float phi2 = (j + 1) * (2 * pi / numSlices);   // Angle du deuxième point
+            float phi1 = j * (2 * pi / numSlices);
+            float phi2 = (j + 1) * (2 * pi / numSlices);
 
             Point3D p1(center.getX() + radius * sin(theta1) * cos(phi1),
                        center.getY() + radius * cos(theta1),
@@ -121,7 +124,7 @@ void Sphere3D::generateQuads(int numSlices, int numStacks) {
                        center.getY() + radius * cos(theta1),
                        center.getZ() + radius * sin(theta1) * sin(phi2));
 
-            quads.push_back(Quad3D(p1, p2, p3, p4, color));
+            quads.emplace_back(Quad3D(p1, p2, p3, p4, color));
         }
     }
 }

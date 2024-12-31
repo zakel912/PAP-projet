@@ -123,59 +123,43 @@ class Point3D {
         }
 
         /**
+         * @brief Compare deux points pour l'égalité.
+         * @param p1 Le premier point à comparer.
+         * @param p2 Le deuxième point à comparer.
+         * @return true si les deux points sont égaux, false sinon.
+         */
+        friend bool operator==(const Point3D& p1, const Point3D& p2);
+
+        /**
+         * @brief Compare deux points pour l'inégalité.
+         * @param p1 Le premier point à comparer.
+         * @param p2 Le deuxième point à comparer.
+         */
+        friend bool operator!=(const Point3D& p1, const Point3D& p2);
+
+        //Définition des opérateurs externes
+
+        /**
          * @brief Opérateur d'addition de deux points.
-         * @param other L'autre point à ajouter.
+         * @param p1 Le premier point à ajouter.
+         * @param p2 Le deuxième point à ajouter.
          * @return Le point résultant de l'addition.
          */
-        Point3D operator+(const Point3D& other) const{
-            return Point3D(x + other.getX(), y + other.getY(), z + other.getZ());  
+        friend Point3D operator+(const Point3D& p1, const Point3D& p2) {
+            return Point3D(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
         }
 
         /**
          * @brief Opérateur de soustraction de deux points.
-         * @param other L'autre point à soustraire.
+         * @param p1 Le premier point à soustraire.
+         * @param p2 Le deuxième point à soustraire.
          * @return Le point résultant de la soustraction.
          */
-        Point3D operator-(const Point3D& other) const{
-            return Point3D(x - other.getX(), y - other.getY(), z - other.getZ());
+        friend Point3D operator-(const Point3D& p1, const Point3D& p2) {
+            return Point3D(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
         }
-
         friend std::ostream& operator<<(std::ostream& os, const Point3D& point);
 
 }; 
-
-    /**
-     * @brief Compare deux points pour l'égalité.
-     * @param p1 Le premier point à comparer.
-     * @param p2 Le deuxième point à comparer.
-     * @return true si les deux points sont égaux, false sinon.
-     */
-    bool operator==(const Point3D& p1, const Point3D& p2);
-
-    /**
-     * @brief Compare deux points pour l'inégalité.
-     * @param p1 Le premier point à comparer.
-     * @param p2 Le deuxième point à comparer.
-     */
-    bool operator!=(const Point3D& p1, const Point3D& p2);
-
-    //Définition des opérateurs externes
-
-    /**
-     * @brief Opérateur d'addition de deux points.
-     * @param p1 Le premier point à ajouter.
-     * @param p2 Le deuxième point à ajouter.
-     * @return Le point résultant de l'addition.
-     */
-    Point3D operator+(const Point3D& p1, const Point3D& p2);
-
-
-    /**
-     * @brief Opérateur de soustraction de deux points.
-     * @param p1 Le premier point à soustraire.
-     * @param p2 Le deuxième point à soustraire.
-     * @return Le point résultant de la soustraction.
-     */
-    Point3D operator-(const Point3D& p1, const Point3D& p2);
 
 #endif 

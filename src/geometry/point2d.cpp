@@ -1,6 +1,8 @@
 #include "point2d.h"
 #include <cmath>
 
+Point2D::Point2D(int x, int y) : x(x), y(y) {}
+
 Point2D::Point2D(float x, float y) {
     this->x = x;
     this->y = y;

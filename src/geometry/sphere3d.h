@@ -1,4 +1,4 @@
-/**
+/** 
  * @file Sphere3D.h
  * @brief Déclaration de la classe Sphere3D pour représenter une sphère en 3D.
  *
@@ -11,7 +11,7 @@
 
 #include "point3d.h"
 #include "quad3d.h"
-#include "couleur.h"
+#include "../couleur.h"
 #include <vector>
 #include <cmath>
 #include <stdexcept>
@@ -48,20 +48,19 @@ public:
      * @param rouge La composante rouge de la couleur de la sphère.
      * @param vert La composante verte de la couleur de la sphère.
      * @param bleu La composante bleue de la couleur de la sphère.
-    * @pre Le rayon doit être strictement positif.
-     */
-    Sphere3D(const Point3D& center, float radius=1, int subdivisions, int rouge = 0, int vert = 0, int bleu = 0);
-
-    /**
-     * @brief Constructeur initialisant la sphère avec des valeurs spécifiques pour le centre ,le rayon et pour la couleur.
-     * @param center Centre de la sphère.
-     * @param radius Rayon de la sphère.
-     * @param subdivisions Le nombre de subdivisions pour discrétiser la sphère (doit être > 0).
-     * @param color La couleur de la sphère.
      * @pre Le rayon doit être strictement positif.
      */
-Sphere3D(Point3D center, Couleur color, float radius = 1, int subdivisions)
-    : Sphere3D(center, radius, subdivisions, color.getRouge(), color.getVert(), color.getBleu()) {}
+    Sphere3D(const Point3D& center = Point3D(), float radius = 1, int subdivisions = 1, int rouge = 0, int vert = 0, int bleu = 0);
+
+    /**
+     * @brief Constructeur initialisant la sphère avec des valeurs spécifiques pour le centre, le rayon et pour la couleur.
+     * @param center Centre de la sphère.
+     * @param color La couleur de la sphère.
+     * @param radius Rayon de la sphère.
+     * @param subdivisions Le nombre de subdivisions pour discrétiser la sphère (doit être > 0).
+     * @pre Le rayon doit être strictement positif.
+     */
+    Sphere3D(const Point3D& center, const Couleur& color, float radius = 1, int subdivisions = 1);
 
     /**
      * @brief Constructeur par défaut de la classe Sphere3D.
@@ -102,7 +101,7 @@ Sphere3D(Point3D center, Couleur color, float radius = 1, int subdivisions)
      * @brief Accesseur pour la couleur de la sphère.
      * @return La couleur de la sphère.
      */
-    Couleur getColor() const{return color;}
+    Couleur getColor() const { return color; }
 
     /**
      * @brief Modifie la couleur de la sphère.  
@@ -115,28 +114,24 @@ Sphere3D(Point3D center, Couleur color, float radius = 1, int subdivisions)
     /**
      * @brief Modifie la couleur de la sphère.
      * @param color La nouvelle couleur de la sphère.
-     * @return void
      */
-    void setColor(const Couleur &color);
+    void setColor(const Couleur& color);
 
     /**
      * @brief Modifie la composante rouge de la couleur de la sphère.
      * @param rouge La nouvelle composante rouge de la couleur de la sphère.
-     * @return void
      */
     void setColorRouge(int rouge);
 
     /**
      * @brief Modifie la composante verte de la couleur de la sphère.
      * @param vert La nouvelle composante verte de la couleur de la sphère.
-     * @return void
      */
     void setColorVert(int vert);
 
     /**
      * @brief Modifie la composante bleue de la couleur de la sphère.
      * @param bleu La nouvelle composante bleue de la couleur de la sphère.
-     * @return void
      */
     void setColorBleu(int bleu);
 

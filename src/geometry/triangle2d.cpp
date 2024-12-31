@@ -3,59 +3,86 @@
 #include <stdexcept>
 
 // Constructeur par défaut
-Triangle2D::Triangle2D() : p1_(Point2D()), p2_(Point2D()), p3_(Point2D()) {}
+Triangle2D::Triangle2D()
+    : p1(Point2D(0, 0)), p2(Point2D(0, 0)), p3(Point2D(0, 0)), color(Couleur()), depth(0.0f) {}
 
-// Constructeur avec trois sommets
-Triangle2D::Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3) : p1_(p1), p2_(p2), p3_(p3) {
-    // Vérification que les trois points ne sont pas colinéaires
-    float areaValue = std::fabs((p1_.getX() * (p2_.getY() - p3_.getY()) +
-                                 p2_.getX() * (p3_.getY() - p1_.getY()) +
-                                 p3_.getX() * (p1_.getY() - p2_.getY())) / 2.0f);
+// Constructeur avec trois sommets et une couleur RVB
+Triangle2D::Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, int rouge, int vert, int bleu, float depth)
+    : p1(p1), p2(p2), p3(p3), color(Couleur(rouge, vert, bleu)), depth(depth) {
+    float areaValue = std::fabs((p1.getX() * (p2.getY() - p3.getY()) +
+                                 p2.getX() * (p3.getY() - p1.getY()) +
+                                 p3.getX() * (p1.getY() - p2.getY())) / 2.0f);
     if (areaValue < 1e-6) {
         throw std::runtime_error("Les trois points sont colinéaires. Impossible de former un triangle.");
     }
 }
 
-// Accesseurs
+// Constructeur avec trois sommets et une couleur (objet Couleur)
+Triangle2D::Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, const Couleur& color, float depth)
+    : Triangle2D(p1, p2, p3, color.getRouge(), color.getVert(), color.getBleu()) {}
+
+// Accesseurs pour les sommets
 Point2D Triangle2D::getP1() const {
-    return p1_;
+    return p1;
 }
 
 Point2D Triangle2D::getP2() const {
-    return p2_;
+    return p2;
 }
 
 Point2D Triangle2D::getP3() const {
-    return p3_;
+    return p3;
+}
+
+// Accesseur pour la couleur
+Couleur Triangle2D::getColor() const {
+    return color;
+}
+
+// Modificateur pour la couleur (objet Couleur)
+void Triangle2D::setColor(const Couleur& color) {
+    this->color = color;
+}
+
+// Modificateur pour la couleur (composantes RVB)
+void Triangle2D::setColor(int rouge, int vert, int bleu) {
+    color.setRouge(rouge);
+    color.setVert(vert);
+    color.setBleu(bleu);
+}
+
+// Accesseur pour la profondeur moyenne
+float Triangle2D::averageDepth() const {
+    return depth;
 }
 
 // Calcul du périmètre
 float Triangle2D::perimeter() const {
-    return p1_.distance(p2_) + p2_.distance(p3_) + p3_.distance(p1_);
+    return p1.distance(p2) + p2.distance(p3) + p3.distance(p1);
 }
 
 // Calcul de l'aire
 float Triangle2D::area() const {
-    return std::fabs((p1_.getX() * (p2_.getY() - p3_.getY()) +
-                      p2_.getX() * (p3_.getY() - p1_.getY()) +
-                      p3_.getX() * (p1_.getY() - p2_.getY())) / 2.0f);
+    return std::fabs((p1.getX() * (p2.getY() - p3.getY()) +
+                      p2.getX() * (p3.getY() - p1.getY()) +
+                      p3.getX() * (p1.getY() - p2.getY())) / 2.0f);
 }
 
 // Vérifie si un point est à l'intérieur du triangle
 bool Triangle2D::contains(const Point2D& point) const {
     float totalArea = area();
 
-    float area1 = std::fabs((point.getX() * (p2_.getY() - p3_.getY()) +
-                             p2_.getX() * (p3_.getY() - point.getY()) +
-                             p3_.getX() * (point.getY() - p2_.getY())) / 2.0f);
+    float area1 = std::fabs((point.getX() * (p2.getY() - p3.getY()) +
+                             p2.getX() * (p3.getY() - point.getY()) +
+                             p3.getX() * (point.getY() - p2.getY())) / 2.0f);
 
-    float area2 = std::fabs((p1_.getX() * (point.getY() - p3_.getY()) +
-                             point.getX() * (p3_.getY() - p1_.getY()) +
-                             p3_.getX() * (p1_.getY() - point.getY())) / 2.0f);
+    float area2 = std::fabs((p1.getX() * (point.getY() - p3.getY()) +
+                             point.getX() * (p3.getY() - p1.getY()) +
+                             p3.getX() * (p1.getY() - point.getY())) / 2.0f);
 
-    float area3 = std::fabs((p1_.getX() * (p2_.getY() - point.getY()) +
-                             p2_.getX() * (point.getY() - p1_.getY()) +
-                             point.getX() * (p1_.getY() - p2_.getY())) / 2.0f);
+    float area3 = std::fabs((p1.getX() * (p2.getY() - point.getY()) +
+                             p2.getX() * (point.getY() - p1.getY()) +
+                             point.getX() * (p1.getY() - p2.getY())) / 2.0f);
 
     // Le point est à l'intérieur si la somme des sous-aires est égale à l'aire totale
     return std::fabs(totalArea - (area1 + area2 + area3)) < 1e-6;
@@ -63,10 +90,13 @@ bool Triangle2D::contains(const Point2D& point) const {
 
 // Surcharge de l'opérateur <<
 std::ostream& operator<<(std::ostream& os, const Triangle2D& triangle) {
-    os << "Triangle2D["
-       << "P1: " << triangle.getP1() << ", "
-       << "P2: " << triangle.getP2() << ", "
-       << "P3: " << triangle.getP3()
+    os << "Triangle2D[" << "P1: " << triangle.getP1() 
+       << ", P2: " << triangle.getP2() 
+       << ", P3: " << triangle.getP3() 
+       << ", Color: (" << triangle.getColor().getRouge() << ", " 
+       << triangle.getColor().getVert() << ", " 
+       << triangle.getColor().getBleu() << ")"
+       << ", Depth: " << triangle.averageDepth()
        << "]";
     return os;
 }

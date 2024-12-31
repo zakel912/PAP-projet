@@ -1,5 +1,4 @@
 #include "couleur.h"
-#include <stdexcept>
 #include <iostream>
 
 // Constructeur par défaut ou avec paramètres
@@ -32,7 +31,10 @@ bool Couleur::equals(const Couleur& other) const {
 
 // Mélange de couleurs
 Couleur Couleur::blend(const Couleur& other) const {
-    return Couleur((rouge + other.rouge) / 2, (vert + other.vert) / 2, (bleu + other.bleu) / 2);
+    int blendedRouge = (getRouge() + other.getRouge()) / 2;
+    int blendedVert = (getVert() + other.getVert()) / 2;
+    int blendedBleu = (getBleu() + other.getBleu()) / 2;
+    return Couleur(blendedRouge, blendedVert, blendedBleu);
 }
 
 // Surcharge des opérateurs
@@ -46,6 +48,6 @@ bool operator!=(const Couleur& c1, const Couleur& c2) {
 
 // Surcharge de l'opérateur <<
 std::ostream& operator<<(std::ostream& os, const Couleur& couleur) {
-    os << "(R: " << couleur.rouge << ", G: " << couleur.vert << ", B: " << couleur.bleu << ")";
+    os << "(R: " << couleur.getRouge() << ", G: " << couleur.getVert() << ", B: " << couleur.getBleu() << ")";
     return os;
 }

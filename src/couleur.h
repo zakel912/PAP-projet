@@ -27,12 +27,7 @@ private:
      * @param valeur La valeur à valider.
      * @throw std::invalid_argument Si la valeur est hors de l'intervalle [0, 255].
      */
-    void validateComponent(int valeur) const {
-        if (valeur < 0 || valeur > 255) {
-            throw std::invalid_argument("La valeur de la composante RVB doit être entre 0 et 255.");
-        }
-    }
-
+    void validateComponent(int valeur) const;
 public:
     /**
      * @brief Constructeur initialisant la couleur avec des valeurs spécifiques pour les composantes rouge, verte et bleue.
@@ -102,18 +97,13 @@ public:
      * @param other L'autre couleur à comparer.
      * @return true si les deux couleurs sont égales, false sinon.
      */
-    bool equals(const Couleur& other) const {
-        return rouge == other.rouge && vert == other.vert && bleu == other.bleu;
-    }
-
+    bool equals(const Couleur& other) const;
     /**
      * @brief Mélange la couleur actuelle avec une autre couleur.
      * @param other L'autre couleur à mélanger.
      * @return Une nouvelle couleur résultant du mélange.
      */
-    Couleur blend(const Couleur& other) const {
-        return Couleur((rouge + other.rouge) / 2, (vert + other.vert) / 2, (bleu + other.bleu) / 2);
-    }
+    Couleur blend(const Couleur& other) const;
 
     /**
      * @brief Affiche la couleur sous forme de chaîne lisible.
@@ -121,19 +111,12 @@ public:
      * @param couleur La couleur à afficher.
      * @return Le flux de sortie modifié.
      */
-    friend std::ostream& operator<<(std::ostream& os, const Couleur& couleur) {
-        os << "(R: " << couleur.rouge << ", G: " << couleur.vert << ", B: " << couleur.bleu << ")";
-        return os;
-    }
+    friend std::ostream& operator<<(std::ostream& os, const Couleur& couleur);
 };
 
 // Surcharge des opérateurs
-bool operator==(const Couleur& c1, const Couleur& c2) {
-    return c1.equals(c2);
-}
+bool operator==(const Couleur& c1, const Couleur& c2);
 
-bool operator!=(const Couleur& c1, const Couleur& c2) {
-    return !c1.equals(c2);
-}
+bool operator!=(const Couleur& c1, const Couleur& c2);
 
 #endif // COULEUR_H
