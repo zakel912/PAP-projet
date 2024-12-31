@@ -4,13 +4,14 @@
 int main() {
     // Création de points
     Point2D p1(1, 2);
-    Point2D p2(3, 4);
-    Point2D p3(1, 2);
-    Point2D p4(p3);
+    Point2D p2(3, 6);
+    Point2D p3(5, 10);
+    Point2D p4(1.0f, 4.0f);
 
     // Affichage des coordonnées
     std::cout << "Point p1: " << p1 << std::endl;
     std::cout << "Point p2: " << p2 << std::endl;
+    std::cout << "Point p5: " << p4 << std::endl;
 
     // Test des opérateurs ==
     if (p1 == p3) {
@@ -27,6 +28,11 @@ int main() {
 
     // Distance statique entre deux points
     std::cout << "Distance (statique) entre p2 et p3: " << Point2D::distance(p2, p3) << std::endl;
+
+    // Vérification de colinéarité
+    bool collinear = Point2D::areCollinear(p1, p2, p3);
+    std::cout << "Les points p1, p2, et p3 sont " << (collinear ? "colinéaires" : "non colinéaires") << ".\n";
+
 
     // Test de l'opérateur +
     Point2D sum = p1 + p2;

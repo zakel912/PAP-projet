@@ -13,6 +13,7 @@ Couleur::Couleur(int rouge, int vert, int bleu) {
 
 Couleur::Couleur(const Couleur& other) : rouge(other.rouge), vert(other.vert), bleu(other.bleu) {}
 
+
 // Accesseurs et mutateurs (déjà définis inline dans `couleur.h`)
 
 // Validation des composantes RGB

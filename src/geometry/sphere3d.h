@@ -24,10 +24,10 @@
  */
 class Sphere3D {
 private:
-    Point3D center;              ///< Centre de la sphère.
-    float radius;                ///< Rayon de la sphère.
-    int subdivisions;            ///< Nombre de subdivisions pour discrétiser la sphère.
-    std::vector<Quad3D> quads;   ///< Ensemble des quadrilatères représentant la sphère.
+    Point3D center;              // Centre de la sphère.
+    float radius;                // Rayon de la sphère.
+    int subdivisions;            // Nombre de subdivisions pour discrétiser la sphère.
+    std::vector<Quad3D> quads;   // Ensemble des quadrilatères représentant la sphère.
 
     Couleur color;
 

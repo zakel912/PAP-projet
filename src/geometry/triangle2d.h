@@ -46,7 +46,7 @@ public:
      * @param depth Profondeur du triangle.
      * @throws std::runtime_error Si les trois points sont colinéaires.
      */
-    Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, int rouge = 0, int vert = 0, int bleu = 0, float depth = 0.0f);
+    Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, int rouge = 0, int vert = 0, int bleu = 0, float depth=0.0f);
 
     /**
      * @brief Constructeur initialisant le triangle avec trois sommets donnés, une couleur et une profondeur.
@@ -57,7 +57,7 @@ public:
      * @param depth Profondeur du triangle.
      * @throws std::runtime_error Si les trois points sont colinéaires.
      */
-    Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, const Couleur& color, float depth = 0.0f);
+    Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, const Couleur& color, float depth=0.0f);
 
     /**
      * @brief Accesseur pour le premier sommet du triangle.
@@ -112,12 +112,6 @@ public:
     void setDepth(float newDepth){
         depth = newDepth;
     }
-
-    /**
-     * @brief Calcule la profondeur moyenne du triangle basée sur ses sommets.
-     * @return La profondeur moyenne.
-     */
-    float averageDepth() const;
 
     /**
      * @brief Calcule le périmètre du triangle.

@@ -1,15 +1,9 @@
 #include "point3d.h"
 #include <cmath>
 
-Point3D::Point3D(float x, float y, float z) : x(x), y(y), z(z) {
-    this->x = x;
-    this->y = y;
-    this->z = z;
-}
+Point3D::Point3D(float x, float y, float z) : x(x), y(y), z(z) {}
 
 Point3D::Point3D(const Point3D& other) : x(other.x), y(other.y), z(other.z) {}
-
-Point3D::~Point3D() {}
 
 float Point3D::getX() const{
     return x;
@@ -51,7 +45,7 @@ static constexpr float TOLERANCE = 1e-6;
 bool Point3D::areCollinear(const Point3D& p1, const Point3D& p2, const Point3D& p3) {
     Point3D u(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
     Point3D v(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
-    Point3D cross = crossProduct(u, v);
+    Point3D cross = u.crossProduct(v);
     return std::fabs(cross.x) < TOLERANCE &&
            std::fabs(cross.y) < TOLERANCE &&
            std::fabs(cross.z) < TOLERANCE;

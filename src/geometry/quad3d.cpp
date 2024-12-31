@@ -3,19 +3,25 @@
 #include <stdexcept>
 #include <cmath>
 
+// Constructeur par défaut
 Quad3D::Quad3D() 
     : triangles_{Triangle3D(), Triangle3D(Point3D(1, 1), Point3D(0, 1), Point3D(1, 0))} {}
-
 
 // Constructeur avec deux triangles et des composantes RVB
 Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, int rouge, int vert, int bleu)
     : triangles_{firstT, secondT} {
+    if (!firstT.hasCommonSide(secondT)) {
+        throw std::invalid_argument("The two triangles must share a common side to form a valid Quad3D.");
+    }
     setColor(rouge, vert, bleu);
 }
 
-// Constructeur avec deux triangles et un objet Couleur
+// Constructor with two triangles and a color object
 Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, const Couleur& color)
     : triangles_{firstT, secondT} {
+    if (!firstT.hasCommonSide(secondT)) {
+        throw std::invalid_argument("The two triangles must share a common side to form a valid Quad3D.");
+    }
     setColor(color);
 }
 
@@ -23,12 +29,18 @@ Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, const Couleu
 Quad3D::Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, int rouge, int vert, int bleu)
     : triangles_{Triangle3D(p1, p2, p3, rouge, vert, bleu),
                  Triangle3D(p1, p3, p4, rouge, vert, bleu)} {
+    // Validation des sommets
+    if (Point3D::areCollinear(p1, p2, p3) || Point3D::areCollinear(p1, p3, p4)) {
+        throw std::runtime_error("Les sommets fournis ne forment pas un quadrilatère valide.");
+    }
 }
 
+// Accesseur pour le premier triangle
 const Triangle3D& Quad3D::getFirstTriangle() const noexcept {
     return triangles_[0];
 }
 
+// Accesseur pour le deuxième triangle
 const Triangle3D& Quad3D::getSecondTriangle() const noexcept {
     return triangles_[1];
 }
@@ -50,14 +62,17 @@ void Quad3D::setColor(int rouge, int vert, int bleu) {
     triangles_[1].setColor(rouge, vert, bleu);
 }
 
+// Calcul de la surface
 float Quad3D::surface() const {
     return triangles_[0].area() + triangles_[1].area();
 }
 
+// Vérifie si un point est un sommet du quad
 bool Quad3D::isVertex(const Point3D& p) const {
     return triangles_[0].isVertex(p) || triangles_[1].isVertex(p);
 }
 
+// Vérifie si deux quads partagent un côté
 bool Quad3D::hasCommonSide(const Quad3D& other) const {
     return triangles_[0].hasCommonSide(other.getFirstTriangle()) ||
            triangles_[0].hasCommonSide(other.getSecondTriangle()) ||
@@ -65,23 +80,25 @@ bool Quad3D::hasCommonSide(const Quad3D& other) const {
            triangles_[1].hasCommonSide(other.getSecondTriangle());
 }
 
-bool Quad3D::hasCommonSide(const Quad3D& q1, const Quad3D& q2) {
-    return q1.hasCommonSide(q2);
-}
-
+// Vérifie si deux quads ont la même surface
 bool Quad3D::sameSurface(const Quad3D& other) const {
     return std::fabs(surface() - other.surface()) < 1e-6;
 }
 
+// Comparaison de quads
 bool Quad3D::equals(const Quad3D& other) const {
-    return triangles_[0].equals(other.getFirstTriangle()) &&
-           triangles_[1].equals(other.getSecondTriangle());
+    return (triangles_[0].equals(other.getFirstTriangle()) &&
+            triangles_[1].equals(other.getSecondTriangle())) ||
+           (triangles_[0].equals(other.getSecondTriangle()) &&
+            triangles_[1].equals(other.getFirstTriangle()));
 }
 
+// Surcharge de l'opérateur ==
 bool Quad3D::operator==(const Quad3D& other) const {
     return equals(other);
 }
 
+// Surcharge de l'opérateur <<
 std::ostream& operator<<(std::ostream& os, const Quad3D& quad) {
     os << "Quad3D:\n";
     os << "  Triangle 1: " << quad.getFirstTriangle() << "\n";

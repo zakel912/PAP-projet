@@ -7,8 +7,8 @@ int main() {
     try {
         // Création de points 3D
         Point3D p1(0, 0, 0);
-        Point3D p2(4, 0, 0);
-        Point3D p3(0, 3, 0);
+        Point3D p2(4, 0, 1);
+        Point3D p3(0, 3, 2);
 
         // === TEST DES CONSTRUCTEURS ===
         std::cout << "=== TEST DES CONSTRUCTEURS ===" << std::endl;
@@ -65,10 +65,8 @@ int main() {
 
         // Méthode equals
         std::cout << "t1 et t3 sont égaux : " << (t1.equals(t3) ? "Oui" : "Non") << std::endl;
-
-        // Test de l'œil pour le rendu
-        Triangle3D::setEyePosition(Point3D(1, 1, 1));
-        std::cout << "Position de l'œil : " << Triangle3D::getEyePosition() << std::endl;
+        
+        std::cout << "t1 normale : " << (t1.getNormale()) << std::endl;
 
     } catch (const std::exception& e) {
         std::cerr << "Erreur : " << e.what() << std::endl;

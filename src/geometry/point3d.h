@@ -42,7 +42,7 @@ class Point3D {
         /**
          * @brief Destructeur de la classe Point3D.
          */
-        ~Point3D();
+        ~Point3D(){};
 
         /**
         * @brief Accesseur pour la coordonnée x.

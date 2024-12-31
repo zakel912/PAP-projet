@@ -1,88 +1,62 @@
 #include "renderer.h"
 #include <stdexcept>
+#include <iostream>
 
-// Constructeur
-Renderer::Renderer(Scene3D* scene, int window_width, int window_height)
-    : scene_(scene), window_width_(window_width), window_height_(window_height), window_(nullptr), renderer_(nullptr) {}
-
-// Destructeur
-Renderer::~Renderer() {
-    cleanup();
-}
-
-// Initialise SDL2
-bool Renderer::initialize() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
-        throw std::runtime_error("Impossible d'initialiser SDL2 : " + std::string(SDL_GetError()));
+Renderer::Renderer(int width, int height) : width_(width), height_(height) {
+    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
+        throw std::runtime_error("SDL_Init Error: " + std::string(SDL_GetError()));
     }
 
-    window_ = SDL_CreateWindow("3D Renderer",
-                               SDL_WINDOWPOS_CENTERED,
-                               SDL_WINDOWPOS_CENTERED,
-                               window_width_,
-                               window_height_,
-                               SDL_WINDOW_SHOWN);
+    window_ = SDL_CreateWindow("3D Scene Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_, height_, SDL_WINDOW_SHOWN);
     if (!window_) {
-        throw std::runtime_error("Impossible de créer la fenêtre : " + std::string(SDL_GetError()));
+        throw std::runtime_error("SDL_CreateWindow Error: " + std::string(SDL_GetError()));
     }
 
-    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED);
+    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (!renderer_) {
-        throw std::runtime_error("Impossible de créer le renderer : " + std::string(SDL_GetError()));
+        SDL_DestroyWindow(window_);
+        throw std::runtime_error("SDL_CreateRenderer Error: " + std::string(SDL_GetError()));
     }
-
-    return true;
 }
 
-// Dessine un triangle 2D
-void Renderer::drawTriangle(const Triangle2D& triangle) const {
-    // Récupérer la couleur du triangle
-    Couleur color = triangle.getColor();
-    SDL_SetRenderDrawColor(renderer_, color.getRouge(), color.getVert(), color.getBleu(), SDL_ALPHA_OPAQUE);
-
-    // Dessiner les lignes du triangle
-    SDL_RenderDrawLine(renderer_,
-                       static_cast<int>(triangle.getP1().getX()), static_cast<int>(triangle.getP1().getY()),
-                       static_cast<int>(triangle.getP2().getX()), static_cast<int>(triangle.getP2().getY()));
-
-    SDL_RenderDrawLine(renderer_,
-                       static_cast<int>(triangle.getP2().getX()), static_cast<int>(triangle.getP2().getY()),
-                       static_cast<int>(triangle.getP3().getX()), static_cast<int>(triangle.getP3().getY()));
-
-    SDL_RenderDrawLine(renderer_,
-                       static_cast<int>(triangle.getP3().getX()), static_cast<int>(triangle.getP3().getY()),
-                       static_cast<int>(triangle.getP1().getX()), static_cast<int>(triangle.getP1().getY()));
+Renderer::~Renderer() {
+    SDL_DestroyRenderer(renderer_);
+    SDL_DestroyWindow(window_);
+    SDL_Quit();
 }
 
-// Effectue le rendu de la scène
-void Renderer::render() {
-    // Effacer l'écran
-    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, SDL_ALPHA_OPAQUE);
+void Renderer::clear() {
+    SDL_SetRenderDrawColor(renderer_, 0, 0, 0, 255); // Fond noir
     SDL_RenderClear(renderer_);
+}
 
-    // Obtenir les triangles projetés de la scène
-    auto projectedTriangles = scene_->getProjectedTriangles();
-
-    // Dessiner chaque triangle
-    for (const auto& triangle : projectedTriangles) {
-        drawTriangle(triangle);
-    }
-
-    // Mettre à jour l'affichage
+void Renderer::present() {
     SDL_RenderPresent(renderer_);
 }
 
-// Nettoie et ferme SDL2
-void Renderer::cleanup() {
-    if (renderer_) {
-        SDL_DestroyRenderer(renderer_);
-        renderer_ = nullptr;
+void Renderer::setColor(int r, int g, int b) {
+    SDL_SetRenderDrawColor(renderer_, r, g, b, 255);
+}
+
+void Renderer::drawTriangle(const Triangle2D& triangle) {
+    setColor(triangle.getColor().getRouge(), triangle.getColor().getVert(), triangle.getColor().getBleu());
+
+    // Dessin des lignes reliant les sommets
+    const auto& p1 = triangle.getP1();
+    const auto& p2 = triangle.getP2();
+    const auto& p3 = triangle.getP3();
+
+    SDL_RenderDrawLine(renderer_, p1.getX(), p1.getY(), p2.getX(), p2.getY());
+    SDL_RenderDrawLine(renderer_, p2.getX(), p2.getY(), p3.getX(), p3.getY());
+    SDL_RenderDrawLine(renderer_, p3.getX(), p3.getY(), p1.getX(), p1.getY());
+}
+
+void Renderer::renderScene(const std::vector<Triangle2D>& triangles) {
+    clear();
+
+    for (const auto& triangle : triangles) {
+        drawTriangle(triangle);
     }
 
-    if (window_) {
-        SDL_DestroyWindow(window_);
-        window_ = nullptr;
-    }
-
-    SDL_Quit();
+    present();
 }

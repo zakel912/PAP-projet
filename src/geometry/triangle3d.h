@@ -26,8 +26,6 @@ class Triangle3D {
         Point3D p2; // Deuxième sommet du triangle.
         Point3D p3; // Troisième sommet du triangle.
         Couleur color; //couleur du triangle
-
-        static Point3D eyePosition; //position de l'oeil pour le rendu 3D
         
     public:
 
@@ -134,24 +132,16 @@ class Triangle3D {
         void setColorBleu(int bleu){color.setBleu(bleu);}
 
         /**
-         * @brief Accesseur pour la position de l'oeil pour le rendu 3D.
-         * @return La position de l'oeil pour le rendu 3D.
-         */
-        static Point3D getEyePosition(){return eyePosition;}
-
-        /**
-         * @brief Modifie la position de l'oeil pour le rendu 3D.
-         * @param eyePosition La nouvelle position de l'oeil pour le rendu 3D.
-         * @return void
-         */
-        static void setEyePosition(const Point3D& eyePosition){Triangle3D::eyePosition = eyePosition;}
-
-        /**
          * @brief Méthode pour orienter les sommets dans le sens trigonométrique.
          * @return void
          */
         void orient();
-
+        
+        /**
+         * @brief Calcule la profondeur moyenne du triangle basée sur ses sommets.
+         * @return La profondeur moyenne.
+         */
+        float averageDepth() const;
 
         /**
          * @brief Calcul du périmètre du triangle.
@@ -199,6 +189,16 @@ class Triangle3D {
          * @return true si les deux triangles sont égaux, false sinon.
          */
         bool equals(const Triangle3D& other) const;
+
+        /**
+         * @brief Calcule et retourne la normale du triangle.
+         * 
+         * @return Point3D La normale du triangle.
+         * @throw std::runtime_error Si le triangle est dégénéré (aire nulle).
+         */
+        Point3D getNormale() const;
+
+        bool isValid() const;
 
         friend std::ostream& operator<<(std::ostream& os, const Triangle3D& triangle);
 };

@@ -102,6 +102,7 @@ void Sphere3D::generateQuads(int numSlices, int numStacks) {
             float phi1 = j * (2 * pi / numSlices);
             float phi2 = (j + 1) * (2 * pi / numSlices);
 
+            // Points calculés pour la grille
             Point3D p1(center.getX() + radius * sin(theta1) * cos(phi1),
                        center.getY() + radius * cos(theta1),
                        center.getZ() + radius * sin(theta1) * sin(phi1));
@@ -118,7 +119,10 @@ void Sphere3D::generateQuads(int numSlices, int numStacks) {
                        center.getY() + radius * cos(theta1),
                        center.getZ() + radius * sin(theta1) * sin(phi2));
 
-            quads.emplace_back(Quad3D(p1, p2, p3, p4, color));
+            // Ajouter un quadrilatère valide
+            if (!(p1 == p2 || p2 == p3 || p3 == p4 || p4 == p1)) {
+                quads.emplace_back(Quad3D(p1, p2, p3, p4, color));
+            }
         }
     }
 }

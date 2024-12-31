@@ -10,7 +10,7 @@ int main() {
         std::cout << "=== TEST DES CONSTRUCTEURS ===\n";
 
         // Sphère par défaut
-        Sphere3D defaultSphere(Point3D(0, 0, 0), 1.0f, 3, 255, 255, 255); // Subdivisions minimales pour éviter les problèmes
+        Sphere3D defaultSphere(Point3D(0, 0, 0), 1.0f, 10, 255, 255, 255); // Subdivisions minimales pour éviter les problèmes
         std::cout << "Sphère par défaut :\n"
                   << "  Centre : " << defaultSphere.getCenter() << "\n"
                   << "  Rayon : " << defaultSphere.getRadius() << "\n"

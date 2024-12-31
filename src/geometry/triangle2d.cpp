@@ -15,8 +15,8 @@ Triangle2D::Triangle2D(const Point2D& point1, const Point2D& point2, const Point
 }
 
 // Constructeur avec trois sommets et une couleur (objet Couleur)
-Triangle2D::Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, const Couleur& color, float depth)
-    : Triangle2D(p1, p2, p3, color.getRouge(), color.getVert(), color.getBleu()) {}
+Triangle2D::Triangle2D(const Point2D& p1, const Point2D& p2, const Point2D& p3, const Couleur& color, float depthValue)
+    : Triangle2D(p1, p2, p3, color.getRouge(), color.getVert(), color.getBleu(), depthValue) {}
 
 // Accesseurs pour les sommets
 Point2D Triangle2D::getP1() const {
@@ -60,24 +60,15 @@ float Triangle2D::area() const {
                       p3.getX() * (p1.getY() - p2.getY())) / 2.0f);
 }
 
-float Triangle2D::averageDepth() const {
-    // Moyenne des coordonnées des sommets
-    float averageX = (p1.getX() + p2.getX() + p3.getX()) / 3.0f;
-    float averageY = (p1.getY() + p2.getY() + p3.getY()) / 3.0f;
-
-    return depth;
-}
-
 // Vérifie si un point est à l'intérieur du triangle
 bool Triangle2D::contains(const Point2D& point) const {
     float totalArea = area();
-    float area1 = Triangle2D(point, p2, p3).area();
-    float area2 = Triangle2D(p1, point, p3).area();
-    float area3 = Triangle2D(p1, p2, point).area();
+    float area1 = Triangle2D(point, p2, p3, color, depth).area();
+    float area2 = Triangle2D(p1, point, p3, color, depth).area();
+    float area3 = Triangle2D(p1, p2, point, color, depth).area();
 
     return std::abs(totalArea - (area1 + area2 + area3)) < 1e-6;
 }
-
 
 // Surcharge de l'opérateur <<
 std::ostream& operator<<(std::ostream& os, const Triangle2D& triangle) {
@@ -87,7 +78,7 @@ std::ostream& operator<<(std::ostream& os, const Triangle2D& triangle) {
        << ", Color: (" << triangle.getColor().getRouge() << ", " 
        << triangle.getColor().getVert() << ", " 
        << triangle.getColor().getBleu() << ")"
-       << ", Depth: " << triangle.averageDepth()
+       << ", Depth: " << triangle.getDepth()
        << "]";
     return os;
 }

@@ -9,9 +9,9 @@ int main() {
     Point3D p4(p3);
 
     // Accès aux coordonnées
-    std::cout << "p1: (" << p1.getX() << ", " << p1.getY() << ", " << p1.getZ() << ")\n";
+    std::cout << p1 << std::endl;
     std::cout << "p2: (" << p2.getX() << ", " << p2.getY() << ", " << p2.getZ() << ")\n";
-    std::cout << "p4: (" << p4.getX() << ", " << p4.getY() << ", " << p4.getZ() << ")\n";
+    std::cout << p4 << std::endl;
 
     // Distance entre deux points
     std::cout << "Distance entre p1 et p2: " << p1.distance(p2) << "\n";
@@ -49,11 +49,6 @@ int main() {
     // Comparaison d'inégalité
     bool notEqual = (p1 != p3);
     std::cout << "p1 et p3 sont " << (notEqual ? "différents" : "égaux") << ".\n";
-
-    // Utilisation de l'opérateur d'affichage
-    std::cout << "Point p1: " << p1 << "\n";
-    std::cout << "Point p2: " << p2 << "\n";
-    std::cout << "Point p3: " << p3 << "\n";
 
     return 0;
 }

@@ -3,11 +3,12 @@
 
 #include <vector>
 #include <memory>
-#include "pave3d.h"
-#include "sphere3d.h"
-#include "triangle2d.h"
-#include "point3d.h"
-#include "point2d.h"
+#include "../geometry/pave3d.h"
+#include "../geometry/sphere3d.h"
+#include "../geometry/triangle2d.h"
+#include "../geometry/triangle3d.h"
+#include "../geometry/point3d.h"
+#include "../geometry/point2d.h"
 
 /**
  * @class Scene3D
@@ -22,13 +23,6 @@ private:
     Point3D look_at_; ///< Direction de visée (point cible).
     float projection_plane_distance_; ///< Distance du plan de projection à l'œil.
 
-    /**
-     * @brief Projette un point 3D sur le plan 2D.
-     * @param point3D Le point en 3D à projeter.
-     * @return Le point projeté en 2D.
-     */
-    Point2D projectPoint(const Point3D& point3D) const;
-
 public:
     /**
      * @brief Constructeur par défaut de Scene3D.
@@ -37,6 +31,20 @@ public:
      * @param projection_plane_distance Distance initiale du plan de projection.
      */
     Scene3D(const Point3D& eye, const Point3D& look_at, float projection_plane_distance);
+
+    /**
+     * @brief Projette un point 3D sur le plan 2D.
+     * @param point3D Le point en 3D à projeter.
+     * @return Le point projeté en 2D.
+     */
+    Point2D projectPoint(const Point3D& point3D) const;
+
+    /**
+     * @brief Projette un triangle 3D sur un plan 2D.
+     * @param triangle Le triangle en 3D à projeter.
+     * @return Le triangle projeté en 2D.
+     */
+    Triangle2D projectTriangle(const Triangle3D& triangle) const;
 
     /**
      * @brief Ajoute un cube (Pave3D) à la scène.
@@ -55,6 +63,18 @@ public:
      * @return Un vecteur contenant les triangles projetés.
      */
     std::vector<Triangle2D> getProjectedTriangles() const;
+
+    /**
+     * @brief Récupère les cubes présents dans la scène.
+     * @return Un vecteur de pointeurs partagés vers les cubes.
+     */
+    const std::vector<std::shared_ptr<Pave3D>>& getCubes() const;
+
+    /**
+     * @brief Récupère les sphères présentes dans la scène.
+     * @return Un vecteur de pointeurs partagés vers les sphères.
+     */
+    const std::vector<std::shared_ptr<Sphere3D>>& getSpheres() const;
 
     /**
      * @brief Définit la position de l'œil dans l'espace 3D.

@@ -18,7 +18,7 @@ int main() {
         std::cout << "Triangle par défaut : " << defaultTriangle << std::endl;
 
         // Constructeur avec sommets et couleur RVB
-        Triangle2D t1(p1, p2, p3, 255, 0, 0, 10.0f);
+        Triangle2D t1(p1, p2, p3, 255, 0, 0, 10.0);
         std::cout << "Triangle t1 (avec couleur RVB) : " << t1 << std::endl;
 
         // Constructeur avec sommets et objet Couleur
@@ -49,9 +49,6 @@ int main() {
 
         // Calcul de l'aire
         std::cout << "Aire de t1 : " << t1.area() << std::endl;
-
-        // Calcul de la profondeur moyenne
-        std::cout << "Profondeur moyenne de t1 : " << t1.averageDepth() << std::endl;
 
         // Test de contains
         Point2D testPoint1(2, 1); // À l'intérieur
