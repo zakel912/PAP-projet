@@ -11,9 +11,7 @@ Couleur::Couleur(int rouge, int vert, int bleu) {
     this->bleu = bleu;
 }
 
-Couleur::Couleur(const Couleur& other){
-    Couleur(other.getRouge(), other.getVert(), other.getBleu());
-}
+Couleur::Couleur(const Couleur& other) : rouge(other.rouge), vert(other.vert), bleu(other.bleu) {}
 
 // Accesseurs et mutateurs (déjà définis inline dans `couleur.h`)
 

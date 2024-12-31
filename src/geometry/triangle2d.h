@@ -23,11 +23,11 @@
  */
 class Triangle2D {
 private:
-    Point2D p1; ///< Premier sommet du triangle.
-    Point2D p2; ///< Deuxième sommet du triangle.
-    Point2D p3; ///< Troisième sommet du triangle.
-    Couleur color; ///< Couleur du triangle.
-    float depth; ///< Profondeur associée au triangle (par exemple pour le rendu).
+    Point2D p1; // Premier sommet du triangle.
+    Point2D p2; // Deuxième sommet du triangle.
+    Point2D p3; // Troisième sommet du triangle.
+    Couleur color; // Couleur du triangle.
+    float depth; // Profondeur associée au triangle (par exemple pour le rendu).
 
 public:
     /**
@@ -101,13 +101,17 @@ public:
      * @brief Accesseur pour la profondeur du triangle.
      * @return La profondeur du triangle.
      */
-    float getDepth() const;
+    float getDepth() const{
+        return depth;
+    }
 
     /**
      * @brief Modifie la profondeur du triangle.
      * @param depth Nouvelle profondeur du triangle.
      */
-    void setDepth(float depth);
+    void setDepth(float newDepth){
+        depth = newDepth;
+    }
 
     /**
      * @brief Calcule la profondeur moyenne du triangle basée sur ses sommets.

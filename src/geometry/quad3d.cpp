@@ -3,9 +3,9 @@
 #include <stdexcept>
 #include <cmath>
 
-Quad3D::Quad3D(){
-    Quad3D(Triangle3D(), Triangle3D(Point3D(1,1), Point3D(0,1), Point3D(1,0)));
-}
+Quad3D::Quad3D() 
+    : triangles_{Triangle3D(), Triangle3D(Point3D(1, 1), Point3D(0, 1), Point3D(1, 0))} {}
+
 
 // Constructeur avec deux triangles et des composantes RVB
 Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, int rouge, int vert, int bleu)

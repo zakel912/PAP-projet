@@ -63,9 +63,13 @@ bool Point3D::equals(const Point3D& other) const {
            std::fabs(z - other.z) < TOLERANCE;
 }
 
-    bool operator==(const Point3D& lhs, const Point3D& rhs) {
-        return lhs.equals(rhs);
-    }
+bool operator==(const Point3D& lhs, const Point3D& rhs) {
+    return lhs.equals(rhs);
+}
+
+bool operator!=(const Point3D& p1, const Point3D& p2) {
+    return !(p1 == p2);
+}
 
 std::ostream& operator<<(std::ostream& os, const Point3D& point) {
     os << "(" << point.getX() << ", " << point.getY() << ", " << point.getZ() << ")";

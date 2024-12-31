@@ -17,11 +17,16 @@ Triangle3D::Triangle3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, 
 }
 
 Triangle3D::Triangle3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Couleur& color)
-    : p1(p1), p2(p2), p3(p3), color(color) {}
-
-Triangle3D::Triangle3D(const Triangle3D& other){
-    Triangle3D(other.p1, other.p2, other.p3);
+    : p1(p1), p2(p2), p3(p3), color(color) {
+    if (Point3D::areCollinear(p1, p2, p3)) {
+        throw std::runtime_error("Les trois sommets ne doivent pas être alignés.");
+    }
+    // orient();
 }
+
+Triangle3D::Triangle3D(const Triangle3D& other) 
+    : p1(other.p1), p2(other.p2), p3(other.p3), color(other.color) {}
+
 
 const Point3D& Triangle3D::getP1() const {
     return p1;

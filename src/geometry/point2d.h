@@ -76,16 +76,48 @@ class Point2D {
          */
         static float distance(const Point2D& p1, const Point2D& p2);
 
+        /**
+         * @brief Vérifie si trois points sont colinéaires.
+         * @param p1 Premier point.
+         * @param p2 Deuxième point.
+         * @param p3 Troisième point.
+         * @return true si les trois points sont colinéaires, false sinon.
+         */
+        static bool areCollinear(const Point2D& p1, const Point2D& p2, const Point2D& p3);
+
+        /**
+         * @brief Opérateur d'addition de deux points.
+         * @param other L'autre point à ajouter.
+         * @return Le point résultant de l'addition.
+         */
         Point2D operator+(const Point2D& other) const {
             return Point2D(x + other.x, y + other.y);
         };
 
+        /**
+         * @brief Opérateur de soustraction de deux points.
+         * @param other L'autre point à soustraire.
+         * @return Le point résultant de la soustraction.
+         */
         Point2D operator-(const Point2D& other) const {
             return Point2D(x - other.x, y - other.y);
         };
 
+        /**
+         * @brief Compare deux points pour l'égalité.
+         * @param other L'autre point à comparer.
+         * @return true si les deux points sont égaux, false sinon.
+         */
         bool operator==(const Point2D& other) const {
             return x == other.x && y == other.y;
+        };
+
+        /**
+         * @brief Compare deux points pour l'inégalité.
+         * @param other L'autre point à comparer.
+         */
+        bool operator!=(const Point2D& other) const {
+            return !(*this == other);
         };
 
         friend std::ostream& operator<<(std::ostream& os, const Point2D& point);

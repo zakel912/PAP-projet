@@ -63,15 +63,10 @@ public:
     Sphere3D(const Point3D& center, const Couleur& color, float radius = 1, int subdivisions = 1);
 
     /**
-     * @brief Constructeur par défaut de la classe Sphere3D.
-     */
-    Sphere3D();
-
-    /**
      * @brief Accesseur pour le centre de la sphère.
      * @return Le centre de la sphère.
      */
-    Point3D getCenter() const;
+    const Point3D getCenter() const;
 
     /**
      * @brief Modifie le centre de la sphère.
@@ -87,7 +82,8 @@ public:
 
     /**
      * @brief Modifie le rayon de la sphère.
-     * @param radius Le nouveau rayon (doit être positif).
+     * @param radius Le nouveau rayon (doit être strictement positif).
+     * @throw std::invalid_argument Si le rayon est <= 0.
      */
     void setRadius(float radius);
 

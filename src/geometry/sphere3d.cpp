@@ -3,12 +3,6 @@
 #include <cmath>
 #include <iostream>
 
-// Constructeur par défaut
-Sphere3D::Sphere3D()
-    : center(Point3D()), radius(1), subdivisions(1), quads(), color(Couleur()) {
-    generateQuads(subdivisions, subdivisions);
-}
-
 // Constructeur avec centre, rayon, subdivisions et couleur RGB
 Sphere3D::Sphere3D(const Point3D& center, float radius, int subdivisions, int rouge, int vert, int bleu)
     : center(center), radius(radius), subdivisions(subdivisions), color(Couleur(rouge, vert, bleu)) {
@@ -26,7 +20,7 @@ Sphere3D::Sphere3D(const Point3D& center, const Couleur& color, float radius, in
 }
 
 // Accesseur pour le centre
-Point3D Sphere3D::getCenter() const {
+const Point3D Sphere3D::getCenter() const {
     return center;
 }
 
