@@ -83,7 +83,7 @@ public:
     void setEye(const Point3D& eye);
 
     /**
-     * @brief Définit la direction de visée (point cible).
+     * @brief Met à jour la direction de visée (point cible).
      * @param look_at Le nouveau point cible.
      */
     void setLookAt(const Point3D& look_at);

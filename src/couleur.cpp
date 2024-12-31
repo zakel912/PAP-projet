@@ -50,3 +50,12 @@ std::ostream& operator<<(std::ostream& os, const Couleur& couleur) {
     os << "(R: " << couleur.getRouge() << ", G: " << couleur.getVert() << ", B: " << couleur.getBleu() << ")";
     return os;
 }
+
+Couleur& Couleur::operator=(const Couleur& other) {
+    if (this != &other) {
+        rouge = other.rouge;
+        vert = other.vert;
+        bleu = other.bleu;
+    }
+    return *this;
+}
