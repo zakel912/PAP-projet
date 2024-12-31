@@ -3,7 +3,11 @@
 
 Point3D::Point3D(float x, float y, float z) : x(x), y(y), z(z) {}
 
-Point3D::Point3D(const Point3D& other) : x(other.x), y(other.y), z(other.z) {}
+Point3D::Point3D(const Point3D& other){
+    x = other.getX();
+    y = other.getY();
+    z = other.getZ();
+}
 
 float Point3D::getX() const{
     return x;

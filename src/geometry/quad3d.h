@@ -57,7 +57,9 @@ public:
      * 
      * @param other Le quadrilatère à copier.
      */
-    Quad3D(const Quad3D& other) = default;
+    Quad3D(const Quad3D& other){
+        Quad3D(other.getFirstTriangle(), other.getSecondTriangle(), other.getColor());
+    }
 
     /**
      * @brief Constructeur construisant un quadrilatère à partir de quatre points.
