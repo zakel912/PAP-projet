@@ -20,7 +20,7 @@ Triangle3D::Triangle3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, 
     : p1(p1), p2(p2), p3(p3), color(color) {}
 
 Triangle3D::Triangle3D(const Triangle3D& other){
-    Triangle3D(other.p1, other.p2, other.p3);
+    Triangle3D(other.p1, other.p2, other.p3, other.color);
 }
 
 const Point3D& Triangle3D::getP1() const {

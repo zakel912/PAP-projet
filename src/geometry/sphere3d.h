@@ -68,6 +68,15 @@ public:
     Sphere3D();
 
     /**
+     * @brief Constructeur par copie de la classe Sphere3D.
+     * @param other La sphère à copier.
+     * @return Une nouvelle sphère qui est une copie de other.
+     */
+    Sphere3D(const Sphere3D& other){
+        Sphere3D(other.getCenter(), other.getColor(), other.getRadius(), other.subdivisions);
+    }
+
+    /**
      * @brief Accesseur pour le centre de la sphère.
      * @return Le centre de la sphère.
      */

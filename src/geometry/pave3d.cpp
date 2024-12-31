@@ -10,9 +10,9 @@ Pave3D::Pave3D(Quad3D front_quad, Quad3D back_quad, Quad3D left_quad, Quad3D rig
     validateGeometry();
 }
 
-Pave3D::Pave3D(const Pave3D& other)
-    : front_quad(other.front_quad), back_quad(other.back_quad), left_quad(other.left_quad),
-      right_quad(other.right_quad), top_quad(other.top_quad), bottom_quad(other.bottom_quad), color(other.color) {}
+Pave3D::Pave3D(const Pave3D& other){
+    Pave3D(other.front_quad, other.back_quad, other.left_quad, other.right_quad, other.top_quad, other.bottom_quad, other.color);
+}
 
 Quad3D Pave3D::getFrontQuad() const {
     return front_quad;
