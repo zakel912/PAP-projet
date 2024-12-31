@@ -52,6 +52,18 @@ void Pave3D::setColor(int rouge, int vert, int bleu) {
     }
 }
 
+void Pave3D::setColorRouge(int rouge) {
+    setColor(rouge, color.getVert(), color.getBleu());
+}
+
+void Pave3D::setColorVert(int vert) {
+    setColor(color.getRouge(), vert, color.getBleu());
+}
+
+void Pave3D::setColorBleu(int bleu) {
+    setColor(color.getRouge(), color.getVert(), bleu);
+}
+
 // Calcul du volume
 float Pave3D::volume() const {
     float length = faces[0].getFirstTriangle().getP1().distance(faces[0].getFirstTriangle().getP2());
