@@ -61,6 +61,9 @@ class Point2D {
          */
         int getY() const;
 
+        void setX(int newX) { x = newX; }
+        void setY(int newY) { y = newY; }
+
         /**
          * @brief Calcule la distance (euclidienne) entre ce point et un autre point donné.
          * @param other L'autre point avec lequel calculer la distance.

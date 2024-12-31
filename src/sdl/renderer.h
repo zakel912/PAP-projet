@@ -7,20 +7,22 @@
 
 class Renderer {
 private:
-    SDL_Window* window_;
-    SDL_Renderer* renderer_;
-    int width_, height_;
+    SDL_Window* window;
+    SDL_Renderer* renderer;
+    int width, height;
+    int pixelSize; // Taille des pixels
 
 public:
-    Renderer(int width, int height);
+    Renderer(int width, int height, int pixelSize = 1);
     ~Renderer();
 
-    void clear(); // Nettoyer l'écran
-    void present(); // Présenter l'écran
-    void drawTriangle(const Triangle2D& triangle); // Dessiner un triangle
-    void setColor(int r, int g, int b); // Configurer la couleur
+    void clear(const SDL_Color& color);
+    void drawPixel(int x, int y, const SDL_Color& color);
+    void renderScene(const std::vector<Triangle2D>& triangles);
+    void present();
+    void fillTriangle(const Triangle2D& triangle, const SDL_Color& color);
 
-    void renderScene(const std::vector<Triangle2D>& triangles); // Rendu de la scène
 };
+
 
 #endif // RENDERER_H

@@ -74,6 +74,11 @@ public:
     }
 
     /**
+     * @brief Constructeur par défaut de la classe Sphere3D.
+     */
+    Sphere3D();
+
+    /**
      * @brief Accesseur pour le centre de la sphère.
      * @return Le centre de la sphère.
      */
