@@ -77,7 +77,7 @@ public:
     const std::vector<std::shared_ptr<Sphere3D>>& getSpheres() const;
 
     /**
-     * @brief Définit la position de l'œil dans l'espace 3D.
+     * @brief Met à jour la position de l'œil.
      * @param eye La nouvelle position de l'œil.
      */
     void setEye(const Point3D& eye);
