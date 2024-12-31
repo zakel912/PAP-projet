@@ -9,6 +9,8 @@ Point3D::Point3D(const Point3D& other){
     z = other.getZ();
 }
 
+Point3D::~Point3D() {}
+
 float Point3D::getX() const{
     return x;
 }
