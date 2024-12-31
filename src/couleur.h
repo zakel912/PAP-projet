@@ -112,6 +112,12 @@ public:
      * @return Le flux de sortie modifié.
      */
     friend std::ostream& operator<<(std::ostream& os, const Couleur& couleur);
+
+    /**
+     * @brief Opérateur d'assignation d'une couleur à une autre.
+     * @param other La couleur à copier.
+     */
+    Couleur& operator=(const Couleur& other);
 };
 
 // Surcharge des opérateurs

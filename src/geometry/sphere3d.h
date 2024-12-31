@@ -62,10 +62,7 @@ public:
      */
     Sphere3D(const Point3D& center, const Couleur& color, float radius = 1, int subdivisions = 1);
 
-    /**
-     * @brief Constructeur par défaut de la classe Sphere3D.
-     */
-    Sphere3D();
+   
 
     /**
      * @brief Constructeur par copie de la classe Sphere3D.
