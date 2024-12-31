@@ -32,8 +32,8 @@ public:
     /**
      * @brief Constructeur initialisant un quadrilatère à partir de deux triangles.
      * 
-     * @param triangles_[0] Premier triangle du quadrilatère.
-     * @param triangles_[1] Deuxième triangle du quadrilatère.
+     * @param firstT Premier triangle du quadrilatère.
+     * @param secondT Deuxième triangle du quadrilatère.
      * @param rouge La composante rouge de la couleur du quadrilatère.
      * @param vert La composante verte de la couleur du quadrilatère.
      * @param bleu La composante bleue de la couleur du quadrilatère.
@@ -44,8 +44,8 @@ public:
     /**
      * @brief Constructeur initialisant un quadrilatère à partir de deux triangles.
      * 
-     * @param triangles_[0] Premier triangle du quadrilatère.
-     * @param triangles_[1] Deuxième triangle du quadrilatère.
+     * @param secondT Premier triangle du quadrilatère.
+     * @param secondT Deuxième triangle du quadrilatère.
      * @param color La couleur du quadrilatère.
      * @pre Les triangles ne doivent pas être alignés.
      */
