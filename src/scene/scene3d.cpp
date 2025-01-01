@@ -70,6 +70,8 @@ Triangle2D Scene3D::projectTriangle(const Triangle3D& triangle) const {
 std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
     std::vector<Triangle2D> projectedTriangles;
 
+    size_t collinearCount = 0;
+
     // Ajouter les triangles projetés des cubes
     for (const auto& cube : cubes_) {
         for (size_t i = 0; i < 6; ++i) { // Un pavé a toujours 6 faces
@@ -137,6 +139,8 @@ std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
                         projectedTriangles.emplace_back(p1, p2, p3, quad.getColor(), depth);
                     } else {
                         std::cerr << "Erreur : Les points projetés du triangle T1 d'un quad de la sphère forment une ligne droite en 2D.\n";
+                        ++collinearCount;
+                        continue;
                     }
                 }
             } catch (const std::exception& e) {
@@ -155,6 +159,8 @@ std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
                         projectedTriangles.emplace_back(p1, p2, p3, quad.getColor(), depth);
                     } else {
                         std::cerr << "Erreur : Les points projetés du triangle T2 d'un quad de la sphère forment une ligne droite en 2D.\n";
+                        ++collinearCount;
+                        continue;
                     }
                 }
             } catch (const std::exception& e) {
@@ -168,13 +174,21 @@ std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
         return a.getDepth() > b.getDepth();
     });
 
+    if (collinearCount > 0) {
+        std::cerr << collinearCount << " triangles colinéaires ignorés.\n";
+    }
+
     return projectedTriangles;
 }
 
 // Modifier la position de l'œil
 void Scene3D::setEye(const Point3D& eye) {
+    if (eye.distance(look_at_) < 1e-6) {
+        throw std::invalid_argument("La position de l'œil et le point de visée ne peuvent pas être les mêmes.");
+    }
     eye_ = eye;
 }
+
 
 // Modifier la direction de visée
 void Scene3D::setLookAt(const Point3D& look_at) {

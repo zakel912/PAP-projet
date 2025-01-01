@@ -1,70 +1,68 @@
-#include <iostream>
-#include <vector>
+#include "renderer.h"
 #include "scene3d.h"
-#include "sdl/renderer.h"
+#include "../geometry/pave3d.h"
+#include "../geometry/sphere3d.h"
+#include <iostream>
+#include <memory>
+#include <SDL2/SDL.h>
 
 int main() {
     try {
-        const int windowWidth = 1000;
-        const int windowHeight = 1000;
-        const int pixelSize = 30; // Each pixel is 20x20
+        // Renderer initialization
+        int screenWidth = 1000;
+        int screenHeight = 800;
+        int pixelSize = 40;  // Define the size of each pixel
+        Renderer renderer(screenWidth, screenHeight, pixelSize);  // Pass pixelSize to the constructor
 
-        // Calculate the center of the rendering window
-        const int centerX = windowWidth / (2 * pixelSize);
-        const int centerY = windowHeight / (2 * pixelSize);
+        int screenOffsetX = static_cast<float>(screenWidth) / (2 * pixelSize);
+        int screenOffsetY = static_cast<float>(screenHeight) / (2 * pixelSize);
 
-        // Initialize the scene
-        Scene3D scene(Point3D(0, 0, 0), Point3D(0, 0, 30), 5.0f);
-        std::cout << "Scene initialized with:\n"
-                  << "  Eye: (0, 0, 20)\n"
-                  << "  Target: (0, 0, 30)\n"
-                  << "  Projection plane distance: 5.0\n";
+        // Scene setup
+        Scene3D scene(Point3D(0, 0, 10), Point3D(0, 0, 20), 5.0f);
 
-        // Add a red cube centered near the scene origin
-        auto redCube = std::make_shared<Pave3D>(
-            std::array<Quad3D, 6>{
-                Quad3D(Point3D(-5, -5, 35), Point3D(5, -5, 35), Point3D(5, 5, 35), Point3D(-5, 5, 35), Couleur(255, 0, 0)),
-                Quad3D(Point3D(-5, -5, 30), Point3D(5, -5, 30), Point3D(5, 5, 30), Point3D(-5, 5, 30), Couleur(255, 0, 0)),
-                Quad3D(Point3D(-5, -5, 35), Point3D(-5, 5, 35), Point3D(-5, 5, 30), Point3D(-5, -5, 30), Couleur(255, 0, 0)),
-                Quad3D(Point3D(5, -5, 35), Point3D(5, 5, 35), Point3D(5, 5, 30), Point3D(5, -5, 30), Couleur(255, 0, 0)),
-                Quad3D(Point3D(-5, 5, 35), Point3D(5, 5, 35), Point3D(5, 5, 30), Point3D(-5, 5, 30), Couleur(255, 0, 0)),
-                Quad3D(Point3D(-5, -5, 35), Point3D(5, -5, 35), Point3D(5, -5, 30), Point3D(-5, -5, 30), Couleur(255, 0, 0))
-            },
-            Couleur(255, 0, 0)
-        );
-        scene.addCube(redCube);
+        // Adding a cube to the scene
+        auto cube = std::make_shared<Pave3D>(
+            Quad3D(Point3D(-2, -2, 18), Point3D(2, -2, 18), Point3D(2, 2, 18), Point3D(-2, 2, 18), Couleur(255, 0, 0)),
+            Quad3D(Point3D(-2, -2, 22), Point3D(2, -2, 22), Point3D(2, 2, 22), Point3D(-2, 2, 22), Couleur(255, 0, 0)),
+            Quad3D(Point3D(-2, -2, 18), Point3D(-2, 2, 18), Point3D(-2, 2, 22), Point3D(-2, -2, 22), Couleur(0, 255, 0)),
+            Quad3D(Point3D(2, -2, 18), Point3D(2, 2, 18), Point3D(2, 2, 22), Point3D(2, -2, 22), Couleur(0, 255, 0)),
+            Quad3D(Point3D(-2, 2, 18), Point3D(2, 2, 18), Point3D(2, 2, 22), Point3D(-2, 2, 22), Couleur(0, 0, 255)),
+            Quad3D(Point3D(-2, -2, 18), Point3D(2, -2, 18), Point3D(2, -2, 22), Point3D(-2, -2, 22), Couleur(0, 0, 255)),
+            Couleur(255, 0, 0));
+        scene.addCube(cube);
+        std::cout << "Cube rouge ajouté à la scène.\n";
 
-        // Add a green sphere centered closer to the cube
-        auto greenSphere = std::make_shared<Sphere3D>(
-            Point3D(centerX, centerY, 10), Couleur(0, 255, 0), 7.0f, 10);
-        scene.addSphere(greenSphere);
+        // Adding a sphere to the scene
+        auto sphere = std::make_shared<Sphere3D>(Point3D(screenOffsetX, screenOffsetY, 20), Couleur(0, 255, 0), 3, 20);
+        scene.addSphere(sphere);
+        std::cout << "Sphère verte ajoutée à la scène.\n";
 
-        // Get projected triangles
-        std::vector<Triangle2D> projectedTriangles = scene.getProjectedTriangles();
+        // Retrieve projected triangles
+        auto triangles = scene.getProjectedTriangles();
 
-        // Initialize SDL renderer
-        Renderer renderer(windowWidth, windowHeight, pixelSize);
+        // Main rendering loop
+        bool running = true;
+        SDL_Event event;
 
-        // Center the projected 2D triangles
-        for (auto& triangle : projectedTriangles) {
-            triangle.getP1().setX(triangle.getP1().getX() + centerX);
-            triangle.getP1().setY(triangle.getP1().getY() + centerY);
+        while (running) {
+            while (SDL_PollEvent(&event)) {
+                if (event.type == SDL_QUIT) {
+                    running = false;
+                }
+            }
 
-            triangle.getP2().setX(triangle.getP2().getX() + centerX);
-            triangle.getP2().setY(triangle.getP2().getY() + centerY);
+            // Clear the screen
+            renderer.clear({0, 0, 0, 255});
 
-            triangle.getP3().setX(triangle.getP3().getX() + centerX);
-            triangle.getP3().setY(triangle.getP3().getY() + centerY);
+            // Render the scene
+            renderer.renderScene(triangles);
+
+            // Present the rendered frame
+            renderer.present();
         }
-
-        // Render the scene
-        renderer.renderScene(projectedTriangles);
-
-        // Pause before exiting
-        SDL_Delay(5000);
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << "\n";
-        return 1;
+        std::cerr << "Error: " << e.what() << std::endl;
+        return -1;
     }
 
     return 0;

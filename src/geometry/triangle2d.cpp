@@ -9,6 +9,9 @@ Triangle2D::Triangle2D()
 // Constructeur avec trois sommets et une couleur RVB
 Triangle2D::Triangle2D(const Point2D& point1, const Point2D& point2, const Point2D& point3, int rouge, int vert, int bleu, float depthValue)
     : p1(point1), p2(point2), p3(point3), color(Couleur(rouge, vert, bleu)), depth(depthValue) {
+    if (rouge < 0 || rouge > 255 || vert < 0 || vert > 255 || bleu < 0 || bleu > 255) {
+        throw std::runtime_error("Les valeurs RVB doivent être comprises entre 0 et 255.");
+    }
     if (Point2D::distance(p1, p2) == 0 || Point2D::distance(p1, p3) == 0 || Point2D::areCollinear(p1, p2, p3)) {
         throw std::runtime_error("Les trois points doivent former un triangle valide.");
     }
@@ -63,11 +66,21 @@ float Triangle2D::area() const {
 // Vérifie si un point est à l'intérieur du triangle
 bool Triangle2D::contains(const Point2D& point) const {
     float totalArea = area();
-    float area1 = Triangle2D(point, p2, p3, color, depth).area();
-    float area2 = Triangle2D(p1, point, p3, color, depth).area();
-    float area3 = Triangle2D(p1, p2, point, color, depth).area();
 
-    return std::abs(totalArea - (area1 + area2 + area3)) < 1e-6;
+    // Calcul des aires en utilisant directement les sommets
+    float area1 = std::fabs((point.getX() * (p2.getY() - p3.getY()) +
+                             p2.getX() * (p3.getY() - point.getY()) +
+                             p3.getX() * (point.getY() - p2.getY())) / 2.0f);
+
+    float area2 = std::fabs((p1.getX() * (point.getY() - p3.getY()) +
+                             point.getX() * (p3.getY() - p1.getY()) +
+                             p3.getX() * (p1.getY() - point.getY())) / 2.0f);
+
+    float area3 = std::fabs((p1.getX() * (p2.getY() - point.getY()) +
+                             p2.getX() * (point.getY() - p1.getY()) +
+                             point.getX() * (p1.getY() - p2.getY())) / 2.0f);
+
+    return std::fabs(totalArea - (area1 + area2 + area3)) < 1e-6;
 }
 
 // Surcharge de l'opérateur <<

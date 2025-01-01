@@ -16,7 +16,9 @@ int Point2D::getY() const{
 }
 
 float Point2D::distance(const Point2D& other) const {
-    return std::sqrt(std::pow(other.x - x, 2) + std::pow(other.y - y, 2));
+    float dx = other.x - x;
+    float dy = other.y - y;
+    return std::sqrt(dx * dx + dy * dy);
 }
 
 float Point2D::distance(const Point2D& p1, const Point2D& p2) {
@@ -24,8 +26,11 @@ float Point2D::distance(const Point2D& p1, const Point2D& p2) {
 }
 
 bool Point2D::areCollinear(const Point2D& p1, const Point2D& p2, const Point2D& p3) {
-   return (static_cast<float>(p2.getX() - p1.getX()) * (p3.getY() - p1.getY())) ==
-       (static_cast<float>(p2.getY() - p1.getY()) * (p3.getX() - p1.getX()));
+    int dx1 = p2.getX() - p1.getX();
+    int dy1 = p2.getY() - p1.getY();
+    int dx2 = p3.getX() - p1.getX();
+    int dy2 = p3.getY() - p1.getY();
+    return (dx1 * dy2 - dy1 * dx2) == 0;
 }
 
 std::ostream& operator<<(std::ostream& os, const Point2D& point) {

@@ -62,17 +62,6 @@ public:
      */
     Sphere3D(const Point3D& center, const Couleur& color, float radius = 1, int subdivisions = 1);
 
-   
-
-    /**
-     * @brief Constructeur par copie de la classe Sphere3D.
-     * @param other La sphère à copier.
-     * @return Une nouvelle sphère qui est une copie de other.
-     */
-    Sphere3D(const Sphere3D& other){
-        Sphere3D(other.getCenter(), other.getColor(), other.getRadius(), other.subdivisions);
-    }
-
     /**
      * @brief Constructeur par copie de la classe Sphere3D.
      * @param other La sphère à copier.

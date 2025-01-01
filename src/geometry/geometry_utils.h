@@ -1,0 +1,1 @@
+constexpr float TOLERANCE = 1e-6;

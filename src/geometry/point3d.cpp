@@ -1,5 +1,6 @@
 #include "point3d.h"
 #include <cmath>
+#include "geometry_utils.h"
 
 Point3D::Point3D(float x, float y, float z) : x(x), y(y), z(z) {}
 
@@ -8,8 +9,6 @@ Point3D::Point3D(const Point3D& other){
     y = other.getY();
     z = other.getZ();
 }
-
-Point3D::~Point3D() {}
 
 float Point3D::getX() const{
     return x;
@@ -24,9 +23,9 @@ float Point3D::getZ() const{
 }
 
 float Point3D::distance(const Point3D& other) const {
-    return std::sqrt(std::pow(other.x - x, 2) +
-                     std::pow(other.y - y, 2) +
-                     std::pow(other.z - z, 2));
+    return std::sqrt((other.x - x) * (other.x - x) +
+                     (other.y - y) * (other.y - y) +
+                     (other.z - z) * (other.z - z));
 }
 
 
@@ -46,9 +45,10 @@ float Point3D::dotProduct(const Point3D& other) const{
     return getX() * other.getX() + getY() * other.getY() + getZ() * other.getZ();
 }
 
-static constexpr float TOLERANCE = 1e-6;
-
 bool Point3D::areCollinear(const Point3D& p1, const Point3D& p2, const Point3D& p3) {
+    if (p1.equals(p2) || p1.equals(p3) || p2.equals(p3)) {
+        return true;
+    }
     Point3D u(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
     Point3D v(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
     Point3D cross = u.crossProduct(v);
