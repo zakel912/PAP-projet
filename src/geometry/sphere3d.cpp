@@ -125,6 +125,8 @@ void Sphere3D::generateQuads(int numSlices, int numStacks) {
             // Ajouter un quadrilatère valide
             if (!(p1 == p2 || p2 == p3 || p3 == p4 || p4 == p1)) {
                 quads.emplace_back(Quad3D(p1, p2, p3, p4, color));
+            } else {
+                continue;
             }
         }
     }

@@ -62,8 +62,7 @@ public:
      */
     Pave3D(const std::array<Quad3D, 6>& faces, const Couleur& color);
 
-    Pave3D(Quad3D front_quad, Quad3D back_quad, Quad3D left_quad, Quad3D right_quad, Quad3D top_quad, Quad3D bottom_quad, Couleur color);
-
+    Pave3D(const Quad3D& front_quad, const Quad3D& back_quad, const Quad3D& left_quad, const Quad3D& right_quad, const Quad3D& top_quad, const Quad3D& bottom_quad, const Couleur& color);
     /**
      * @brief Constructeur par copie de la classe Pave3D.
      *

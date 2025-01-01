@@ -57,9 +57,7 @@ public:
      * 
      * @param other Le quadrilatère à copier.
      */
-    Quad3D(const Quad3D& other){
-        Quad3D(other.getFirstTriangle(), other.getSecondTriangle(), other.getColor());
-    }
+    Quad3D(const Quad3D& other);
 
     /**
      * @brief Constructeur construisant un quadrilatère à partir de quatre points.
@@ -83,9 +81,7 @@ public:
      * @param color La couleur du quadrilatère.
      * @pre Trois points ne doivents pas être alignés.
      */
-    Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, const Couleur& color)
-        : triangles_{Triangle3D(p1, p2, p3, color), Triangle3D(p1, p3, p4, color)} {
-    }
+    Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, const Couleur& color);
 
     ~Quad3D(){}
 

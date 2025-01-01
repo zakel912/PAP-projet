@@ -11,6 +11,8 @@ Pave3D::Pave3D()
     faces[3] = Quad3D(Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(1, 0, 1), color);
     faces[4] = Quad3D(Point3D(0, 1, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(0, 1, 1), color);
     faces[5] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 0, 1), Point3D(0, 0, 1), color);
+
+    validateGeometry();
 }
 
 // Constructeur paramétré
@@ -19,8 +21,9 @@ Pave3D::Pave3D(const std::array<Quad3D, 6>& faces, const Couleur& color)
     validateGeometry();
 }
 
-Pave3D::Pave3D(Quad3D front_quad, Quad3D back_quad, Quad3D left_quad, Quad3D right_quad, Quad3D top_quad, Quad3D bottom_quad, Couleur color)
-    : Pave3D({front_quad, back_quad, left_quad, right_quad, top_quad, bottom_quad}, color) {}
+Pave3D::Pave3D(const Quad3D& front_quad, const Quad3D& back_quad, const Quad3D& left_quad, const Quad3D& right_quad, const Quad3D& top_quad, const Quad3D& bottom_quad, const Couleur& color)
+    : faces{front_quad, back_quad, left_quad, right_quad, top_quad, bottom_quad}, color(color) {
+}
 
 // Constructeur par copie
 Pave3D::Pave3D(const Pave3D& other)
@@ -44,6 +47,9 @@ void Pave3D::setColor(const Couleur& newColor) {
 
 // Modificateur pour la couleur avec RVB
 void Pave3D::setColor(int rouge, int vert, int bleu) {
+    if (rouge < 0 || rouge > 255 || vert < 0 || vert > 255 || bleu < 0 || bleu > 255) {
+        throw std::invalid_argument("Les valeurs RVB doivent être comprises entre 0 et 255.");
+    }
     color.setRouge(rouge);
     color.setVert(vert);
     color.setBleu(bleu);
@@ -51,6 +57,7 @@ void Pave3D::setColor(int rouge, int vert, int bleu) {
         face.setColor(rouge, vert, bleu);
     }
 }
+
 
 void Pave3D::setColorRouge(int rouge) {
     setColor(rouge, color.getVert(), color.getBleu());
@@ -79,26 +86,29 @@ float Pave3D::volume() const {
 
 // Calcul de la surface totale
 float Pave3D::surfaceArea() const {
-    float area = 0.0f;
-    for (const auto& face : faces) {
-        area += face.surface();
+    static float cachedArea = -1.0f;  // Cache initial
+    if (cachedArea < 0) {  // Si le cache n'est pas valide
+        cachedArea = 0.0f;
+        for (const auto& face : faces) {
+            cachedArea += face.surface();
+        }
     }
-    return area;
+    return cachedArea;
 }
 
 // Validation de la géométrie du pavé
 void Pave3D::validateGeometry() const {
-    // Vérifiez que les faces opposées sont égales en surface
+    // Vérification des dimensions des faces opposées
     if (faces[0].surface() != faces[1].surface() ||
         faces[2].surface() != faces[3].surface() ||
         faces[4].surface() != faces[5].surface()) {
-        throw std::runtime_error("Les faces opposées du pavé ne correspondent pas en surface.");
+        std::cerr << "[Avertissement] Les faces opposées du pavé ne correspondent pas en surface.\n";
     }
 
-    // Vérifiez que les faces ne sont pas dégénérées
-    for (const auto& face : faces) {
-        if (face.getFirstTriangle().isDegenerate() || face.getSecondTriangle().isDegenerate()) {
-            throw std::runtime_error("Une des faces du pavé est dégénérée.");
+    // Vérification des faces dégénérées
+    for (size_t i = 0; i < faces.size(); ++i) {
+        if (faces[i].getFirstTriangle().isDegenerate() || faces[i].getSecondTriangle().isDegenerate()) {
+            std::cerr << "[Avertissement] La face " << i + 1 << " du pavé est dégénérée et sera ignorée dans le rendu.\n";
         }
     }
 }

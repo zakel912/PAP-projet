@@ -1,13 +1,17 @@
 #include "triangle3d.h"
 #include <stdexcept>
 #include <cmath>
+#include "geometry_utils.h"
 
 // Constructeur par défaut
-Triangle3D::Triangle3D() : p1(Point3D()), p2(Point3D()), p3(Point3D()), color(Couleur()) {}
+Triangle3D::Triangle3D() : p1(Point3D(0,0,0)), p2(Point3D(1,0,0)), p3(Point3D(0,1,0)), color(Couleur()) {}
 
 // Constructeur avec trois sommets et une couleur RGB
 Triangle3D::Triangle3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, int rouge, int vert, int bleu)
     : p1(p1), p2(p2), p3(p3), color(rouge, vert, bleu) {
+    if (rouge < 0 || rouge > 255 || vert < 0 || vert > 255 || bleu < 0 || bleu > 255) {
+        throw std::runtime_error("Les valeurs RGB doivent être comprises entre 0 et 255.");
+    }
     if (Point3D::areCollinear(p1, p2, p3)) {
         throw std::runtime_error("Les trois sommets ne doivent pas être alignés.");
     }
@@ -41,11 +45,12 @@ float Triangle3D::perimeter() const {
 
 // Calcul de l'aire
 float Triangle3D::area() const {
-    float a = p1.distance(p2);
-    float b = p2.distance(p3);
-    float c = p3.distance(p1);
-    float s = (a + b + c) / 2; // Semi-périmètre
-    return std::sqrt(s * (s - a) * (s - b) * (s - c));
+    Point3D u = p2 - p1;
+    Point3D v = p3 - p1;
+
+    // Norme du produit vectoriel divisé par 2
+    Point3D cross = u.crossProduct(v);
+    return std::sqrt(cross.dotProduct(cross)) / 2.0f;
 }
 
 // Vérifie si un point est un sommet du triangle
@@ -53,9 +58,10 @@ bool Triangle3D::isVertex(const Point3D& p) const {
     return p1.equals(p) || p2.equals(p) || p3.equals(p);
 }
 
-// Vérifie si le triangle est dégénéré
 bool Triangle3D::isDegenerate() const {
-    return area() < 1e-6; // Tolérance pour les erreurs de précision flottante
+    // Si deux sommets sont identiques ou si les trois sommets sont colinéaires
+    return p1 == p2 || p2 == p3 || p1 == p3 ||
+           area() < TOLERANCE; // Norme du produit vectoriel proche de zéro
 }
 
 // Vérifie si deux triangles partagent un côté
@@ -83,7 +89,7 @@ Point3D Triangle3D::getNormale() const {
     Point3D normale = u.crossProduct(v);
 
     // Vérification : si la longueur de la normale est nulle, le triangle est dégénéré
-    if (normale.dotProduct(normale) < 1e-6) { // Norme² proche de zéro
+    if (normale.dotProduct(normale) < TOLERANCE) { // Norme² proche de zéro
         throw std::runtime_error("Triangle dégénéré : impossible de calculer la normale.");
     }
 

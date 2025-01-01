@@ -99,6 +99,10 @@ class Point3D {
          */
         float dotProduct(const Point3D& other) const;
 
+        float norm() const {
+            return std::sqrt(x * x + y * y + z * z);
+        }
+
         /**
          * @brief Vérifie si trois points sont alingnés.
          * @param p1 Le premier point.
