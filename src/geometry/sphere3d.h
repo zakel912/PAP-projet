@@ -74,11 +74,6 @@ public:
     }
 
     /**
-     * @brief Constructeur par défaut de la classe Sphere3D.
-     */
-    Sphere3D();
-
-    /**
      * @brief Constructeur par copie de la classe Sphere3D.
      * @param other La sphère à copier.
      * @return Une nouvelle sphère qui est une copie de other.
