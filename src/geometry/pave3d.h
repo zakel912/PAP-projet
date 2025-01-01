@@ -83,6 +83,12 @@ public:
     const Quad3D& getFace(size_t index) const;
 
     /**
+     * @brief Accesseur pour lla liste des faces du pavé.
+     * @return Un tableau contenant les six faces du pavé.
+     */
+    const std::array<Quad3D, 6>& getFaces() const {return faces;}
+
+    /**
      * @brief Accesseur pour la couleur du pavé.
      *
      * @return La couleur du pavé (Couleur).

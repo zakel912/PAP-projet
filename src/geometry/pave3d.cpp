@@ -16,6 +16,9 @@ Pave3D::Pave3D()
 // Constructeur paramétré
 Pave3D::Pave3D(const std::array<Quad3D, 6>& faces, const Couleur& color)
     : faces(faces), color(color) {
+    for (auto& face : this->faces) {
+        face.setColor(color);
+    }
     validateGeometry();
 }
 
@@ -24,11 +27,11 @@ Pave3D::Pave3D(Quad3D front_quad, Quad3D back_quad, Quad3D left_quad, Quad3D rig
 
 // Constructeur par copie
 Pave3D::Pave3D(const Pave3D& other)
-    : faces(other.faces), color(other.color) {}
+    : Pave3D(other.getFaces(), other.getColor()) {}
 
 // Accesseur pour une face
 const Quad3D& Pave3D::getFace(size_t index) const {
-    if (index >= faces.size()) {
+    if (index >= faces.size() || index < 0) {
         throw std::out_of_range("Index hors limites pour les faces du pavé.");
     }
     return faces[index];
