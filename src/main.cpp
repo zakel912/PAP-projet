@@ -9,13 +9,10 @@
 int main() {
     try {
         // Renderer initialization
-        int screenWidth = 1000;
-        int screenHeight = 800;
+        int screenWidth = 800;
+        int screenHeight = 600;
         int pixelSize = 40;  // Define the size of each pixel
         Renderer renderer(screenWidth, screenHeight, pixelSize);  // Pass pixelSize to the constructor
-
-        int screenOffsetX = static_cast<float>(screenWidth) / (2 * pixelSize);
-        int screenOffsetY = static_cast<float>(screenHeight) / (2 * pixelSize);
 
         // Scene setup
         Scene3D scene(Point3D(0, 0, 10), Point3D(0, 0, 20), 5.0f);
@@ -33,7 +30,7 @@ int main() {
         std::cout << "Cube rouge ajouté à la scène.\n";
 
         // Adding a sphere to the scene
-        auto sphere = std::make_shared<Sphere3D>(Point3D(screenOffsetX, screenOffsetY, 20), Couleur(0, 255, 0), 3, 20);
+        auto sphere = std::make_shared<Sphere3D>(Point3D(5, 5, 20), Couleur(0, 255, 0), 3, 8);
         scene.addSphere(sphere);
         std::cout << "Sphère verte ajoutée à la scène.\n";
 
