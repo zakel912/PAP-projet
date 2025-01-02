@@ -65,35 +65,20 @@ Triangle2D Scene3D::projectTriangle(const Triangle3D& triangle) const {
     return Triangle2D(p1, p2, p3, triangle.getColor(), triangle.averageDepth());
 }
 
-
-// Récupère les triangles projetés
-std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
+// Récupère les triangles projetés des cubes
+std::vector<Triangle2D> Scene3D::getProjectedTrianglesFromCubes() const {
     std::vector<Triangle2D> projectedTriangles;
 
-    size_t collinearCount = 0;
-
-    // Ajouter les triangles projetés des cubes
     for (const auto& cube : cubes_) {
-        for (size_t i = 0; i < 6; ++i) { // Un pavé a toujours 6 faces
-            const auto& face = cube->getFace(i);
-
+        for (const auto& face : cube->getFaces()) {
             const Triangle3D& t1 = face.getFirstTriangle();
             const Triangle3D& t2 = face.getSecondTriangle();
 
             // Projection du premier triangle
             try {
                 if (t1.isValid()) {
-                    Point2D p1 = projectPoint(t1.getP1());
-                    Point2D p2 = projectPoint(t1.getP2());
-                    Point2D p3 = projectPoint(t1.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t1.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, face.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T1 sur la face " << i 
-                                  << " forment une ligne droite en 2D.\n";
-                    }
+                    Triangle2D t = projectTriangle(t1);
+                    projectedTriangles.push_back(t);
                 }
             } catch (const std::exception& e) {
                 std::cerr << "Erreur lors de la projection du triangle T1 : " << e.what() << "\n";
@@ -102,17 +87,8 @@ std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
             // Projection du deuxième triangle
             try {
                 if (t2.isValid()) {
-                    Point2D p1 = projectPoint(t2.getP1());
-                    Point2D p2 = projectPoint(t2.getP2());
-                    Point2D p3 = projectPoint(t2.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t2.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, face.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T2 sur la face " << i 
-                                  << " forment une ligne droite en 2D.\n";
-                    }
+                    Triangle2D t = projectTriangle(t2);
+                    projectedTriangles.push_back(t);
                 }
             } catch (const std::exception& e) {
                 std::cerr << "Erreur lors de la projection du triangle T2 : " << e.what() << "\n";
@@ -120,63 +96,64 @@ std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
         }
     }
 
-    // Ajouter les triangles projetés des sphères
-    for (const auto& sphere : spheres_) {
-        const auto& quads = sphere->getQuads();
-        for (const auto& quad : quads) {
+    return projectedTriangles;
+}
+
+// Récupère les triangles projetés des sphères
+
+std::vector<Triangle2D> Scene3D::getProjectedTrianglesFromSpheres() const {
+    std::vector<Triangle2D> projectedTriangles;
+    size_t collinearCount = 0;  
+
+    for(const auto& sphere : spheres_) {
+        for(const auto& quad : sphere->getQuads()) {
             const Triangle3D& t1 = quad.getFirstTriangle();
             const Triangle3D& t2 = quad.getSecondTriangle();
 
-            // Projection du premier triangle
+            // Projection des triangles
             try {
                 if (t1.isValid()) {
-                    Point2D p1 = projectPoint(t1.getP1());
-                    Point2D p2 = projectPoint(t1.getP2());
-                    Point2D p3 = projectPoint(t1.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t1.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, quad.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T1 d'un quad de la sphère forment une ligne droite en 2D.\n";
-                        ++collinearCount;
-                        continue;
-                    }
+                    Triangle2D t = projectTriangle(t1);
+                    projectedTriangles.push_back(t);
+                } else {
+                    std::cerr << "Erreur : Les points projetés du triangle T1 d'un quad de la sphère forment une ligne droite en 2D.\n";
+                    ++collinearCount;
+                    continue;
                 }
-            } catch (const std::exception& e) {
-                std::cerr << "Erreur lors de la projection du triangle T1 : " << e.what() << "\n";
-            }
 
-            // Projection du deuxième triangle
-            try {
                 if (t2.isValid()) {
-                    Point2D p1 = projectPoint(t2.getP1());
-                    Point2D p2 = projectPoint(t2.getP2());
-                    Point2D p3 = projectPoint(t2.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t2.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, quad.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T2 d'un quad de la sphère forment une ligne droite en 2D.\n";
-                        ++collinearCount;
-                        continue;
-                    }
+                    Triangle2D t = projectTriangle(t2);
+                    projectedTriangles.push_back(t);
+                } else {
+                    std::cerr << "Erreur : Les points projetés du triangle T2 d'un quad de la sphère forment une ligne droite en 2D.\n";
+                    ++collinearCount;
+                    continue;
                 }
             } catch (const std::exception& e) {
-                std::cerr << "Erreur lors de la projection du triangle T2 : " << e.what() << "\n";
+                std::cerr << "Erreur lors de la projection des triangles : " << e.what() << "\n";
             }
         }
     }
-
-    // Trier les triangles par profondeur moyenne (ordre décroissant)
-    std::sort(projectedTriangles.begin(), projectedTriangles.end(), [](const Triangle2D& a, const Triangle2D& b) {
-        return a.getDepth() > b.getDepth();
-    });
 
     if (collinearCount > 0) {
         std::cerr << collinearCount << " triangles colinéaires ignorés.\n";
     }
+
+    return projectedTriangles;
+}
+
+
+// Récupère les triangles projetés
+std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
+    std::vector<Triangle2D> projectedTriangles;
+
+    // Ajout des triangles projetés des cubes
+    std::vector<Triangle2D> projectedCubes = getProjectedTrianglesFromCubes();
+    projectedTriangles.insert(projectedTriangles.end(), projectedCubes.begin(), projectedCubes.end());
+
+    // Ajout des triangles projetés des sphères
+    std::vector<Triangle2D> projectedSpheres = getProjectedTrianglesFromSpheres();
+    projectedTriangles.insert(projectedTriangles.end(), projectedSpheres.begin(), projectedSpheres.end());
 
     return projectedTriangles;
 }

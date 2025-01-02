@@ -59,6 +59,18 @@ public:
     void addSphere(const std::shared_ptr<Sphere3D>& sphere);
 
     /**
+     * @brief Récupère les triangles 2D projetés de des pavés dans la scène.
+     * @return Un vecteur contenant les triangles projetés.
+     */
+    std::vector<Triangle2D> getProjectedTrianglesFromCubes() const;
+
+    /**
+     * @brief Récupère les triangles 2D projetés des sphères dans la scène.
+     * @return Un vecteur contenant les triangles projetés.
+     */
+    std::vector<Triangle2D> getProjectedTrianglesFromSpheres() const;
+
+    /**
      * @brief Récupère les triangles 2D projetés de tous les objets dans la scène.
      * @return Un vecteur contenant les triangles projetés.
      */
