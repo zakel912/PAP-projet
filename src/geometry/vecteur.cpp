@@ -70,3 +70,17 @@ bool Vecteur::isPaveVisible(const Pave3D& pave) const {
     }
     return false;
 }
+
+bool Vecteur::IsSphereVisible(const Sphere3D& sphere) const {
+    Point3D center = sphere.getCenter();
+    float radius = sphere.getRadius();
+    float dist = distanceToPlane(center);
+    float dot = (center - origine).dotProduct(extremite - origine);
+    return dist < radius && dot > 0;
+}
+
+Vecteur& Vecteur::operator=(const Vecteur& other){
+    origine = other.getOrigine();
+    extremite = other.getExtremite();
+    return *this;
+}

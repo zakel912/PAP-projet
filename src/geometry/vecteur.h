@@ -156,6 +156,36 @@ class Vecteur {
          * @return true si le pavé est visible, false sinon.
          */
         bool isPaveVisible(const Pave3D& pave) const;
+
+        /**
+         * @brief Vérifie si une sphère est visible depuis l'origine.
+         * @param sphere La sphère à vérifier.
+         * @return true si la sphère est visible, false sinon.
+         */
+        bool isSphereVisible(const Sphere3D& sphere) const;
+
+        /**
+         * @brief Vérifie si deux vecteurs sont égaux.
+         * @param other L'autre vecteur à comparer.
+         * @return true si les deux vecteurs sont égaux, false sinon.
+         */
+        bool equals(const Vecteur& other) const{
+            return origine.equals(other.origine) && extremite.equals(other.extremite);
+        }
+
+        /**
+         * @brief Surcharge de l'opérateur d'égalité pour les vecteurs.
+         * @param other L'autre vecteur à comparer.
+         * @return true si les vecteurs sont égaux, false sinon.
+         */
+        friend bool operator==(const Vecteur& v1, const Vecteur& v2){
+            return v1.equals(v2);
+        }
+
+        /**
+         * @brief Surcharge de l'opérateur d'assignation pour les vecteurs.
+         */
+        Vecteur& operator=(const Vecteur& other);
 };
 
 
