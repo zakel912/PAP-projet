@@ -231,6 +231,12 @@ public:
      * @return void
      */
     void orient(const Point3D& eye);
+
+    /**
+     * @brief Retourne le centre du quadrilatère.
+     * @return Point3D Le centre du quadrilatère.
+     */
+    Point3D center() const;
 };
 
 #endif // QUAD3D_H

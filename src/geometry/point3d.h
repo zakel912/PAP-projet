@@ -164,6 +164,29 @@ class Point3D {
         }
         friend std::ostream& operator<<(std::ostream& os, const Point3D& point);
 
+        /**
+         * @brief Opérateur de multiplication d'un point par un scalaire.
+         * @param p Le point à multiplier.
+         * @param scalar Le scalaire par lequel multiplier le point.
+         * @return Le point résultant de la multiplication.
+         */
+        friend Point3D operator*(const Point3D& p, float scalar) {
+            return Point3D(p.x * scalar, p.y * scalar, p.z * scalar);
+        }
+
+        /**
+         * @brief Opérateur de division d'un point par un scalaire.
+         * @param p Le point à diviser.
+         * @param scalar Le scalaire par lequel diviser le point.
+         * @return Le point résultant de la division.
+         */
+        friend Point3D operator/(const Point3D& p, float scalar) {
+            if (scalar == 0) {
+                throw std::invalid_argument("Division par zéro.");
+            }
+            return p * (1.0f / scalar);
+        }
+
 }; 
 
 #endif 

@@ -170,3 +170,13 @@ void Quad3D::orient(const Point3D& eye) {
     triangles_[1].orient(eye);
 
 }
+
+Point3D Quad3D::center() const {
+    Point3D center;
+    center = triangles_[0].getP1() + triangles_[0].getP2() + triangles_[0].getP3() + triangles_[1].getP3();
+    if (!triangles_[0].isVertex(triangles_[1].getP2())){
+        center += triangles_[1].getP2();
+        return center / 5.0f;
+    }
+    return center / 4.0f;
+}
