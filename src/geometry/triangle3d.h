@@ -135,7 +135,7 @@ class Triangle3D {
          * @brief Méthode pour orienter les sommets dans le sens trigonométrique.
          * @return void
          */
-        void orient();
+        void orient(const Point3D& pointOfView);
         
         /**
          * @brief Calcule la profondeur moyenne du triangle basée sur ses sommets.
@@ -201,6 +201,14 @@ class Triangle3D {
         bool isValid() const;
 
         friend std::ostream& operator<<(std::ostream& os, const Triangle3D& triangle);
+
+        /**
+         * @brief Echange deux sommets du triangle.
+         * @param i L'indice du premier sommet.
+         * @param j L'indice du deuxième sommet.
+         * @return void
+         */
+        void swapVertices(int i, int j);
 };
 
 //bool operator==(const triangle3D& t1, const triangle3D& t2);

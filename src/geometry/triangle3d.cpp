@@ -34,6 +34,16 @@ const Point3D& Triangle3D::getP1() const { return p1; }
 const Point3D& Triangle3D::getP2() const { return p2; }
 const Point3D& Triangle3D::getP3() const { return p3; }
 
+void Triangle3D::orient(const Point3D& pointOfView) {
+    Point3D normale = getNormale();
+    Point3D viewVector = pointOfView - p1;
+
+    // Si le produit scalaire entre la normale et le vecteur de vue est négatif, les sommets sont dans le sens horaire
+    if (normale.dotProduct(viewVector) < 0) {
+        std::swap(p2, p3);
+    }
+}
+
 float Triangle3D::averageDepth() const {
     return (p1.getZ() + p2.getZ() + p3.getZ()) / 3.0f;
 }
@@ -114,3 +124,17 @@ std::ostream& operator<<(std::ostream& os, const Triangle3D& triangle) {
        << "]";
     return os;
 }
+
+void triangle3D::swapVertices(int i, int j){
+    
+    if (i < 1 || i > 3 || j < 1 || j > 3){
+        throw std::invalid_argument("Les indices doivent être compris entre 1 et 3.");
+    }
+
+    if (i == j) return;
+
+    Point3D* points[] = {&p1, &p2, &p3};
+    std::swap(*points[i-1], *points[j-1]);
+}
+
+

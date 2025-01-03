@@ -224,6 +224,13 @@ public:
      * @return std::ostream& Le flux de sortie modifié.
      */
     friend std::ostream& operator<<(std::ostream& os, const Quad3D& quad);
+
+    /**
+     * @brief Orient les sommets du quadrilatère dans le sens trigonométrique en fonction de l'oeil.
+     * @param eye L'oeil de la caméra.
+     * @return void
+     */
+    void orient(const Point3D& eye);
 };
 
 #endif // QUAD3D_H

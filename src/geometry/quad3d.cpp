@@ -123,3 +123,50 @@ std::ostream& operator<<(std::ostream& os, const Quad3D& quad) {
     os << "  Triangle 2: " << quad.getSecondTriangle() << "\n";
     return os;
 }
+
+void Quad3D::orient(const Point3D& eye) {
+
+    Point3D p1;
+    if (triangle_[1].isVectex(tirangle_[0].getP1())){
+
+        p1 = triangles_[0].getP1();
+        //on place ce point comme deuxième sommet de triangle_[0]
+        triangles_[0].swapVertices(1, 2);
+
+        //on oriente les sommest de triangle_[0] dans le sens anti-horaire
+        triangles_[0].orient(eye);
+
+        if (triangles_[0].getP2() == p1){
+            triangles_[0].swapVertices(2, 3);
+        }
+
+    } else if(triangles_[1].isVertex(triangles_[0].getP2())){
+
+        p1 = triangles_[0].getP2();
+        triangles_[0].swapVertices(2, 3);
+        triangles_[0].orient(eye);
+
+        if (triangles_[0].getP2() == p1){
+            triangles_[0].swapVertices(2, 3);
+        }
+
+    } else{
+        p1 = triangles_[0].getP3();
+        triangles_[0].orient(eye);
+
+        if (triangles_[0].getP2() == p1){
+            triangles_[0].swapVertices(2, 3);
+        }
+    }
+
+    // on place P1 comme Premier sommet de triangle_[1]
+    if (triangles_[1].isVertex(triangles_[0].getP1())){
+        triangles_[1].swapVertices(1, 2);
+    } else if (triangles_[1].isVertex(triangles_[0].getP2())){
+        triangles_[1].swapVertices(2, 3);
+    } else{
+        triangles_[1].swapVertices(1, 3);
+    }
+    triangles_[1].orient(eye);
+
+}
