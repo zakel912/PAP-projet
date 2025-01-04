@@ -84,3 +84,47 @@ Vecteur& Vecteur::operator=(const Vecteur& other){
     extremite = other.getExtremite();
     return *this;
 }
+
+Point2D Vecteur::projectPoint(const Point3D& point, int width, int height) const {
+
+    if (widgt <= 0 || height <= 0) {
+        throw std::invalid_argument("La largeur et la hauteur doivent être positives.");
+    }
+
+    // Projection du point sur le plan
+    Point3D n = extremite - origine;
+    Point3D n_normalise = n / n.norm();
+    Point3D p_projet = point - distanceToPlane(point) * n_normalise;
+
+    // Projection du point sur l'écran
+    // Création des axes locaux
+    // Rotation d'angle 30° de n par rapport à l'axe des x
+    double angle = 30 * M_PI / 180; // Conversion de 30 degrés en radians
+    double cosAngle = cos(angle);
+    double sinAngle = sin(angle);
+    Point3D n_rot(n.getX(), cosAngle * n.getY() - sinAngle * n.getZ(), sinAngle * n.getY() + cosAngle * n.getZ());
+    Point3D axe_u = n_rot - distanceToPlane(n_rot) * n_normalise;
+    Point3D axe_u_normalise = axe_u / axe_u.norm();
+
+    // Axe v = n x u
+    Point3D axe_v = n.crossProduct(axe_u_normalise);
+
+    // Projection du point sur le plan
+    float x = p_projet.dotProduct(axe_u_normalise);
+    float y = p_projet.dotProduct(axe_v);
+
+    // Projection sur l'écran
+    float x_ecran = (x + 1) * width / 2;
+
+    // L'axe des y est inversé
+    float y_ecran = height - (y + 1) * height / 2;
+
+    return Point2D(static_cast<int>(x_ecran), static_cast<int>(y_ecran));
+}
+
+Triangle2D Vecteur::projectTriangle(const Triangle3D& triangle, int width, int height) const {
+    Point2D p1 = projectPoint(triangle.getPoint1(), width, height);
+    Point2D p2 = projectPoint(triangle.getPoint2(), width, height);
+    Point2D p3 = projectPoint(triangle.getPoint3(), width, height);
+    return Triangle2D(p1, p2, p3, triangle.getColor(), distanceToPlane(triangle));
+}

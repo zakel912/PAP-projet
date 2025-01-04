@@ -186,6 +186,24 @@ class Vecteur {
          * @brief Surcharge de l'opérateur d'assignation pour les vecteurs.
          */
         Vecteur& operator=(const Vecteur& other);
+
+        /**
+         * @brief Pojette un point  sur le plan normal au vecteur qui a pour origine l'origine du vecteur, puis projette le point sur l'écran.
+         * @param point Le point à projeter.
+         * @param width La largeur de l'écran.
+         * @param height La hauteur de l'écran.
+         * @return Le point 2D projeté sur l'écran.
+         */
+        Point2D project(const Point3D& point, int width, int height) const;
+
+        /**
+         * @brief Porjette un triangle sur le plan normal au vecteur qui a pour origine l'origine du vecteur, puis projette le triangle sur l'écran.
+         * @param triangle Le triangle à projeter.
+         * @param width La largeur de l'écran.
+         * @param height La hauteur de l'écran. 
+         * @return Le triangle 2D projeté sur l'écran.
+         */
+        Triangle2D project(const Triangle3D& triangle, int width, int height) const;
 };
 
 
