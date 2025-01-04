@@ -52,7 +52,7 @@ Pave3D::Pave3D(const Pave3D& other)
 
 // Accesseur pour une face
 const Quad3D& Pave3D::getFace(size_t index) const {
-    if (index >= faces.size()) {
+    if (index >= faces.size() || index < 0) {
         throw std::out_of_range("Index hors limites pour les faces du pavé.");
     }
     return faces[index];
