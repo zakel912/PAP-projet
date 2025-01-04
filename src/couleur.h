@@ -36,7 +36,7 @@ public:
      * @param bleu La composante bleue (0-255).
      * @throw std::invalid_argument Si une composante est hors de l'intervalle [0, 255].
      */
-    Couleur(int rouge = 0, int vert = 0, int bleu = 0);
+    Couleur(int rouge = 255, int vert = 255, int bleu = 255);
 
     /**
      * @brief Constructeur par copie de la classe Couleur.

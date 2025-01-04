@@ -101,17 +101,13 @@ public:
      * @brief Accesseur pour la profondeur du triangle.
      * @return La profondeur du triangle.
      */
-    float getDepth() const{
-        return depth;
-    }
+    float getDepth() const{ return depth; }
 
     /**
      * @brief Modifie la profondeur du triangle.
      * @param depth Nouvelle profondeur du triangle.
      */
-    void setDepth(float newDepth){
-        depth = newDepth;
-    }
+    void setDepth(float newDepth){ depth = newDepth; }
 
     /**
      * @brief Calcule le périmètre du triangle.
@@ -131,6 +127,16 @@ public:
      * @return true si le point est à l'intérieur, false sinon.
      */
     bool contains(const Point2D& point) const;
+
+    /**
+     * @brief Effectue une translation du triangle dans l'espace 2D.
+     * @param offset Le vecteur de translation à appliquer.
+     */
+    void translate(const Point2D& offset) {
+        p1 = p1 + offset;
+        p2 = p2 + offset;
+        p3 = p3 + offset;
+    }
 
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher les informations du triangle.

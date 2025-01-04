@@ -1,81 +1,95 @@
-#include "renderer.h"
+#include <cassert>
+#include <iostream>
+#include "pave3d.h"
+#include "geometry_utils.h"
 
-bool initializeRenderer(SDL_Window** window, SDL_Renderer** renderer, int width, int height) {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        SDL_Log("SDL_Init Error: %s", SDL_GetError());
-        return false;
-    }
+void testPave3D() {
+    // Points pour les tests
+    Point3D p1(0, 0, 0);
+    Point3D p2(1, 0, 0);
+    Point3D p3(1, 1, 0);
+    Point3D p4(0, 1, 0);
+    Point3D p5(0, 0, 1);
+    Point3D p6(1, 0, 1);
+    Point3D p7(1, 1, 1);
+    Point3D p8(0, 1, 1);
 
-    *window = SDL_CreateWindow("3D Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
-    if (!*window) {
-        SDL_Log("SDL_CreateWindow Error: %s", SDL_GetError());
-        SDL_Quit();
-        return false;
-    }
+    // Couleurs pour les faces
+    Couleur red(255, 0, 0);
+    Couleur green(0, 255, 0);
+    Couleur blue(0, 0, 255);
+    Couleur yellow(255, 255, 0);
+    Couleur cyan(0, 255, 255);
+    Couleur magenta(255, 0, 255);
 
-    *renderer = SDL_CreateRenderer(*window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!*renderer) {
-        SDL_DestroyWindow(*window);
-        SDL_Log("SDL_CreateRenderer Error: %s", SDL_GetError());
-        SDL_Quit();
-        return false;
-    }
+    // Faces du pavé
+    Quad3D frontFace(p1, p2, p3, p4, red);
+    Quad3D backFace(p5, p6, p7, p8, green);
+    Quad3D leftFace(p1, p4, p8, p5, blue);
+    Quad3D rightFace(p2, p3, p7, p6, yellow);
+    Quad3D topFace(p4, p3, p7, p8, cyan);
+    Quad3D bottomFace(p1, p2, p6, p5, magenta);
 
-    return true;
+    // Test du constructeur par défaut
+    Pave3D defaultPave;
+    assert(defaultPave.getFace(0).getColor() == Couleur(255, 255, 255));
+    std::cout << "check1" << std::endl;
+
+    // Test du constructeur avec six faces
+    std::array<Quad3D, 6> faces = {frontFace, backFace, leftFace, rightFace, topFace, bottomFace};
+    Pave3D pave1(faces);
+    assert(pave1.getFace(0).getColor() == red);
+    assert(pave1.getFace(1).getColor() == green);
+    assert(pave1.getFace(2).getColor() == blue);
+    assert(pave1.getFace(3).getColor() == yellow);
+    assert(pave1.getFace(4).getColor() == cyan);
+    assert(pave1.getFace(5).getColor() == magenta);
+    std::cout << "check2" << std::endl;
+
+    // Test du constructeur avec faces individuelles
+    Pave3D pave2(frontFace, backFace, leftFace, rightFace, topFace, bottomFace);
+    assert(pave2.getFace(0).getColor() == red);
+    assert(pave2.getFace(1).getColor() == green);
+    assert(pave2.getFace(2).getColor() == blue);
+    assert(pave2.getFace(3).getColor() == yellow);
+    assert(pave2.getFace(4).getColor() == cyan);
+    assert(pave2.getFace(5).getColor() == magenta);
+    std::cout << "check3" << std::endl;
+
+    // Test de la surface totale
+    float surface = pave1.surfaceArea();
+    float expectedSurface = 2 * (frontFace.surface() + leftFace.surface() + topFace.surface());
+    assert(std::abs(surface - expectedSurface) < TOLERANCE);
+    std::cout << "check4" << std::endl;
+
+    // Test du volume
+    float volume = pave1.volume();
+    float expectedVolume = 1.0f; // Le pavé est un cube de côté 1
+    assert(std::abs(volume - expectedVolume) < TOLERANCE);
+    std::cout << "check5" << std::endl;
+
+    // Test de translation
+
+    pave1.translate(Point3D(1, 1, 1));
+    assert(pave1.getFace(0).getFirstTriangle().getP1() == Point3D(1, 1, 1));
+    assert(pave1.getFace(5).getSecondTriangle().getP3() == Point3D(1, 1, 2));
+    std::cout << "check6" << std::endl;
+
+    // Test des couleurs individuelles
+    pave1.setFaceColor(0, Couleur(128, 128, 128));
+    assert(pave1.getFaceColor(0) == Couleur(128, 128, 128));
+    std::cout << "check7" << std::endl;
+
+    // Test d'égalité
+    Pave3D pave3 = pave2;
+    assert(pave3.equals(pave2) == true);
+    std::cout << "check8" << std::endl;
+
+    std::cout << pave1 << std::endl;
+    std::cout << "All Pave3D tests passed!" << std::endl;
 }
 
-void cleanupRenderer(SDL_Window* window, SDL_Renderer* renderer) {
-    if (renderer) SDL_DestroyRenderer(renderer);
-    if (window) SDL_DestroyWindow(window);
-    SDL_Quit();
-}
-
-void drawFilledTriangle(SDL_Renderer* renderer, const Triangle2D& triangle) {
-    const auto& p1 = triangle.getP1();
-    const auto& p2 = triangle.getP2();
-    const auto& p3 = triangle.getP3();
-
-    int r = triangle.getColor().getRouge();
-    int g = triangle.getColor().getVert();
-    int b = triangle.getColor().getBleu();
-
-    SDL_SetRenderDrawColor(renderer, r, g, b, 255);
-
-    // Sorting vertices by y-coordinate
-    std::vector<Point2D> points = {p1, p2, p3};
-    std::sort(points.begin(), points.end(), [](const Point2D& a, const Point2D& b) {
-        return a.getY() < b.getY();
-    });
-
-    // Triangle vertices
-    Point2D v1 = points[0];
-    Point2D v2 = points[1];
-    Point2D v3 = points[2];
-
-    // Rasterizing the triangle
-    auto drawLine = [&](int x1, int y1, int x2, int y2) {
-        float slope = (x2 - x1) / float(y2 - y1);
-        float x = x1;
-
-        for (int y = y1; y <= y2; ++y) {
-            SDL_RenderDrawPoint(renderer, int(x), y);
-            x += slope;
-        }
-    };
-
-    if (v2.getY() != v1.getY()) {
-        drawLine(v1.getX(), v1.getY(), v2.getX(), v2.getY());
-    }
-    if (v3.getY() != v2.getY()) {
-        drawLine(v2.getX(), v2.getY(), v3.getX(), v3.getY());
-    }
-    if (v3.getY() != v1.getY()) {
-        drawLine(v1.getX(), v1.getY(), v3.getX(), v3.getY());
-    }
-}
-
-void renderTriangles(SDL_Renderer* renderer, const std::vector<Triangle2D>& triangles) {
-    for (const auto& triangle : triangles) {
-        drawFilledTriangle(renderer, triangle);
-    }
+int main() {
+    testPave3D();
+    return 0;
 }

@@ -20,8 +20,8 @@
  */
 class Point2D {
     private:
-        int x; ///< Coordonnée x du point.
-        int y; ///< Coordonnée y du point.
+        int x; // Coordonnée x du point.
+        int y; // Coordonnée y du point.
 
     public:
         /**
@@ -60,8 +60,17 @@ class Point2D {
          * @return La coordonnée y du point.
          */
         int getY() const;
-
+        
+        /**
+        * @brief Sets the x-coordinate of the point.
+        * @param newX The new value for the x-coordinate.
+        */
         void setX(int newX) { x = newX; }
+
+        /**
+        * @brief Sets the y-coordinate of the point.
+        * @param newY The new value for the y-coordinate.
+        */
         void setY(int newY) { y = newY; }
 
         /**
@@ -84,7 +93,7 @@ class Point2D {
          * @param p1 Premier point.
          * @param p2 Deuxième point.
          * @param p3 Troisième point.
-         * @return true si les trois points sont colinéaires, false sinon.
+        * @return true si les trois points sont colinéaires, false sinon.
          */
         static bool areCollinear(const Point2D& p1, const Point2D& p2, const Point2D& p3);
 
@@ -121,6 +130,17 @@ class Point2D {
          */
         bool operator!=(const Point2D& other) const {
             return !(*this == other);
+        };
+
+        /**
+         * @brief Affecte les coordonnées d'un autre point à ce point.
+         * @param other Le point à copier.
+         * @return Une référence à ce point modifié.
+         */
+        Point2D operator=(const Point2D& other) {
+            x = other.getX();
+            y = other.getY();
+            return *this;        
         };
 
         friend std::ostream& operator<<(std::ostream& os, const Point2D& point);

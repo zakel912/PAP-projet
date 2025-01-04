@@ -6,46 +6,50 @@
 // Constructeur
 Scene3D::Scene3D(const Point3D& eye, const Point3D& look_at, float projection_plane_distance)
     : eye_(eye), look_at_(look_at), projection_plane_distance_(projection_plane_distance) {
-    if (projection_plane_distance_ <= 0) {
+    if (projection_plane_distance_ <= TOLERANCE) {
         throw std::invalid_argument("La distance du plan de projection doit être strictement positive.");
     }
 
-    if (eye_.distance(look_at_) < 1e-6) {
-        throw std::invalid_argument("La position de l'\u0153il et le point de visée ne peuvent pas être les mêmes.");
+    if (eye_.distance(look_at_) < TOLERANCE) {
+        throw std::invalid_argument("La position de l'œil et le point de visée ne peuvent pas être les mêmes.");
+    }
+    std::cout << "Scene3D initialized.\n";
+}
+
+// Définir un cube
+void Scene3D::addCube(const Pave3D& cube) {
+    cube_ = cube;
+    hasCube_ = true;
+    std::cout << "Cube défini.\n";
+    // Orienter les faces du cube par rapport à l'œil
+    for (size_t i = 0; i < 6; ++i) {
+        cube_.getFace(i).orient(eye_);  // Vérifiez que getFace retourne une référence modifiable
     }
 }
 
-// Ajout d'un cube à la scène
-void Scene3D::addCube(const std::shared_ptr<Pave3D>& cube) {
-    if (!cube) {
-        throw std::invalid_argument("Le cube ajouté est invalide (nullptr).");
+// Définir une sphère
+void Scene3D::addSphere(const Sphere3D& sphere) {
+    sphere_ = sphere;
+    hasSphere_ = true;
+    std::cout << "Sphère définie avec rayon : " << sphere.getRadius() << "\n";
+    // Orienter les quadrilatères de la sphère par rapport à l'œil
+    for (auto& quad : sphere_.getQuads()) {  // Assurez-vous que getQuads retourne une référence non-constante
+        quad.orient(eye_);
     }
-    cubes_.push_back(cube);
-    std::cout << "Cube ajouté : " << cube->getColor() << "\n";
-}
-
-// Ajout d'une sphère à la scène
-void Scene3D::addSphere(const std::shared_ptr<Sphere3D>& sphere) {
-    if (!sphere) {
-        throw std::invalid_argument("La sphère ajoutée est invalide (nullptr).");
-    }
-    spheres_.push_back(sphere);
-    std::cout << "Sphère ajoutée avec rayon : " << sphere->getRadius() << "\n";
 }
 
 // Projection d'un point 3D sur un plan 2D
 Point2D Scene3D::projectPoint(const Point3D& point3D) const {
-    // Calcul de la projection perspective
     float dx = point3D.getX() - eye_.getX();
     float dy = point3D.getY() - eye_.getY();
     float dz = point3D.getZ() - eye_.getZ();
 
     if (dz <= 0) {
-        std::cerr << "Projection impossible : le point est derrière l'\u0153il.\n"
+        std::cerr << "Projection impossible : le point est derrière l'œil.\n"
                   << "  Point 3D : " << point3D << "\n"
-                  << "  Position de l'\u0153il : " << eye_ << "\n"
+                  << "  Position de l'œil : " << eye_ << "\n"
                   << "  dz (distance Z) : " << dz << "\n";
-        throw std::runtime_error("Projection impossible : le point est derrière l'\u0153il.");
+        throw std::runtime_error("Projection impossible : le point est derrière l'œil.");
     }
 
     float scale = projection_plane_distance_ / dz;
@@ -57,7 +61,6 @@ Point2D Scene3D::projectPoint(const Point3D& point3D) const {
 
 // Projette un triangle 3D en 2D
 Triangle2D Scene3D::projectTriangle(const Triangle3D& triangle) const {
-
     Point2D p1 = projectPoint(triangle.getP1());
     Point2D p2 = projectPoint(triangle.getP2());
     Point2D p3 = projectPoint(triangle.getP3());
@@ -65,156 +68,106 @@ Triangle2D Scene3D::projectTriangle(const Triangle3D& triangle) const {
     return Triangle2D(p1, p2, p3, triangle.getColor(), triangle.averageDepth());
 }
 
-
 // Récupère les triangles projetés
 std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
     std::vector<Triangle2D> projectedTriangles;
 
-    size_t collinearCount = 0;
-
-    // Ajouter les triangles projetés des cubes
-    for (const auto& cube : cubes_) {
-        for (size_t i = 0; i < 6; ++i) { // Un pavé a toujours 6 faces
-            const auto& face = cube->getFace(i);
-
-            const Triangle3D& t1 = face.getFirstTriangle();
-            const Triangle3D& t2 = face.getSecondTriangle();
-
-            // Projection du premier triangle
-            try {
-                if (t1.isValid()) {
-                    Point2D p1 = projectPoint(t1.getP1());
-                    Point2D p2 = projectPoint(t1.getP2());
-                    Point2D p3 = projectPoint(t1.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t1.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, face.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T1 sur la face " << i 
-                                  << " forment une ligne droite en 2D.\n";
-                    }
-                }
-            } catch (const std::exception& e) {
-                std::cerr << "Erreur lors de la projection du triangle T1 : " << e.what() << "\n";
+    auto processTriangles = [&](const std::vector<Triangle3D>& triangles) {
+        for (const auto& triangle : triangles) {
+            std::cout << "Traitement du triangle 3D : " << triangle << "\n";
+            if (isVisible(triangle, eye_)) {
+                projectedTriangles.push_back(projectTriangle(triangle));
+                std::cout << "  Triangle projeté avec succès.\n";
+            } else {
+                std::cout << "  Triangle non visible.\n";
             }
+        }
+    };
 
-            // Projection du deuxième triangle
-            try {
-                if (t2.isValid()) {
-                    Point2D p1 = projectPoint(t2.getP1());
-                    Point2D p2 = projectPoint(t2.getP2());
-                    Point2D p3 = projectPoint(t2.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t2.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, face.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T2 sur la face " << i 
-                                  << " forment une ligne droite en 2D.\n";
-                    }
-                }
-            } catch (const std::exception& e) {
-                std::cerr << "Erreur lors de la projection du triangle T2 : " << e.what() << "\n";
-            }
+    if (hasCube_) {
+        std::cout << "Traitement des faces du cube.\n";
+        for (size_t i = 0; i < 6; ++i) {
+            const Quad3D& face = cube_.getFace(i);
+            processTriangles({face.getFirstTriangle(), face.getSecondTriangle()});
         }
     }
 
-    // Ajouter les triangles projetés des sphères
-    for (const auto& sphere : spheres_) {
-        const auto& quads = sphere->getQuads();
-        for (const auto& quad : quads) {
-            const Triangle3D& t1 = quad.getFirstTriangle();
-            const Triangle3D& t2 = quad.getSecondTriangle();
-
-            // Projection du premier triangle
-            try {
-                if (t1.isValid()) {
-                    Point2D p1 = projectPoint(t1.getP1());
-                    Point2D p2 = projectPoint(t1.getP2());
-                    Point2D p3 = projectPoint(t1.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t1.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, quad.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T1 d'un quad de la sphère forment une ligne droite en 2D.\n";
-                        ++collinearCount;
-                        continue;
-                    }
-                }
-            } catch (const std::exception& e) {
-                std::cerr << "Erreur lors de la projection du triangle T1 : " << e.what() << "\n";
-            }
-
-            // Projection du deuxième triangle
-            try {
-                if (t2.isValid()) {
-                    Point2D p1 = projectPoint(t2.getP1());
-                    Point2D p2 = projectPoint(t2.getP2());
-                    Point2D p3 = projectPoint(t2.getP3());
-
-                    if (!Point2D::areCollinear(p1, p2, p3)) {
-                        float depth = t2.averageDepth();
-                        projectedTriangles.emplace_back(p1, p2, p3, quad.getColor(), depth);
-                    } else {
-                        std::cerr << "Erreur : Les points projetés du triangle T2 d'un quad de la sphère forment une ligne droite en 2D.\n";
-                        ++collinearCount;
-                        continue;
-                    }
-                }
-            } catch (const std::exception& e) {
-                std::cerr << "Erreur lors de la projection du triangle T2 : " << e.what() << "\n";
-            }
+    if (hasSphere_) {
+        std::cout << "Traitement des quadrilatères de la sphère.\n";
+        for (const auto& quad : sphere_.getQuads()) {
+            processTriangles({quad.getFirstTriangle(), quad.getSecondTriangle()});
         }
     }
 
-    // Trier les triangles par profondeur moyenne (ordre décroissant)
-    std::sort(projectedTriangles.begin(), projectedTriangles.end(), [](const Triangle2D& a, const Triangle2D& b) {
-        return a.getDepth() > b.getDepth();
-    });
-
-    if (collinearCount > 0) {
-        std::cerr << collinearCount << " triangles colinéaires ignorés.\n";
-    }
-
+    std::cout << "Nombre de triangles projetés : " << projectedTriangles.size() << "\n";
     return projectedTriangles;
 }
 
 // Modifier la position de l'œil
 void Scene3D::setEye(const Point3D& eye) {
-    if (eye.distance(look_at_) < 1e-6) {
+    if (eye.distance(look_at_) < TOLERANCE) {
         throw std::invalid_argument("La position de l'œil et le point de visée ne peuvent pas être les mêmes.");
     }
     eye_ = eye;
-}
+    std::cout << "Position de l'œil mise à jour : " << eye_ << "\n";
 
+    // Réorienter les objets de la scène
+    if (hasCube_) {
+        for (size_t i = 0; i < 6; ++i) {
+            cube_.getFace(i).orient(eye_);
+        }
+    }
+    if (hasSphere_) {
+        for (auto& quad : sphere_.getQuads()) {
+            quad.orient(eye_);
+        }
+    }
+}
 
 // Modifier la direction de visée
 void Scene3D::setLookAt(const Point3D& look_at) {
     look_at_ = look_at;
+    std::cout << "Direction de visée mise à jour : " << look_at_ << "\n";
 }
 
 // Modifier la distance du plan de projection
 void Scene3D::setProjectionPlaneDistance(float distance) {
-    if (distance <= 0) {
+    if (distance <= TOLERANCE) {
         throw std::invalid_argument("La distance du plan de projection doit être strictement positive.");
     }
     projection_plane_distance_ = distance;
+    std::cout << "Distance du plan de projection mise à jour : " << projection_plane_distance_ << "\n";
 }
 
 // Vide tous les objets de la scène
 void Scene3D::clear() {
-    cubes_.clear();
-    spheres_.clear();
+    hasCube_ = false;
+    hasSphere_ = false;
+    std::cout << "Scène vidée.\n";
 }
 
-// Accesseur pour les cubes
-const std::vector<std::shared_ptr<Pave3D>>& Scene3D::getCubes() const {
-    return cubes_;
+// Accesseur pour le cube
+Pave3D& Scene3D::getCube() {
+    if (!hasCube_) {
+        throw std::logic_error("Aucun cube n'est défini dans la scène.");
+    }
+    return cube_;
 }
 
-// Accesseur pour les sphères
-const std::vector<std::shared_ptr<Sphere3D>>& Scene3D::getSpheres() const {
-    return spheres_;
+// Accesseur pour la sphère
+const Sphere3D& Scene3D::getSphere() const {
+    if (!hasSphere_) {
+        throw std::logic_error("Aucune sphère n'est définie dans la scène.");
+    }
+    return sphere_;
+}
+
+// Vérifie si un cube est défini
+bool Scene3D::hasCube() const {
+    return hasCube_;
+}
+
+// Vérifie si une sphère est définie
+bool Scene3D::hasSphere() const {
+    return hasSphere_;
 }

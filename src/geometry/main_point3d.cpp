@@ -1,54 +1,74 @@
+#include <cassert>
 #include <iostream>
 #include "point3d.h"
+#include "geometry_utils.h"
+
+
+void testPoint3D() {
+    // Test du constructeur par défaut
+    Point3D p1;
+    assert(std::abs(p1.getX()) < TOLERANCE && std::abs(p1.getY()) < TOLERANCE && std::abs(p1.getZ()) < TOLERANCE);
+
+    // Test du constructeur avec paramètres
+    Point3D p2(1.0f, 2.0f, 3.0f);
+    assert(std::abs(p2.getX() - 1.0f) < TOLERANCE && std::abs(p2.getY() - 2.0f) < TOLERANCE && std::abs(p2.getZ() - 3.0f) < TOLERANCE);
+
+    // Test de la distance entre deux points
+    Point3D p3(5.0f, 6.0f, 7.0f);
+    float dist = p3.distance(p2);
+    float expectedDist = std::sqrt(std::pow(5.0f - 1.0f, 2) + std::pow(6.0f - 2.0f, 2) + std::pow(7.0f - 3.0f, 2));
+    assert(std::abs(dist - expectedDist) < TOLERANCE);
+
+    // Test de la distance statique
+    float staticDist = Point3D::distance(p3, p2);
+    assert(std::abs(staticDist - expectedDist) < TOLERANCE);
+
+    // Test du produit scalaire
+    Point3D p4(2.0f, 3.0f, 4.0f);
+    float dot = p2.dotProduct(p4);
+    float expectedDot = 1.0f * 2.0f + 2.0f * 3.0f + 3.0f * 4.0f;
+    assert(std::abs(dot - expectedDot) < TOLERANCE);
+
+    // Test du produit vectoriel
+    Point3D cross = p2.crossProduct(p4);
+    Point3D expectedCross(-1.0f, 2.0f, -1.0f);
+    assert(std::abs(cross.getX() - expectedCross.getX()) < TOLERANCE);
+    assert(std::abs(cross.getY() - expectedCross.getY()) < TOLERANCE);
+    assert(std::abs(cross.getZ() - expectedCross.getZ()) < TOLERANCE);
+
+    // Test de la norme
+    float norm = p2.norm();
+    float expectedNorm = std::sqrt(1.0f * 1.0f + 2.0f * 2.0f + 3.0f * 3.0f);
+    assert(std::abs(norm - expectedNorm) < TOLERANCE);
+
+    // Test de colinéarité
+    Point3D p5(2.0f, 4.0f, 6.0f);
+    assert(Point3D::areCollinear(p1, p2, p5) == true);
+    assert(Point3D::areCollinear(Point3D(1, 2, 3), Point3D(2, 4, 6), Point3D(3, 6, 9)) == true);
+
+    // Test des opérateurs
+    Point3D sum = p2 + p4;
+    Point3D expectedSum(3.0f, 5.0f, 7.0f);
+    assert(sum == expectedSum);
+
+    Point3D diff = p4 - p2;
+    Point3D expectedDiff(1.0f, 1.0f, 1.0f);
+    assert(diff == expectedDiff);
+
+    Point3D scaled = p2 * 2.0f;
+    Point3D expectedScaled(2.0f, 4.0f, 6.0f);
+    assert(scaled == expectedScaled);
+
+    Point3D divided = p4 / 2.0f;
+    Point3D expectedDivided(1.0f, 1.5f, 2.0f);
+    assert(std::abs(divided.getX() - expectedDivided.getX()) < TOLERANCE);
+    assert(std::abs(divided.getY() - expectedDivided.getY()) < TOLERANCE);
+    assert(std::abs(divided.getZ() - expectedDivided.getZ()) < TOLERANCE);
+
+    std::cout << "All Point3D tests passed!" << std::endl;
+}
 
 int main() {
-    // Création de points
-    Point3D p1(1.0, 2.0, 3.0);
-    Point3D p2(4.0, 5.0, 6.0);
-    Point3D p3(7.0, 8.0, 9.0);
-    Point3D p4(p3);
-
-    // Accès aux coordonnées
-    std::cout << p1 << std::endl;
-    std::cout << "p2: (" << p2.getX() << ", " << p2.getY() << ", " << p2.getZ() << ")\n";
-    std::cout << p4 << std::endl;
-
-    // Distance entre deux points
-    std::cout << "Distance entre p1 et p2: " << p1.distance(p2) << "\n";
-
-    // Distance statique entre deux points
-    std::cout << "Distance entre p1 et p3 (statique): " << Point3D::distance(p1, p3) << "\n";
-
-    // Produit scalaire
-    std::cout << "Produit scalaire p1 . p2: " << p1.dotProduct(p2) << "\n";
-
-    // Produit vectoriel
-    Point3D cross = p1.crossProduct(p2);
-    std::cout << "Produit vectoriel p1 x p2: (" << cross.getX() << ", " << cross.getY() << ", " << cross.getZ() << ")\n";
-
-    // Produit vectoriel statique
-    Point3D crossStatic = Point3D::crossProduct(p1, p3);
-    std::cout << "Produit vectoriel (statique) p1 x p3: (" << crossStatic.getX() << ", " << crossStatic.getY() << ", " << crossStatic.getZ() << ")\n";
-
-    // Vérification de colinéarité
-    bool collinear = Point3D::areCollinear(p1, p2, p3);
-    std::cout << "Les points p1, p2, et p3 sont " << (collinear ? "colinéaires" : "non colinéaires") << ".\n";
-
-    // Comparaison d'égalité
-    bool equal = (p1 == p2);
-    std::cout << "p1 et p2 sont " << (equal ? "égaux" : "différents") << ".\n";
-
-    // Addition de points
-    Point3D sum = p1 + p2;
-    std::cout << "Somme p1 + p2: (" << sum.getX() << ", " << sum.getY() << ", " << sum.getZ() << ")\n";
-
-    // Soustraction de points
-    Point3D diff = p2 - p1;
-    std::cout << "Différence p2 - p1: (" << diff.getX() << ", " << diff.getY() << ", " << diff.getZ() << ")\n";
-
-    // Comparaison d'inégalité
-    bool notEqual = (p1 != p3);
-    std::cout << "p1 et p3 sont " << (notEqual ? "différents" : "égaux") << ".\n";
-
+    testPoint3D();
     return 0;
 }

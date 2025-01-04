@@ -28,7 +28,6 @@
 class Pave3D {
 private:
     std::array<Quad3D, 6> faces; ///< Tableau contenant les six faces du pavé (avant, arrière, gauche, droite, haut, bas).
-    Couleur color; ///< Couleur associée au pavé.
 
     /**
      * @brief Valide la géométrie du pavé.
@@ -60,9 +59,12 @@ public:
      *
      * @throw std::runtime_error Si les faces ne forment pas un pavé valide.
      */
-    Pave3D(const std::array<Quad3D, 6>& faces, const Couleur& color);
+    Pave3D(const std::array<Quad3D, 6>& faces);
 
-    Pave3D(const Quad3D& front_quad, const Quad3D& back_quad, const Quad3D& left_quad, const Quad3D& right_quad, const Quad3D& top_quad, const Quad3D& bottom_quad, const Couleur& color);
+    Pave3D(const Quad3D& front_quad, const Quad3D& back_quad, const Quad3D& left_quad, const Quad3D& right_quad, const Quad3D& top_quad, const Quad3D& bottom_quad);
+
+    Pave3D(const Point3D& origin, float length, float width, float height, const Couleur& color);
+
     /**
      * @brief Constructeur par copie de la classe Pave3D.
      *
@@ -81,52 +83,38 @@ public:
      */
     const Quad3D& getFace(size_t index) const;
 
-    /**
-     * @brief Accesseur pour la couleur du pavé.
-     *
-     * @return La couleur du pavé (Couleur).
-     */
-    const Couleur& getColor() const {
-        return color;
+    Quad3D& getFace(size_t index) {
+        if (index >= faces.size()) {
+            throw std::out_of_range("Index de face invalide. Les indices doivent être entre 0 et 5.");
+        }
+        return faces[index];
     }
 
     /**
-     * @brief Modifie la couleur du pavé.
-     *
-     * Cette modification s'applique à toutes les faces du pavé.
-     *
-     * @param color La nouvelle couleur du pavé.
+     * @brief Modifie la couleur d'une face spécifique du pavé.
+     * @param index L'indice de la face (de 0 à 5).
+     * @param color La nouvelle couleur à appliquer à la face.
+     * @throws std::out_of_range Si l'indice est hors des limites.
      */
-    void setColor(const Couleur& color);
+    void setFaceColor(size_t index, const Couleur& color) {
+        if (index >= faces.size()) {
+            throw std::out_of_range("Index de face invalide. Les indices doivent être entre 0 et 5.");
+        }
+        faces[index].setColor(color);
+    }
 
     /**
-     * @brief Modifie la couleur du pavé.
-     *
-     * Cette modification s'applique à toutes les faces du pavé.
-     *
-     * @param rouge Composante rouge de la couleur (0-255).
-     * @param vert Composante verte de la couleur (0-255).
-     * @param bleu Composante bleue de la couleur (0-255).
+     * @brief Retourne la couleur de la face spécifique.
+     * @param index L'indice de la face (de 0 à 5).
+     * @return La couleur de la face.
+     * @throws std::out_of_range Si l'indice est hors des limites.
      */
-    void setColor(int rouge=0, int vert=0, int bleu=0);
-
-    /**
-     * @brief Modifie la composante rouge de la couleur du pavé.
-     * @param rouge La nouvelle composante rouge de la couleur (0-255).
-     */
-    void setColorRouge(int rouge);
-
-    /**
-     * @brief Modifie la composante verte de la couleur du pavé.
-     * @param vert La nouvelle composante verte de la couleur (0-255).
-     */
-    void setColorVert(int vert);
-
-    /**
-     * @brief Modifie la composante bleue de la couleur du pavé.
-     * @param bleu La nouvelle composante bleue de la couleur (0-255).
-     */
-    void setColorBleu(int bleu);
+    Couleur getFaceColor(size_t index) const {
+        if (index >= faces.size()) {
+            throw std::out_of_range("Index de face invalide. Les indices doivent être entre 0 et 5.");
+        }
+        return faces[index].getColor();
+    }
 
     /**
      * @brief Calcule le volume du pavé.
@@ -155,6 +143,25 @@ public:
      * @return true si les pavés sont égaux, false sinon.
      */
     bool equals(const Pave3D& other) const;
+
+    /**
+     * @brief Translate le quadrilatère dans l'espace 3D.
+     * @param offset Le décalage à appliquer (Point3D).
+     */
+    void translate(const Point3D& offset) {
+        for (auto& face : faces) {
+            face.translate(offset);
+        }
+    }
+
+    void rotate(float angle, char axis, const Point3D& center);
+
+    /**
+     * @brief Calculates the center of the Pave3D.
+     * @return The geometric center of the Pave3D as a Point3D.
+     */
+    Point3D center() const;
+
 
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher un pavé.

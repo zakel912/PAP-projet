@@ -44,7 +44,7 @@ class Triangle3D {
          * @param bleu La composante bleue de la couleur du triangle.
          * @pre Les trois sommets ne doivent pas être alignés.
          */
-        Triangle3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, int rouge =0, int vert=0, int bleu =0);
+        Triangle3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, int rouge =255, int vert=255, int bleu =255);
 
         /**
          * @brief Constructeur initialisant le triangle avec des valeurs spécifiques pour les trois sommets dans l'ordre
@@ -135,7 +135,7 @@ class Triangle3D {
          * @brief Méthode pour orienter les sommets dans le sens trigonométrique.
          * @return void
          */
-        void orient();
+        void orient(const Point3D& pointOfView);
         
         /**
          * @brief Calcule la profondeur moyenne du triangle basée sur ses sommets.
@@ -198,12 +198,54 @@ class Triangle3D {
          */
         Point3D getNormale() const;
 
-        bool isValid() const;
+        /**
+         * @brief Echange deux sommets du triangle.
+         * @param i L'indice du premier sommet.
+         * @param j L'indice du deuxième sommet.
+         * @return void
+         */
+        void swapVertices(int i, int j);
 
+        /**
+         * @brief Calcule et retourne le centroïde (centre de gravité) du triangle.
+         * @return Le centroïde du triangle en tant que Point3D.
+         */
+        Point3D getCentroid() const;
+
+        /**
+         * @brief Vérifie si le triangle est valide.
+         * @return true si le triangle est valide, false sinon.
+         */
+        bool isValid() const { return !Point3D::areCollinear(p1, p2, p3); }
+
+        /**
+         * @brief Affiche les informations du triangle dans un flux de sortie.
+         * @param os Le flux dans lequel écrire.
+         * @param triangle Le triangle à afficher.
+         * @return Une référence au flux modifié.
+         */
         friend std::ostream& operator<<(std::ostream& os, const Triangle3D& triangle);
-};
 
-//bool operator==(const triangle3D& t1, const triangle3D& t2);
+        /**
+         * @brief Effectue une translation du triangle dans l'espace 3D.
+         * @param offset Le vecteur de translation à appliquer.
+         */
+        void translate(const Point3D& offset) { 
+            p1 = p1 + offset;
+            p2 = p2 + offset;
+            p3 = p3 + offset;
+        }
+
+
+        /**
+         * @brief Effectue une rotation du triangle autour d'un axe donné.
+         * @param angle Angle de rotation en radians.
+         * @param axis Axe autour duquel effectuer la rotation ('x', 'y', ou 'z').
+         * @param center Point autour duquel effectuer la rotation (par défaut : origine).
+         */
+        void rotate(float angle, char axis, const Point3D& center);
+
+};
 
 #endif
 

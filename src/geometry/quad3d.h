@@ -8,6 +8,7 @@
 
 #include "point3d.h"
 #include "triangle3d.h"
+#include "vector"
 #include <array>
 
 /**
@@ -50,7 +51,6 @@ public:
      * @pre Les triangles ne doivent pas être alignés.
      */
     Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, const Couleur& color);
-
 
     /**
      * @brief Constructeur par copie de la classe Quad3D.
@@ -120,6 +120,7 @@ public:
      * @return void
      */
     void setColor(int rouge, int vert, int bleu);
+    
     /**
      * @brief Modifie la composante rouge de la couleur du quadrilatère.
      * @param rouge La nouvelle composante rouge de la couleur du quadrilatère.
@@ -215,6 +216,45 @@ public:
      * @return false Sinon.
      */
     bool operator==(const Quad3D& other) const;
+
+    /**
+     * @brief Retrieves the vertices of the quadrilateral.
+     * @return A vector of Point3D objects representing the vertices of the quadrilateral.
+     */
+    std::vector<Point3D> getVertices() const;
+
+    /**
+     * @brief Translate le quadrilatère dans l'espace 3D.
+     * @param offset Le décalage à appliquer (Point3D).
+     */
+    void translate(const Point3D& offset) {
+        triangles_[0].translate(offset);
+        triangles_[1].translate(offset);
+    }
+
+    /**
+     * @brief Orient les sommets du quadrilatère dans le sens trigonométrique en fonction de l'oeil.
+     * @param eye L'oeil de la caméra.
+     * @return void
+     */
+    void orient(const Point3D& eye);
+
+    /**
+     * @brief Retourne le centre du quadrilatère.
+     * @return Point3D Le centre du quadrilatère.
+     */
+    Point3D center() const;
+
+    void rotate(float angle, char axis);
+
+    void rotate(float angle, char axis, const Point3D& center);
+
+    // quad3d.h
+    /**
+     * @brief Calculates the average depth of the quad.
+     * @return The average depth of the two triangles composing the quad.
+     */
+    float averageDepth() const;
 
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher les informations d'un quadrilatère.

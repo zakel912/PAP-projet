@@ -4,7 +4,7 @@
 #include "geometry_utils.h"
 
 // Constructeur par défaut
-Triangle3D::Triangle3D() : p1(Point3D(0,0,0)), p2(Point3D(1,0,0)), p3(Point3D(0,1,0)), color(Couleur()) {}
+Triangle3D::Triangle3D() : p1(Point3D(0,0,0)), p2(Point3D(0,0,0)), p3(Point3D(0,0,0)), color(Couleur()) {}
 
 // Constructeur avec trois sommets et une couleur RGB
 Triangle3D::Triangle3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, int rouge, int vert, int bleu)
@@ -96,10 +96,35 @@ Point3D Triangle3D::getNormale() const {
     return normale;
 }
 
-bool Triangle3D::isValid() const {
-    return !Point3D::areCollinear(p1, p2, p3);
+void Triangle3D::swapVertices(int i, int j) {
+    if (i < 1 || i > 3 || j < 1 || j > 3) {
+        throw std::invalid_argument("Les indices doivent être compris entre 1 et 3.");
+    }
+
+    if (i == j) return;
+
+    Point3D* points[] = {&p1, &p2, &p3};
+
+    std::swap(*points[i - 1], *points[j - 1]);
 }
 
+void Triangle3D::orient(const Point3D& pointOfView) {
+    Point3D normale = getNormale();
+    Point3D viewVector = pointOfView - getCentroid();
+
+    // Si le produit scalaire entre la normale et le vecteur de vue est négatif, les sommets sont dans le sens horaire
+    if (normale.dotProduct(viewVector) < 0) {
+        std::swap(p2, p3);
+    }
+}
+
+Point3D Triangle3D::getCentroid() const {
+    float x = (p1.getX() + p2.getX() + p3.getX()) / 3.0f;
+    float y = (p1.getY() + p2.getY() + p3.getY()) / 3.0f;
+    float z = (p1.getZ() + p2.getZ() + p3.getZ()) / 3.0f;
+
+    return Point3D(x, y, z);
+}
 
 // Surcharge de l'opérateur <<
 std::ostream& operator<<(std::ostream& os, const Triangle3D& triangle) {
@@ -113,4 +138,42 @@ std::ostream& operator<<(std::ostream& os, const Triangle3D& triangle) {
        << ", Average Depth: " << triangle.averageDepth()
        << "]";
     return os;
+}
+
+void Triangle3D::rotate(float angle, char axis, const Point3D& center) {
+    // Fonction pour appliquer la rotation à un point
+    auto rotatePoint = [&](const Point3D& point) -> Point3D {
+        float x = point.getX() - center.getX();
+        float y = point.getY() - center.getY();
+        float z = point.getZ() - center.getZ();
+
+        float cosAngle = std::cos(angle);
+        float sinAngle = std::sin(angle);
+
+        float newX = x, newY = y, newZ = z;
+
+        switch (axis) {
+            case 'x': // Rotation autour de l'axe X
+                newY = y * cosAngle - z * sinAngle;
+                newZ = y * sinAngle + z * cosAngle;
+                break;
+            case 'y': // Rotation autour de l'axe Y
+                newX = x * cosAngle + z * sinAngle;
+                newZ = -x * sinAngle + z * cosAngle;
+                break;
+            case 'z': // Rotation autour de l'axe Z
+                newX = x * cosAngle - y * sinAngle;
+                newY = x * sinAngle + y * cosAngle;
+                break;
+            default:
+                throw std::invalid_argument("Axe invalide. Utilisez 'x', 'y' ou 'z'.");
+        }
+
+        return Point3D(newX + center.getX(), newY + center.getY(), newZ + center.getZ());
+    };
+
+    // Appliquer la rotation à chaque point du triangle
+    p1 = rotatePoint(p1);
+    p2 = rotatePoint(p2);
+    p3 = rotatePoint(p3);
 }

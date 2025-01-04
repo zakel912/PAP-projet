@@ -10,6 +10,7 @@
 #include <iostream>
 #include <cmath>
 #include <stdexcept>
+#include "geometry_utils.h"
 
 /**
  * @class Point3D
@@ -24,6 +25,7 @@ class Point3D {
         float x;
         float y;
         float z;
+
     public:
         /**
         * @brief Constructeur initialisant le point avec des valeurs spécifiques pour x, y et z.
@@ -63,6 +65,30 @@ class Point3D {
         float getZ() const;
 
         /**
+         * @brief Modifie la coordonnée x.
+         * @param newX La nouvelle valeur pour la coordonnée x.
+         */
+        void setX(float newX) {
+            x = newX;
+        }
+
+        /**
+         * @brief Modifie la coordonnée y.
+         * @param newY La nouvelle valeur pour la coordonnée y.
+         */
+        void setY(float newY) {
+            y = newY;
+        }
+
+        /**
+         * @brief Modifie la coordonnée z.
+         * @param newZ La nouvelle valeur pour la coordonnée z.
+         */
+        void setZ(float newZ) {
+            z = newZ;
+        }
+
+        /**
          * @brief Calcule la distance (euclidienne) entre ce point et un autre point donné.
          * @param other L'autre point avec lequel calculer la distance.
          * @return La distance entre ce point et l'autre point.
@@ -99,6 +125,10 @@ class Point3D {
          */
         float dotProduct(const Point3D& other) const;
 
+        /**
+         * @brief Calcule la norme du vecteur représenté par le point.
+         * @return La norme du vecteur.
+         */
         float norm() const {
             return std::sqrt(x * x + y * y + z * z);
         }
@@ -119,6 +149,11 @@ class Point3D {
          */
         bool equals(const Point3D& other) const;
 
+        /**
+         * @brief Affecte les coordonnées d'un autre point à ce point.
+         * @param other Le point à copier.
+         * @return Une référence à ce point modifié.
+         */
         Point3D& operator=(const Point3D& other){
             x = other.getX();
             y = other.getY();
@@ -141,18 +176,6 @@ class Point3D {
          */
         friend bool operator!=(const Point3D& p1, const Point3D& p2);
 
-        //Définition des opérateurs externes
-
-        /**
-         * @brief Opérateur d'addition de deux points.
-         * @param p1 Le premier point à ajouter.
-         * @param p2 Le deuxième point à ajouter.
-         * @return Le point résultant de l'addition.
-         */
-        friend Point3D operator+(const Point3D& p1, const Point3D& p2) {
-            return Point3D(p1.x + p2.x, p1.y + p2.y, p1.z + p2.z);
-        }
-
         /**
          * @brief Opérateur de soustraction de deux points.
          * @param p1 Le premier point à soustraire.
@@ -162,6 +185,41 @@ class Point3D {
         friend Point3D operator-(const Point3D& p1, const Point3D& p2) {
             return Point3D(p1.x - p2.x, p1.y - p2.y, p1.z - p2.z);
         }
+
+        Point3D operator+(const Point3D& other) const {
+            return Point3D(x + other.x, y + other.y, z + other.z);
+        }
+
+        /**
+         * @brief Opérateur de multiplication d'un point par un scalaire.
+         * @param p Le point à multiplier.
+         * @param scalar Le scalaire par lequel multiplier le point.
+         * @return Le point résultant de la multiplication.
+         */
+        friend Point3D operator*(const Point3D& p, float scalar) {
+            return Point3D(p.x * scalar, p.y * scalar, p.z * scalar);
+        }
+
+        /**
+         * @brief Opérateur de division d'un point par un scalaire.
+         * @param p Le point à diviser.
+         * @param scalar Le scalaire par lequel diviser le point.
+         * @return Le point résultant de la division.
+         */
+        friend Point3D operator/(const Point3D& p, float scalar) {
+            if (scalar == 0) {
+                throw std::invalid_argument("Division par zéro.");
+            }
+            return p * (1.0f / scalar);
+        }
+
+        /**
+         * @brief Normalise le vecteur représenté par le point.
+         * @return Un point normalisé (longueur égale à 1).
+         */
+        Point3D normalize() const ;
+
+
         friend std::ostream& operator<<(std::ostream& os, const Point3D& point);
 
 }; 

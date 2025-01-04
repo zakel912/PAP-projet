@@ -6,7 +6,7 @@
 
 // Constructeur par défaut
 Quad3D::Quad3D() 
-    : triangles_{Triangle3D(), Triangle3D(Point3D(1, 1), Point3D(0, 1), Point3D(1, 0))} {}
+    : triangles_{Triangle3D(), Triangle3D()} {}
 
 // Constructeur avec deux triangles et des composantes RVB
 Quad3D::Quad3D(const Triangle3D& firstT, const Triangle3D& secondT, int rouge, int vert, int bleu)
@@ -68,6 +68,11 @@ Couleur Quad3D::getColor() const {
     return triangles_[0].getColor();
 }
 
+std::vector<Point3D> Quad3D::getVertices() const {
+    return {triangles_[0].getP1(), triangles_[0].getP2(), triangles_[0].getP3(),
+            triangles_[1].getP3()};
+}
+
 // Modificateur pour la couleur avec un objet Couleur
 void Quad3D::setColor(const Couleur& color) {
     triangles_[0].setColor(color);
@@ -116,10 +121,58 @@ bool Quad3D::operator==(const Quad3D& other) const {
     return equals(other);
 }
 
+void Quad3D::orient(const Point3D& eye) {
+    std::cout << "Avant orientation :\n";
+    std::cout << "  Normale T1 : " << triangles_[0].getNormale() << "\n";
+    std::cout << "  Normale T2 : " << triangles_[1].getNormale() << "\n";
+
+    triangles_[0].orient(eye);
+    triangles_[1].orient(eye);
+
+    // Vérifie et ajuste si nécessaire pour maintenir une orientation cohérente.
+    auto normal1 = triangles_[0].getNormale();
+    auto normal2 = triangles_[1].getNormale();
+
+    if (normal1.dotProduct(normal2) < 0) {
+        triangles_[1].swapVertices(1, 3); // Inverse l'ordre pour aligner les normales.
+    }
+
+    std::cout << "Après orientation :\n";
+    std::cout << "  Normale T1 : " << triangles_[0].getNormale() << "\n";
+    std::cout << "  Normale T2 : " << triangles_[1].getNormale() << "\n";
+}
+
+Point3D Quad3D::center() const {
+    auto vertices = getVertices();
+    Point3D center;
+    for (const auto& vertex : vertices) {
+        center = center + vertex;
+    }
+    return center / static_cast<float>(vertices.size());
+}
+
 // Surcharge de l'opérateur <<
 std::ostream& operator<<(std::ostream& os, const Quad3D& quad) {
     os << "Quad3D:\n";
     os << "  Triangle 1: " << quad.getFirstTriangle() << "\n";
     os << "  Triangle 2: " << quad.getSecondTriangle() << "\n";
     return os;
+}
+
+void Quad3D::rotate(float angle, char axis) {
+    // Calcule le centre du quadrilatère
+    Point3D quadCenter = center();
+
+    // Applique la rotation aux deux triangles
+    triangles_[0].rotate(angle, axis, quadCenter);
+    triangles_[1].rotate(angle, axis, quadCenter);
+}
+
+void Quad3D::rotate(float angle, char axis, const Point3D& center) {
+    triangles_[0].rotate(angle, axis, center);
+    triangles_[1].rotate(angle, axis, center);
+}
+
+float Quad3D::averageDepth() const {
+    return (triangles_[0].averageDepth() + triangles_[1].averageDepth()) / 2.0f;
 }

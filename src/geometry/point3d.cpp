@@ -33,8 +33,12 @@ float Point3D::distance(const Point3D& p1, const Point3D& p2){
     return p1.distance(p2);
 }
 
-Point3D Point3D::crossProduct(const Point3D& other) const{
-    return Point3D(getY() * other.getZ() - getZ() * other.getY(), getZ() * other.getX() - getX() * other.getZ(), getX() * other.getY() - getY() * other.getX());
+Point3D Point3D::crossProduct(const Point3D& other) const {
+    return Point3D(
+        y * other.z - z * other.y,
+        z * other.x - x * other.z,
+        x * other.y - y * other.x
+    );
 }
 
 Point3D Point3D::crossProduct(const Point3D& p1, const Point3D& p2){
@@ -46,15 +50,10 @@ float Point3D::dotProduct(const Point3D& other) const{
 }
 
 bool Point3D::areCollinear(const Point3D& p1, const Point3D& p2, const Point3D& p3) {
-    if (p1.equals(p2) || p1.equals(p3) || p2.equals(p3)) {
-        return true;
-    }
-    Point3D u(p2.x - p1.x, p2.y - p1.y, p2.z - p1.z);
-    Point3D v(p3.x - p1.x, p3.y - p1.y, p3.z - p1.z);
-    Point3D cross = u.crossProduct(v);
-    return std::fabs(cross.x) < TOLERANCE &&
-           std::fabs(cross.y) < TOLERANCE &&
-           std::fabs(cross.z) < TOLERANCE;
+    Point3D v1 = p2 - p1;
+    Point3D v2 = p3 - p1;
+
+    return v1.crossProduct(v2).norm() < TOLERANCE;
 }
 
 bool Point3D::equals(const Point3D& other) const {
@@ -69,6 +68,14 @@ bool operator==(const Point3D& lhs, const Point3D& rhs) {
 
 bool operator!=(const Point3D& p1, const Point3D& p2) {
     return !(p1 == p2);
+}
+
+Point3D Point3D::normalize() const {
+    float magnitude = norm();
+    if (magnitude < TOLERANCE) {
+        return Point3D(0, 0, 0);
+    }
+    return *this / magnitude;
 }
 
 std::ostream& operator<<(std::ostream& os, const Point3D& point) {

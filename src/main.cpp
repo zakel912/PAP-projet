@@ -1,43 +1,50 @@
 #include "renderer.h"
 #include "scene3d.h"
 #include "../geometry/pave3d.h"
-#include "../geometry/sphere3d.h"
 #include <iostream>
-#include <memory>
 #include <SDL2/SDL.h>
 
-int main() {
+// Configuration initiale
+struct Config {
+    int screenWidth = 800;
+    int screenHeight = 600;
+    int pixelSize = 10;
+    Point3D cameraPosition = Point3D(0, 0, 5);
+    Point3D lookAtPosition = Point3D(0, 0, 0);
+    float projectionPlaneDistance = 5.0f;
+};
+
+// Fonction principale
+int main(int argc, char* argv[]) {
     try {
-        // Renderer initialization
-        int screenWidth = 800;
-        int screenHeight = 600;
-        int pixelSize = 40;  // Define the size of each pixel
-        Renderer renderer(screenWidth, screenHeight, pixelSize);  // Pass pixelSize to the constructor
+        // Configuration par défaut
+        Config config;
 
-        // Scene setup
-        Scene3D scene(Point3D(0, 0, 10), Point3D(0, 0, 20), 5.0f);
+        // Lecture des arguments (si fournis)
+        if (argc > 1) config.screenWidth = std::stoi(argv[1]);
+        if (argc > 2) config.screenHeight = std::stoi(argv[2]);
+        if (argc > 3) config.pixelSize = std::stoi(argv[3]);
+        if (argc > 4) config.cameraPosition = Point3D(std::stof(argv[4]), std::stof(argv[5]), std::stof(argv[6]));
+        if (argc > 7) config.lookAtPosition = Point3D(std::stof(argv[7]), std::stof(argv[8]), std::stof(argv[9]));
+        if (argc > 10) config.projectionPlaneDistance = std::stof(argv[10]);
 
-        // Adding a cube to the scene
-        auto cube = std::make_shared<Pave3D>(
-            Quad3D(Point3D(-2, -2, 18), Point3D(2, -2, 18), Point3D(2, 2, 18), Point3D(-2, 2, 18), Couleur(255, 0, 0)),
-            Quad3D(Point3D(-2, -2, 22), Point3D(2, -2, 22), Point3D(2, 2, 22), Point3D(-2, 2, 22), Couleur(255, 0, 0)),
-            Quad3D(Point3D(-2, -2, 18), Point3D(-2, 2, 18), Point3D(-2, 2, 22), Point3D(-2, -2, 22), Couleur(0, 255, 0)),
-            Quad3D(Point3D(2, -2, 18), Point3D(2, 2, 18), Point3D(2, 2, 22), Point3D(2, -2, 22), Couleur(0, 255, 0)),
-            Quad3D(Point3D(-2, 2, 18), Point3D(2, 2, 18), Point3D(2, 2, 22), Point3D(-2, 2, 22), Couleur(0, 0, 255)),
-            Quad3D(Point3D(-2, -2, 18), Point3D(2, -2, 18), Point3D(2, -2, 22), Point3D(-2, -2, 22), Couleur(0, 0, 255)),
-            Couleur(255, 0, 0));
+        // Initialisation du renderer
+        Renderer renderer(config.screenWidth, config.screenHeight, config.pixelSize);
+
+        // Initialisation de la scène
+        Scene3D scene(config.cameraPosition, config.lookAtPosition, config.projectionPlaneDistance);
+
+        // Ajout d'un cube
+        Pave3D cube(
+            Quad3D(Point3D(-1, -1, 2), Point3D(1, -1, 2), Point3D(1, 1, 2), Point3D(-1, 1, 2), Couleur(255, 0, 0)),
+            Quad3D(Point3D(-1, -1, 4), Point3D(1, -1, 4), Point3D(1, 1, 4), Point3D(-1, 1, 4), Couleur(255, 0, 0)),
+            Quad3D(Point3D(-1, -1, 2), Point3D(-1, 1, 2), Point3D(-1, 1, 4), Point3D(-1, -1, 4), Couleur(0, 255, 0)),
+            Quad3D(Point3D(1, -1, 2), Point3D(1, 1, 2), Point3D(1, 1, 4), Point3D(1, -1, 4), Couleur(0, 255, 0)),
+            Quad3D(Point3D(-1, 1, 2), Point3D(1, 1, 2), Point3D(1, 1, 4), Point3D(-1, 1, 4), Couleur(0, 0, 255)),
+            Quad3D(Point3D(-1, -1, 2), Point3D(1, -1, 2), Point3D(1, -1, 4), Point3D(-1, -1, 4), Couleur(0, 0, 255))
+        );
         scene.addCube(cube);
-        std::cout << "Cube rouge ajouté à la scène.\n";
 
-        // Adding a sphere to the scene
-        auto sphere = std::make_shared<Sphere3D>(Point3D(5, 5, 20), Couleur(0, 255, 0), 3, 8);
-        scene.addSphere(sphere);
-        std::cout << "Sphère verte ajoutée à la scène.\n";
-
-        // Retrieve projected triangles
-        auto triangles = scene.getProjectedTriangles();
-
-        // Main rendering loop
         bool running = true;
         SDL_Event event;
 
@@ -46,19 +53,24 @@ int main() {
                 if (event.type == SDL_QUIT) {
                     running = false;
                 }
+                if (event.type == SDL_KEYDOWN) {
+                    switch (event.key.keysym.sym) {
+                        case SDLK_w: scene.setEye(scene.getEye() + Point3D(0, 1, 0)); break;
+                        case SDLK_s: scene.setEye(scene.getEye() + Point3D(0, -1, 0)); break;
+                        case SDLK_a: scene.setEye(scene.getEye() + Point3D(-1, 0, 0)); break;
+                        case SDLK_d: scene.setEye(scene.getEye() + Point3D(1, 0, 0)); break;
+                        case SDLK_q: scene.setEye(scene.getEye() + Point3D(0, 0, -1)); break;
+                        case SDLK_e: scene.setEye(scene.getEye() + Point3D(0, 0, 1)); break;
+                    }
+                }
             }
 
-            // Clear the screen
             renderer.clear({0, 0, 0, 255});
-
-            // Render the scene
-            renderer.renderScene(triangles);
-
-            // Present the rendered frame
+            renderer.renderScene(scene);
             renderer.present();
         }
     } catch (const std::exception& e) {
-        std::cerr << "Error: " << e.what() << std::endl;
+        std::cerr << "Erreur : " << e.what() << std::endl;
         return -1;
     }
 

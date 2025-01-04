@@ -1,72 +1,81 @@
-#include "sphere3d.h"
-#include "quad3d.h"
-#include "point3d.h"
-#include "../couleur.h"
+#include <cassert>
 #include <iostream>
+#include "sphere3d.h"
+#include "geometry_utils.h"
 
-int main() {
+void testSphere3D() {
+    // Points pour les tests
+    Point3D center(0, 0, 0);
+    float radius = 1.0f;
+    int subdivisions = 5;
+
+    // Test du constructeur par défaut
+    Sphere3D defaultSphere;
+    assert(defaultSphere.getCenter() == Point3D(0, 0, 0));
+    assert(std::abs(defaultSphere.getRadius() - 1.0f) < TOLERANCE);
+    assert(defaultSphere.getQuads().size() > 0); // La sphère doit être subdivisée en quadrilatères
+    std::cout << "check1" << std::endl;
+
+    // Test du constructeur paramétré
+    Sphere3D sphere(center, radius, subdivisions);
+    assert(sphere.getCenter() == center);
+    assert(std::abs(sphere.getRadius() - radius) < TOLERANCE);
+    assert(sphere.getQuads().size() > 0); // La sphère doit être subdivisée en quadrilatères
+    std::cout << "check2" << std::endl;
+
+    // Test des propriétés géométriques
+    float expectedVolume = (4.0f / 3.0f) * M_PI * std::pow(radius, 3);
+    float calculatedVolume = sphere.volume();
+    assert(std::abs(calculatedVolume - expectedVolume) < TOLERANCE);
+    std::cout << "check3 (volume)" << std::endl;
+
+    float expectedSurfaceArea = 4.0f * M_PI * std::pow(radius, 2);
+    float calculatedSurfaceArea = sphere.surfaceArea();
+    assert(std::abs(calculatedSurfaceArea - expectedSurfaceArea) < TOLERANCE);
+    std::cout << "check4 (surface area)" << std::endl;
+
+    // Test de modification du centre
+    Point3D newCenter(1, 1, 1);
+    sphere.setCenter(newCenter);
+    assert(sphere.getCenter() == newCenter);
+    std::cout << "check5 (center modification)" << std::endl;
+
+    // Test de modification du rayon
+    float newRadius = 2.0f;
+    sphere.setRadius(newRadius);
+    assert(std::abs(sphere.getRadius() - newRadius) < TOLERANCE);
+
+    expectedVolume = (4.0f / 3.0f) * M_PI * std::pow(newRadius, 3);
+    calculatedVolume = sphere.volume();
+    assert(std::abs(calculatedVolume - expectedVolume) < TOLERANCE);
+
+    expectedSurfaceArea = 4.0f * M_PI * std::pow(newRadius, 2);
+    calculatedSurfaceArea = sphere.surfaceArea();
+    assert(std::abs(calculatedSurfaceArea - expectedSurfaceArea) < TOLERANCE);
+    std::cout << "check6 (radius modification)" << std::endl;
+
+    // Test des quadrilatères
+    const auto& quads = sphere.getQuads();
+    assert(!quads.empty()); // Les quadrilatères doivent exister
+    std::cout << "check7 (quads existence)" << std::endl;
+
+    // Test de modification de couleur d'un quadrilatère
+    sphere.setQuadColor(0, Couleur(255, 0, 0));
+    assert(sphere.getQuadColor(0) == Couleur(255, 0, 0));
+    std::cout << "check8 (quad color modification)" << std::endl;
+
+    // Test d'accès à un quadrilatère hors index
     try {
-        // === TEST DES CONSTRUCTEURS ===
-        std::cout << "=== TEST DES CONSTRUCTEURS ===\n";
-
-        // Sphère par défaut
-        Sphere3D defaultSphere(Point3D(0, 0, 0), 1.0f, 10, 255, 255, 255); // Subdivisions minimales pour éviter les problèmes
-        std::cout << "Sphère par défaut :\n"
-                  << "  Centre : " << defaultSphere.getCenter() << "\n"
-                  << "  Rayon : " << defaultSphere.getRadius() << "\n"
-                  << "  Couleur : " << defaultSphere.getColor() << "\n"
-                  << "  Volume : " << defaultSphere.volume() << "\n"
-                  << "  Surface : " << defaultSphere.surfaceArea() << "\n";
-
-        // Sphère avec centre, rayon, subdivisions et couleur RVB
-        Sphere3D redSphere(Point3D(1, 1, 1), 3.0f, 8, 255, 0, 0); // Plus de subdivisions pour éviter l'alignement des sommets
-        std::cout << "Sphère rouge :\n"
-                  << "  Centre : " << redSphere.getCenter() << "\n"
-                  << "  Rayon : " << redSphere.getRadius() << "\n"
-                  << "  Couleur : " << redSphere.getColor() << "\n"
-                  << "  Volume : " << redSphere.volume() << "\n"
-                  << "  Surface : " << redSphere.surfaceArea() << "\n";
-
-        // Sphère avec centre, couleur, rayon et subdivisions
-        Sphere3D greenSphere(Point3D(0, 0, 0), Couleur(0, 255, 0), 2.0f, 6);
-        std::cout << "Sphère verte :\n"
-                  << "  Centre : " << greenSphere.getCenter() << "\n"
-                  << "  Rayon : " << greenSphere.getRadius() << "\n"
-                  << "  Couleur : " << greenSphere.getColor() << "\n"
-                  << "  Volume : " << greenSphere.volume() << "\n"
-                  << "  Surface : " << greenSphere.surfaceArea() << "\n";
-
-        // === TEST DES MÉTHODES ===
-        std::cout << "\n=== TEST DES MÉTHODES ===\n";
-
-        // Modification du centre
-        greenSphere.setCenter(Point3D(5, 5, 5));
-        std::cout << "Nouveau centre de la sphère verte : " << greenSphere.getCenter() << "\n";
-
-        // Modification du rayon
-        greenSphere.setRadius(4.0f);
-        std::cout << "Nouveau rayon de la sphère verte : " << greenSphere.getRadius() << "\n";
-
-        // Modification de la couleur
-        greenSphere.setColor(128, 0, 128);
-        std::cout << "Nouvelle couleur de la sphère verte : " << greenSphere.getColor() << "\n";
-
-        // Modification des composantes RVB
-        greenSphere.setColorRouge(200);
-        greenSphere.setColorVert(50);
-        greenSphere.setColorBleu(25);
-        std::cout << "Couleur modifiée de la sphère verte : " << greenSphere.getColor() << "\n";
-
-        // Affichage des quadrilatères
-        const auto& quads = greenSphere.getQuads();
-        std::cout << "\nNombre de quadrilatères dans la sphère verte : " << quads.size() << "\n";
-        for (size_t i = 0; i < quads.size(); ++i) {
-            std::cout << "Quadrilatère " << i + 1 << " :\n" << quads[i] << "\n";
-        }
-
-    } catch (const std::exception& e) {
-        std::cerr << "Erreur : " << e.what() << "\n";
+        sphere.getQuadColor(-1);
+        assert(false); // Ne devrait pas atteindre cette ligne
+    } catch (const std::out_of_range&) {
+        std::cout << "check9 (out-of-range access)" << std::endl;
     }
 
+    std::cout << "All Sphere3D tests passed!" << std::endl;
+}
+
+int main() {
+    testSphere3D();
     return 0;
 }

@@ -29,7 +29,6 @@ private:
     int subdivisions;            // Nombre de subdivisions pour discrétiser la sphère.
     std::vector<Quad3D> quads;   // Ensemble des quadrilatères représentant la sphère.
 
-    Couleur color;
 
     /**
      * @brief Génère les quadrilatères approximant la sphère.
@@ -37,7 +36,8 @@ private:
      * Cette méthode utilise une approche basée sur les coordonnées sphériques
      * pour créer les quadrilatères approximant la sphère.
      */
-    void generateQuads(int numSlices, int numStacks);
+    void generateQuads(int numSlices, int numStacks, const Couleur& color = Couleur(0, 0, 0));
+
 
 public:
     /**
@@ -45,32 +45,21 @@ public:
      * @param center Le centre de la sphère.
      * @param radius Le rayon de la sphère (doit être positif).
      * @param subdivisions Le nombre de subdivisions pour discrétiser la sphère (doit être > 0).
-     * @param rouge La composante rouge de la couleur de la sphère.
-     * @param vert La composante verte de la couleur de la sphère.
-     * @param bleu La composante bleue de la couleur de la sphère.
      * @pre Le rayon doit être strictement positif.
      */
-    Sphere3D(const Point3D& center = Point3D(), float radius = 1, int subdivisions = 1, int rouge = 0, int vert = 0, int bleu = 0);
-
-    /**
-     * @brief Constructeur initialisant la sphère avec des valeurs spécifiques pour le centre, le rayon et pour la couleur.
-     * @param center Centre de la sphère.
-     * @param color La couleur de la sphère.
-     * @param radius Rayon de la sphère.
-     * @param subdivisions Le nombre de subdivisions pour discrétiser la sphère (doit être > 0).
-     * @pre Le rayon doit être strictement positif.
-     */
-    Sphere3D(const Point3D& center, const Couleur& color, float radius = 1, int subdivisions = 1);
+    Sphere3D(const Point3D& center = Point3D(), float radius = 1, int subdivisions = 1);
 
     /**
      * @brief Constructeur par copie de la classe Sphere3D.
      * @param other La sphère à copier.
      * @return Une nouvelle sphère qui est une copie de other.
      */
-    Sphere3D(const Sphere3D& other){
-        Sphere3D(other.getCenter(), other.getColor(), other.getRadius(), other.subdivisions);
+    Sphere3D(const Sphere3D& other)
+        : center(other.center), radius(other.radius), subdivisions(other.subdivisions), quads(other.quads) {
+        if (radius <= 0 || subdivisions <= 0) {
+            throw std::invalid_argument("Cannot copy a sphere with invalid parameters.");
+        }
     }
-
     /**
      * @brief Accesseur pour le centre de la sphère.
      * @return Le centre de la sphère.
@@ -102,43 +91,25 @@ public:
      */
     const std::vector<Quad3D>& getQuads() const;
 
-    /**
-     * @brief Accesseur pour la couleur de la sphère.
-     * @return La couleur de la sphère.
-     */
-    Couleur getColor() const { return color; }
+    std::vector<Quad3D>& getQuads() {
+        return quads;
+    }
 
     /**
-     * @brief Modifie la couleur de la sphère.  
-     * @param rouge La composante rouge de la couleur de la sphère.
-     * @param vert La composante verte de la couleur de la sphère.
-     * @param bleu La composante bleue de la couleur de la sphère.
+     * @brief Modifie la couleur d'un quadrilatère spécifique de la sphère.
+     * @param index L'indice du quadrilatère.
+     * @param color La nouvelle couleur.
+     * @throw std::out_of_range Si l'indice est invalide.
      */
-    void setColor(int rouge, int vert, int bleu);
+    void setQuadColor(int index, const Couleur& color);
 
     /**
-     * @brief Modifie la couleur de la sphère.
-     * @param color La nouvelle couleur de la sphère.
+     * @brief Accesseur pour la couleur d'un quadrilatère spécifique de la sphère.
+     * @param index L'indice du quadrilatère.
+     * @return La couleur du quadrilatère.
+     * @throw std::out_of_range Si l'indice est invalide.
      */
-    void setColor(const Couleur& color);
-
-    /**
-     * @brief Modifie la composante rouge de la couleur de la sphère.
-     * @param rouge La nouvelle composante rouge de la couleur de la sphère.
-     */
-    void setColorRouge(int rouge);
-
-    /**
-     * @brief Modifie la composante verte de la couleur de la sphère.
-     * @param vert La nouvelle composante verte de la couleur de la sphère.
-     */
-    void setColorVert(int vert);
-
-    /**
-     * @brief Modifie la composante bleue de la couleur de la sphère.
-     * @param bleu La nouvelle composante bleue de la couleur de la sphère.
-     */
-    void setColorBleu(int bleu);
+    Couleur getQuadColor(int index) const;
 
     /**
      * @brief Calcul le volume de la sphère.

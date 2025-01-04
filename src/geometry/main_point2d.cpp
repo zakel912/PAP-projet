@@ -1,46 +1,62 @@
+#include <cassert>
 #include <iostream>
 #include "point2d.h"
 
+void testPoint2D() {
+    // Test du constructeur par défaut
+    Point2D p1(0, 0); // Appelle explicitement le constructeur avec `int`.
+    assert(p1.getX() == 0 && p1.getY() == 0);
+
+    // Test du constructeur avec paramètres
+    Point2D p2(3, 4);
+    assert(p2.getX() == 3 && p2.getY() == 4);
+
+    // Test du constructeur par copie
+    Point2D p3(p2);
+    assert(p3.getX() == p2.getX() && p3.getY() == p2.getY());
+
+    // Test de la distance entre deux points
+    Point2D p4(0, 0);
+    float dist = p4.distance(p2);
+    float expectedDist = std::sqrt(3 * 3 + 4 * 4);
+    assert(std::abs(dist - expectedDist) < 1e-6);
+
+    // Test de la distance statique
+    float staticDist = Point2D::distance(p4, p2);
+    assert(std::abs(staticDist - expectedDist) < 1e-6);
+
+    // Test de colinéarité
+    Point2D p5(6, 8); // Multiples scalaires de (3, 4)
+    assert(Point2D::areCollinear(p4, p2, p5) == true);
+    Point2D p6(1, 2);
+    assert(Point2D::areCollinear(p4, p2, p6) == false);
+
+    // Test des opérateurs
+    Point2D sum = p2 + p5;
+    Point2D expectedSum(9, 12);
+    assert(sum == expectedSum);
+
+    Point2D diff = p5 - p2;
+    Point2D expectedDiff(3, 4);
+    assert(diff == expectedDiff);
+
+    // Test des opérateurs d'égalité
+    assert(p2 == p3);
+    assert(p2 != p4);
+
+    // Test des setters
+    p1.setX(10);
+    p1.setY(20);
+    assert(p1.getX() == 10 && p1.getY() == 20);
+
+    // Test de l'opérateur d'affichage
+    std::cout << "Testing Point2D output operator:" << std::endl;
+    std::cout << "Point: " << p2 << std::endl;
+
+    std::cout << "All Point2D tests passed!" << std::endl;
+}
+
 int main() {
-    // Création de points
-    Point2D p1(1, 2);
-    Point2D p2(3, 6);
-    Point2D p3(5, 10);
-    Point2D p4(1.0f, 4.0f);
-
-    // Affichage des coordonnées
-    std::cout << "Point p1: " << p1 << std::endl;
-    std::cout << "Point p2: " << p2 << std::endl;
-    std::cout << "Point p5: " << p4 << std::endl;
-
-    // Test des opérateurs ==
-    if (p1 == p3) {
-        std::cout << "p1 et p3 sont égaux." << std::endl;
-    }
-
-    // Test des opérateurs !=
-    if (p1 != p2) {
-        std::cout << "p1 et p2 sont différents." << std::endl;
-    }
-
-    // Calcul de la distance entre deux points
-    std::cout << "Distance entre p1 et p2: " << p1.distance(p2) << std::endl;
-
-    // Distance statique entre deux points
-    std::cout << "Distance (statique) entre p2 et p3: " << Point2D::distance(p2, p3) << std::endl;
-
-    // Vérification de colinéarité
-    bool collinear = Point2D::areCollinear(p1, p2, p3);
-    std::cout << "Les points p1, p2, et p3 sont " << (collinear ? "colinéaires" : "non colinéaires") << ".\n";
-
-
-    // Test de l'opérateur +
-    Point2D sum = p1 + p2;
-    std::cout << "Somme de p1 et p2: " << sum << std::endl;
-
-    // Test de l'opérateur -
-    Point2D diff = p2 - p1;
-    std::cout << "Différence de p2 et p1: " << diff << std::endl;
-
+    testPoint2D();
     return 0;
 }

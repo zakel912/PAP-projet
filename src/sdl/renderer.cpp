@@ -2,45 +2,48 @@
 #include <stdexcept>
 #include <algorithm>
 
+// Constructeur
 Renderer::Renderer(int width, int height, int pixelSize)
-    : pixelSize(pixelSize), window(nullptr), renderer(nullptr) {
+    : width_(width), height_(height), pixelSize_(pixelSize), window_(nullptr), renderer_(nullptr) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         throw std::runtime_error("Failed to initialize SDL");
     }
 
-    window = SDL_CreateWindow("3D Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width, height, SDL_WINDOW_SHOWN);
-    if (!window) {
+    window_ = SDL_CreateWindow("3D Renderer", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, width_, height_, SDL_WINDOW_SHOWN);
+    if (!window_) {
         SDL_Quit();
         throw std::runtime_error("Failed to create SDL Window");
     }
 
-    renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-    if (!renderer) {
-        SDL_DestroyWindow(window);
+    renderer_ = SDL_CreateRenderer(window_, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+    if (!renderer_) {
+        SDL_DestroyWindow(window_);
         SDL_Quit();
         throw std::runtime_error("Failed to create SDL Renderer");
     }
 }
 
+// Destructeur
 Renderer::~Renderer() {
-    if (renderer) SDL_DestroyRenderer(renderer);
-    if (window) SDL_DestroyWindow(window);
+    if (renderer_) SDL_DestroyRenderer(renderer_);
+    if (window_) SDL_DestroyWindow(window_);
     SDL_Quit();
 }
 
-
+// Effacer l'écran avec une couleur
 void Renderer::clear(const SDL_Color& color) {
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_RenderClear(renderer);
+    SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);
+    SDL_RenderClear(renderer_);
 }
 
-
+// Dessiner un pixel
 void Renderer::drawPixel(int x, int y, const SDL_Color& color) {
-    SDL_SetRenderDrawColor(renderer, color.r, color.g, color.b, color.a);
-    SDL_Rect pixelRect = {x * pixelSize, y * pixelSize, pixelSize, pixelSize};
-    SDL_RenderFillRect(renderer, &pixelRect);
+    SDL_SetRenderDrawColor(renderer_, color.r, color.g, color.b, color.a);
+    SDL_Rect pixelRect = {x * pixelSize_, y * pixelSize_, pixelSize_, pixelSize_};
+    SDL_RenderFillRect(renderer_, &pixelRect);
 }
 
+// Remplir un triangle
 void Renderer::fillTriangle(const Triangle2D& triangle, const SDL_Color& color) {
     std::vector<Point2D> vertices = {triangle.getP1(), triangle.getP2(), triangle.getP3()};
     auto [minY, maxY] = std::minmax_element(vertices.begin(), vertices.end(),
@@ -73,7 +76,9 @@ void Renderer::fillTriangle(const Triangle2D& triangle, const SDL_Color& color) 
     }
 }
 
-void Renderer::renderScene(const std::vector<Triangle2D>& triangles) {
+// Rendu de la scène
+void Renderer::renderScene(const Scene3D& scene) {
+    auto triangles = scene.getProjectedTriangles();
     for (const auto& triangle : triangles) {
         SDL_Color color = {
             static_cast<Uint8>(triangle.getColor().getRouge()),
@@ -85,7 +90,7 @@ void Renderer::renderScene(const std::vector<Triangle2D>& triangles) {
     }
 }
 
-
+// Afficher le rendu
 void Renderer::present() {
-    SDL_RenderPresent(renderer);
+    SDL_RenderPresent(renderer_);
 }

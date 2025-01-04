@@ -1,6 +1,7 @@
 #include "triangle2d.h"
 #include <cmath>
 #include <stdexcept>
+#include "geometry_utils.h"
 
 // Constructeur par défaut
 Triangle2D::Triangle2D()
@@ -80,7 +81,7 @@ bool Triangle2D::contains(const Point2D& point) const {
                              p2.getX() * (point.getY() - p1.getY()) +
                              point.getX() * (p1.getY() - p2.getY())) / 2.0f);
 
-    return std::fabs(totalArea - (area1 + area2 + area3)) < 1e-6;
+    return std::fabs(totalArea - (area1 + area2 + area3)) < TOLERANCE;
 }
 
 // Surcharge de l'opérateur <<

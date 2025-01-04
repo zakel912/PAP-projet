@@ -4,30 +4,51 @@
 
 // Constructeur par défaut
 Pave3D::Pave3D()
-    : color(Couleur()) {
-    faces[0] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(0, 1, 0), color);
-    faces[1] = Quad3D(Point3D(0, 0, 1), Point3D(1, 0, 1), Point3D(1, 1, 1), Point3D(0, 1, 1), color);
-    faces[2] = Quad3D(Point3D(0, 0, 0), Point3D(0, 1, 0), Point3D(0, 1, 1), Point3D(0, 0, 1), color);
-    faces[3] = Quad3D(Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(1, 0, 1), color);
-    faces[4] = Quad3D(Point3D(0, 1, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(0, 1, 1), color);
-    faces[5] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 0, 1), Point3D(0, 0, 1), color);
+     {
+    faces[0] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(0, 1, 0), Couleur(255,255,255));
+    faces[1] = Quad3D(Point3D(0, 0, 1), Point3D(1, 0, 1), Point3D(1, 1, 1), Point3D(0, 1, 1), Couleur(255,255,255));
+    faces[2] = Quad3D(Point3D(0, 0, 0), Point3D(0, 1, 0), Point3D(0, 1, 1), Point3D(0, 0, 1), Couleur(255,255,255));
+    faces[3] = Quad3D(Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(1, 0, 1), Couleur(255,255,255));
+    faces[4] = Quad3D(Point3D(0, 1, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(0, 1, 1), Couleur(255,255,255));
+    faces[5] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 0, 1), Point3D(0, 0, 1), Couleur(255,255,255));
 
     validateGeometry();
 }
 
 // Constructeur paramétré
-Pave3D::Pave3D(const std::array<Quad3D, 6>& faces, const Couleur& color)
-    : faces(faces), color(color) {
+Pave3D::Pave3D(const std::array<Quad3D, 6>& faces)
+    : faces(faces) {
     validateGeometry();
 }
 
-Pave3D::Pave3D(const Quad3D& front_quad, const Quad3D& back_quad, const Quad3D& left_quad, const Quad3D& right_quad, const Quad3D& top_quad, const Quad3D& bottom_quad, const Couleur& color)
-    : faces{front_quad, back_quad, left_quad, right_quad, top_quad, bottom_quad}, color(color) {
+Pave3D::Pave3D(const Quad3D& front_quad, const Quad3D& back_quad, const Quad3D& left_quad, const Quad3D& right_quad, const Quad3D& top_quad, const Quad3D& bottom_quad)
+    : faces{front_quad, back_quad, left_quad, right_quad, top_quad, bottom_quad} {
+}
+
+Pave3D::Pave3D(const Point3D& origin, float length, float width, float height, const Couleur& color) {
+    Point3D p1 = origin;
+    Point3D p2 = origin + Point3D(length, 0, 0);
+    Point3D p3 = origin + Point3D(length, width, 0);
+    Point3D p4 = origin + Point3D(0, width, 0);
+
+    Point3D p5 = origin + Point3D(0, 0, height);
+    Point3D p6 = origin + Point3D(length, 0, height);
+    Point3D p7 = origin + Point3D(length, width, height);
+    Point3D p8 = origin + Point3D(0, width, height);
+
+    faces[0] = Quad3D(p1, p2, p3, p4, color); // Bas
+    faces[1] = Quad3D(p5, p6, p7, p8, color); // Haut
+    faces[2] = Quad3D(p1, p4, p8, p5, color); // Gauche
+    faces[3] = Quad3D(p2, p3, p7, p6, color); // Droite
+    faces[4] = Quad3D(p1, p2, p6, p5, color); // Avant
+    faces[5] = Quad3D(p4, p3, p7, p8, color); // Arrière
+
+    validateGeometry();
 }
 
 // Constructeur par copie
 Pave3D::Pave3D(const Pave3D& other)
-    : faces(other.faces), color(other.color) {}
+    : faces(other.faces) {}
 
 // Accesseur pour une face
 const Quad3D& Pave3D::getFace(size_t index) const {
@@ -35,40 +56,6 @@ const Quad3D& Pave3D::getFace(size_t index) const {
         throw std::out_of_range("Index hors limites pour les faces du pavé.");
     }
     return faces[index];
-}
-
-// Modificateur pour la couleur
-void Pave3D::setColor(const Couleur& newColor) {
-    color = newColor;
-    for (auto& face : faces) {
-        face.setColor(newColor);
-    }
-}
-
-// Modificateur pour la couleur avec RVB
-void Pave3D::setColor(int rouge, int vert, int bleu) {
-    if (rouge < 0 || rouge > 255 || vert < 0 || vert > 255 || bleu < 0 || bleu > 255) {
-        throw std::invalid_argument("Les valeurs RVB doivent être comprises entre 0 et 255.");
-    }
-    color.setRouge(rouge);
-    color.setVert(vert);
-    color.setBleu(bleu);
-    for (auto& face : faces) {
-        face.setColor(rouge, vert, bleu);
-    }
-}
-
-
-void Pave3D::setColorRouge(int rouge) {
-    setColor(rouge, color.getVert(), color.getBleu());
-}
-
-void Pave3D::setColorVert(int vert) {
-    setColor(color.getRouge(), vert, color.getBleu());
-}
-
-void Pave3D::setColorBleu(int bleu) {
-    setColor(color.getRouge(), color.getVert(), bleu);
 }
 
 // Calcul du volume
@@ -115,7 +102,31 @@ void Pave3D::validateGeometry() const {
 
 // Vérification d'égalité
 bool Pave3D::equals(const Pave3D& other) const {
-    return faces == other.faces && color.equals(other.color);
+    return faces == other.faces;
+}
+
+void Pave3D::rotate(float angle, char axis, const Point3D& center) {
+    for (auto& face : faces) {
+        face.rotate(angle, axis, center);
+    }
+}
+
+Point3D Pave3D::center() const {
+    Point3D minPoint = faces[0].getFirstTriangle().getP1();
+    Point3D maxPoint = minPoint;
+
+    for (const auto& face : faces) {
+        for (const auto& vertex : face.getVertices()) {
+            minPoint.setX(std::min(minPoint.getX(), vertex.getX()));
+            minPoint.setY(std::min(minPoint.getY(), vertex.getY()));
+            minPoint.setZ(std::min(minPoint.getZ(), vertex.getZ()));
+
+            maxPoint.setX(std::max(maxPoint.getX(), vertex.getX()));
+            maxPoint.setY(std::max(maxPoint.getY(), vertex.getY()));
+            maxPoint.setZ(std::max(maxPoint.getZ(), vertex.getZ()));
+        }
+    }
+    return (minPoint + maxPoint) * 0.5f;
 }
 
 // Surcharge de l'opérateur de flux
@@ -124,6 +135,5 @@ std::ostream& operator<<(std::ostream& os, const Pave3D& pave) {
     for (size_t i = 0; i < pave.faces.size(); ++i) {
         os << "  Face " << i + 1 << ": " << pave.faces[i] << "\n";
     }
-    os << "  Color: " << pave.getColor() << "\n";
     return os;
 }
