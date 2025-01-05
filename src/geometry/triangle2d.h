@@ -139,15 +139,26 @@ public:
         p3 = p3 + offset;
     }
 
+    /**
+     * @brief Compare deux triangles 2D en fonction de leur profondeur.
+     * @param other Le triangle 2D à comparer.
+     * @return true si la profondeur du triangle courant est inférieure à celle de `other`, false sinon.
+     */
     bool operator<(const Triangle2D& other) const {
         return this->depth < other.depth;
     }
 
+    /**
+     * @brief Vérifie si trois points 2D sont collinéaires.
+     * @param p1 Le premier point.
+     * @param p2 Le deuxième point.
+     * @param p3 Le troisième point.
+     * @return true si les trois points sont collinéaires, false sinon.
+     */
     static bool areCollinear(const Point2D& p1, const Point2D& p2, const Point2D& p3) {
         return std::abs((p2.getY() - p1.getY()) * (p3.getX() - p1.getX()) -
                         (p3.getY() - p1.getY()) * (p2.getX() - p1.getX())) < TOLERANCE;
     }
-
 
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher les informations du triangle.

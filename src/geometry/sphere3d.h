@@ -23,115 +23,121 @@
  * La sphère est approximée par un ensemble de quadrilatères (à travers des Quad3D).
  */
 class Sphere3D {
-private:
-    Point3D center;              // Centre de la sphère.
-    float radius;                // Rayon de la sphère.
-    int subdivisions;            // Nombre de subdivisions pour discrétiser la sphère.
-    std::vector<Quad3D> quads;   // Ensemble des quadrilatères représentant la sphère.
+    private:
+        Point3D center;              // Centre de la sphère.
+        float radius;                // Rayon de la sphère.
+        int subdivisions;            // Nombre de subdivisions pour discrétiser la sphère.
+        std::vector<Quad3D> quads;   // Ensemble des quadrilatères représentant la sphère.
 
+        /**
+         * @brief Génère les quadrilatères approximant la sphère.
+         * Cette méthode utilise une approche basée sur les coordonnées sphériques
+         * pour créer les quadrilatères approximant la sphère.
+         */
+        void generateQuads(int numSlices, int numStacks, const Couleur& color = Couleur(255, 255, 255));
 
-    /**
-     * @brief Génère les quadrilatères approximant la sphère.
-     *
-     * Cette méthode utilise une approche basée sur les coordonnées sphériques
-     * pour créer les quadrilatères approximant la sphère.
-     */
-    void generateQuads(int numSlices, int numStacks, const Couleur& color = Couleur(255, 255, 255));
+    public:
+        /**
+         * @brief Constructeur de la classe Sphere3D.
+         * @param center Le centre de la sphère.
+         * @param radius Le rayon de la sphère (doit être positif).
+         * @param subdivisions Le nombre de subdivisions pour discrétiser la sphère (doit être > 0).
+         * @pre Le rayon doit être strictement positif.
+         */
+        Sphere3D(const Point3D& center = Point3D(), float radius = 1, int subdivisions = 1);
 
-
-public:
-    /**
-     * @brief Constructeur de la classe Sphere3D.
-     * @param center Le centre de la sphère.
-     * @param radius Le rayon de la sphère (doit être positif).
-     * @param subdivisions Le nombre de subdivisions pour discrétiser la sphère (doit être > 0).
-     * @pre Le rayon doit être strictement positif.
-     */
-    Sphere3D(const Point3D& center = Point3D(), float radius = 1, int subdivisions = 1);
-
-    /**
-     * @brief Constructeur par copie de la classe Sphere3D.
-     * @param other La sphère à copier.
-     * @return Une nouvelle sphère qui est une copie de other.
-     */
-    Sphere3D(const Sphere3D& other)
-        : center(other.center), radius(other.radius), subdivisions(other.subdivisions), quads(other.quads) {
-        if (radius <= 0 || subdivisions <= 0) {
-            throw std::invalid_argument("Cannot copy a sphere with invalid parameters.");
+        /**
+         * @brief Constructeur par copie de la classe Sphere3D.
+         * @param other La sphère à copier.
+         * @return Une nouvelle sphère qui est une copie de other.
+         */
+        Sphere3D(const Sphere3D& other)
+            : center(other.center), radius(other.radius), subdivisions(other.subdivisions), quads(other.quads) {
+            if (radius <= 0 || subdivisions <= 0) {
+                throw std::invalid_argument("Cannot copy a sphere with invalid parameters.");
+            }
         }
-    }
-    /**
-     * @brief Accesseur pour le centre de la sphère.
-     * @return Le centre de la sphère.
-     */
-    const Point3D getCenter() const;
+        /**
+         * @brief Accesseur pour le centre de la sphère.
+         * @return Le centre de la sphère.
+         */
+        const Point3D getCenter() const;
 
-    /**
-     * @brief Modifie le centre de la sphère.
-     * @param center Le nouveau centre de la sphère.
-     */
-    void setCenter(const Point3D& center);
+        /**
+         * @brief Modifie le centre de la sphère.
+         * @param center Le nouveau centre de la sphère.
+         */
+        void setCenter(const Point3D& center);
 
-    /**
-     * @brief Accesseur pour le rayon de la sphère.
-     * @return Le rayon de la sphère.
-     */
-    float getRadius() const;
+        /**
+         * @brief Accesseur pour le rayon de la sphère.
+         * @return Le rayon de la sphère.
+         */
+        float getRadius() const;
 
-    /**
-     * @brief Modifie le rayon de la sphère.
-     * @param radius Le nouveau rayon (doit être strictement positif).
-     * @throw std::invalid_argument Si le rayon est <= 0.
-     */
-    void setRadius(float radius);
+        /**
+         * @brief Modifie le rayon de la sphère.
+         * @param radius Le nouveau rayon (doit être strictement positif).
+         * @throw std::invalid_argument Si le rayon est <= 0.
+         */
+        void setRadius(float radius);
 
-    /**
-     * @brief Accesseur pour les quadrilatères approximant la sphère.
-     * @return Une référence constante vers le vecteur des quadrilatères.
-     */
-    const std::vector<Quad3D>& getQuads() const;
+        /**
+         * @brief Accesseur constant pour les quadrilatères qui composent la sphère.
+         * @return Une référence constante vers le vecteur des quadrilatères (`std::vector<Quad3D>`).
+         */
+        const std::vector<Quad3D>& getQuads() const;
 
-    std::vector<Quad3D>& getQuads() {
-        return quads;
-    }
+        /**
+         * @brief Accesseur modifiable pour les quadrilatères qui composent la sphère.
+         * @return Une référence modifiable vers le vecteur des quadrilatères (`std::vector<Quad3D>`).
+         */
+        std::vector<Quad3D>& getQuads() {
+            return quads;
+        }
 
-    /**
-     * @brief Modifie la couleur d'un quadrilatère spécifique de la sphère.
-     * @param index L'indice du quadrilatère.
-     * @param color La nouvelle couleur.
-     * @throw std::out_of_range Si l'indice est invalide.
-     */
-    void setQuadColor(int index, const Couleur& color);
+        /**
+         * @brief Modifie la couleur d'un quadrilatère spécifique de la sphère.
+         * @param index L'indice du quadrilatère.
+         * @param color La nouvelle couleur.
+         * @throw std::out_of_range Si l'indice est invalide.
+         */
+        void setQuadColor(int index, const Couleur& color);
 
-    /**
-     * @brief Accesseur pour la couleur d'un quadrilatère spécifique de la sphère.
-     * @param index L'indice du quadrilatère.
-     * @return La couleur du quadrilatère.
-     * @throw std::out_of_range Si l'indice est invalide.
-     */
-    Couleur getQuadColor(int index) const;
+        /**
+         * @brief Accesseur pour la couleur d'un quadrilatère spécifique de la sphère.
+         * @param index L'indice du quadrilatère.
+         * @return La couleur du quadrilatère.
+         * @throw std::out_of_range Si l'indice est invalide.
+         */
+        Couleur getQuadColor(int index) const;
 
-    /**
-     * @brief Calcul le volume de la sphère.
-     * @return Le volume de la sphère.
-     */
-    float volume() const;
+        /**
+         * @brief Calcul le volume de la sphère.
+         * @return Le volume de la sphère.
+         */
+        float volume() const;
 
-    /**
-     * @brief Calcul la surface totale de la sphère.
-     * @return La surface totale de la sphère.
-     */
-    float surfaceArea() const;
+        /**
+         * @brief Calcul la surface totale de la sphère.
+         * @return La surface totale de la sphère.
+         */
+        float surfaceArea() const;
 
-    /**
-     * @brief Fait pivoter la sphère autour d'un axe donné.
-     * @param angle L'angle de rotation (en radians).
-     * @param axis L'axe de rotation ('x', 'y', 'z').
-     * @param origin Le point autour duquel effectuer la rotation.
-     */
-    void rotate(float angle, char axis, const Point3D& origin);
+        /**
+         * @brief Fait pivoter la sphère autour d'un axe donné.
+         * @param angle L'angle de rotation (en radians).
+         * @param axis L'axe de rotation ('x', 'y', 'z').
+         * @param origin Le point autour duquel effectuer la rotation.
+         */
+        void rotate(float angle, char axis, const Point3D& origin);
 
-    Sphere3D& operator=(const Sphere3D& other) = default;
+        /**
+         * @brief Opérateur d'affectation par défaut pour la classe Sphere3D.
+         * @param other La sphère à copier.
+         * @return Une référence à cet objet après l'affectation.
+         */
+        Sphere3D& operator=(const Sphere3D& other) = default;
 };
 
 #endif

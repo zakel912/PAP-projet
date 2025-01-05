@@ -254,7 +254,6 @@ class Triangle3D {
             p3 = p3 + offset;
         }
 
-
         /**
          * @brief Effectue une rotation du triangle autour d'un axe donné.
          * @param angle Angle de rotation en radians.
@@ -263,13 +262,15 @@ class Triangle3D {
          */
         void rotate(float angle, char axis, const Point3D& center);
 
+        /**
+         * @brief Applique une translation sur l'axe Z aux sommets du triangle.
+         * @param translationZ Le décalage à appliquer à la coordonnée Z des sommets du triangle.
+         */
         void applyTranslationZ(float translationZ) {
             p1.setZ(p1.getZ() + translationZ);
             p2.setZ(p2.getZ() + translationZ);
             p3.setZ(p3.getZ() + translationZ);
         }
-
-
 };  
 
 #endif

@@ -81,18 +81,15 @@ bool Triangle3D::equals(const Triangle3D& other) const {
 }
 
 Point3D Triangle3D::getNormale() const {
-    // Vecteurs formés par les arêtes du triangle
+
     Point3D u = p2 - p1;
     Point3D v = p3 - p1;
 
-    // Produit vectoriel pour obtenir la normale
     Point3D normale = u.crossProduct(v);
 
-    // Vérification : si la longueur de la normale est nulle, le triangle est dégénéré
     if (normale.dotProduct(normale) < TOLERANCE) { // Norme² proche de zéro
         std::cout << "Triangle dégénéré : impossible de calculer la normale.\n";
     }
-
     return normale;
 }
 
@@ -141,7 +138,7 @@ std::ostream& operator<<(std::ostream& os, const Triangle3D& triangle) {
 }
 
 void Triangle3D::rotate(float angle, char axis, const Point3D& center) {
-    // Fonction pour appliquer la rotation à un point
+
     auto rotatePoint = [&](const Point3D& point) -> Point3D {
         float x = point.getX() - center.getX();
         float y = point.getY() - center.getY();
@@ -153,15 +150,15 @@ void Triangle3D::rotate(float angle, char axis, const Point3D& center) {
         float newX = x, newY = y, newZ = z;
 
         switch (axis) {
-            case 'x': // Rotation autour de l'axe X
+            case 'x':
                 newY = y * cosAngle - z * sinAngle;
                 newZ = y * sinAngle + z * cosAngle;
                 break;
-            case 'y': // Rotation autour de l'axe Y
+            case 'y':
                 newX = x * cosAngle + z * sinAngle;
                 newZ = -x * sinAngle + z * cosAngle;
                 break;
-            case 'z': // Rotation autour de l'axe Z
+            case 'z':
                 newX = x * cosAngle - y * sinAngle;
                 newY = x * sinAngle + y * cosAngle;
                 break;
@@ -172,7 +169,6 @@ void Triangle3D::rotate(float angle, char axis, const Point3D& center) {
         return Point3D(newX + center.getX(), newY + center.getY(), newZ + center.getZ());
     };
 
-    // Appliquer la rotation à chaque point du triangle
     p1 = rotatePoint(p1);
     p2 = rotatePoint(p2);
     p3 = rotatePoint(p3);

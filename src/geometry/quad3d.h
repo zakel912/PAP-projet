@@ -90,19 +90,17 @@ public:
 
     /**
      * @brief Retourne le premier triangle du quadrilatère.
-     * 
      * @return const Triangle3D& Référence constante vers le premier triangle.
      */
     const Triangle3D& getFirstTriangle() const noexcept;
 
     /**
      * @brief Retourne le deuxième triangle du quadrilatère.
-     * 
      * @return const Triangle3D& Référence constante vers le deuxième triangle.
      */
     const Triangle3D& getSecondTriangle() const noexcept;
 
-/**
+    /**
      * @brief Accesseur pour la couleur du quadrilatère.
      * @return La couleur du quadrilatère.
      */
@@ -156,16 +154,12 @@ public:
 
     /**
      * @brief Calcule la surface totale du quadrilatère.
-     * 
-     * La surface est la somme des surfaces des deux triangles.
-     * 
      * @return float La surface totale du quadrilatère.
      */
     float surface() const;
 
     /**
      * @brief Vérifie si un point est un sommet du quadrilatère.
-     * 
      * @param p Le point à vérifier.
      * @return true Si le point est un sommet du quadrilatère.
      * @return false Sinon.
@@ -174,7 +168,6 @@ public:
 
     /**
      * @brief Vérifie si deux quadrilatères ont un côté en commun.
-     * 
      * @param other L'autre quadrilatère à comparer.
      * @return true Si les deux quadrilatères ont un côté en commun.
      * @return false Sinon.
@@ -183,7 +176,6 @@ public:
 
     /**
      * @brief Vérifie si deux quadrilatères ont un côté en commun (méthode statique).
-     * 
      * @param q1 Le premier quadrilatère.
      * @param q2 Le deuxième quadrilatère.
      * @return true Si les deux quadrilatères ont un côté en commun.
@@ -193,7 +185,6 @@ public:
 
     /**
      * @brief Vérifie si deux quadrilatères ont la même surface.
-     * 
      * @param other L'autre quadrilatère à comparer.
      * @return true Si les deux quadrilatères ont la même surface.
      * @return false Sinon.
@@ -202,9 +193,6 @@ public:
 
     /**
      * @brief Compare deux quadrilatères pour vérifier s'ils sont égaux.
-     * 
-     * Deux quadrilatères sont égaux si leurs triangles correspondants sont égaux.
-     * 
      * @param other L'autre quadrilatère à comparer.
      * @return true Si les deux quadrilatères sont égaux.
      * @return false Sinon.
@@ -221,7 +209,6 @@ public:
 
     /**
      * @brief Surcharge de l'opérateur d'égalité pour les quadrilatères.
-     * 
      * @param other L'autre quadrilatère à comparer.
      * @return true Si les quadrilatères sont égaux.
      * @return false Sinon.
@@ -289,20 +276,29 @@ public:
         return (centroid1 + centroid2) * 0.5;
     }
 
-    bool operator<(const Quad3D& other) const {
-        return this->averageDepth() < other.averageDepth();
-    }
-
-
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher les informations d'un quadrilatère.
-     * 
      * @param os Flux de sortie.
      * @param quad Le quadrilatère à afficher.
      * @return std::ostream& Le flux de sortie modifié.
      */
     friend std::ostream& operator<<(std::ostream& os, const Quad3D& quad);
 
+    /**
+     * @brief Compare la profondeur moyenne de deux quadrilatères en 3D.
+     * @param other Le quadrilatère avec lequel effectuer la comparaison.
+     * @return `true` si la profondeur moyenne de ce quadrilatère est inférieure à celle de `other`,
+     *         `false` sinon.
+     */
+    bool operator<(const Quad3D& other) const {
+        return this->averageDepth() < other.averageDepth();
+    }
+
+    /**
+     * @brief Opérateur d'affectation par défaut pour la classe Quad3D.
+     * @param other L'objet `Quad3D` à copier.
+     * @return Une référence à cet objet après l'affectation.
+     */
     Quad3D& operator=(const Quad3D&) = default;
 
 };

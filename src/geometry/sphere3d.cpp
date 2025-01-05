@@ -80,24 +80,20 @@ float Sphere3D::surfaceArea() const {
 void Sphere3D::generateQuads(int numSlices, int numStacks, const Couleur& color) {
     quads.clear();
 
-    // Constants for calculations
     const float pi = M_PI;
 
-    // Ensure valid input for slices and stacks
     if (numSlices <= 0 || numStacks <= 0) {
         throw std::invalid_argument("numSlices and numStacks must be greater than 0.");
     }
 
-    // Loop through stacks and slices to generate the sphere quads
     for (int i = 0; i < numStacks; ++i) {
-        float theta1 = i * (pi / numStacks);        // Starting angle for this stack
-        float theta2 = (i + 1) * (pi / numStacks);  // Ending angle for this stack
+        float theta1 = i * (pi / numStacks);
+        float theta2 = (i + 1) * (pi / numStacks);
 
         for (int j = 0; j < numSlices; ++j) {
-            float phi1 = j * (2 * pi / numSlices);        // Starting angle for this slice
-            float phi2 = (j + 1) * (2 * pi / numSlices);  // Ending angle for this slice
+            float phi1 = j * (2 * pi / numSlices);
+            float phi2 = (j + 1) * (2 * pi / numSlices);
 
-            // Calculate the four points for this quad
             Point3D p1(
                 center.getX() + radius * sin(theta1) * cos(phi1),
                 center.getY() + radius * cos(theta1),
@@ -122,22 +118,20 @@ void Sphere3D::generateQuads(int numSlices, int numStacks, const Couleur& color)
                 center.getZ() + radius * sin(theta1) * sin(phi2)
             );
 
-            // Validate that points are not degenerate
             if (p1.distance(p2) < TOLERANCE || p2.distance(p3) < TOLERANCE ||
                 p3.distance(p4) < TOLERANCE || p4.distance(p1) < TOLERANCE) {
-                continue; // Skip degenerate quads
+                continue;
             }
 
-            // Add the quad
             quads.emplace_back(Quad3D(p1, p2, p3, p4, color));
         }
     }
 
-    std::cout << "Generated " << quads.size() << " quads for the sphere.\n";
+    std::cout << quads.size() << " Générés pour la sphere.\n";
 }
 
 void Sphere3D::rotate(float angle, char axis, const Point3D& origin) {
     for (auto& quad : quads) {
-        quad.rotate(angle, axis, origin); // Applique la rotation à chaque quadrilatère
+        quad.rotate(angle, axis, origin);
     }
 }

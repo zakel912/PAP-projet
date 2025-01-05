@@ -206,6 +206,6 @@ void Pave3D::translate(const Point3D& offset, float projectionDistance) {
 // Translate le pavé
 void Pave3D::translate(const Point3D& offset) {
     for (auto& face : faces) {
-        face.translate(offset); // Appliquer la translation à chaque face
+        face.translate(offset);
     }
 }

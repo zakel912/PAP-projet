@@ -126,6 +126,15 @@ public:
      */
     bool isFaceVisible(const Quad3D& quad, const Point3D& eye) const;
     
+    void rotateCamera(float angle, char axis) {
+
+        Point3D direction = eye_ - look_at_;
+
+        direction.rotate(angle, axis, Point3D(0,0,0));
+
+        eye_ = look_at_ + direction;
+    }
+
 };
 
 #endif // SCENE3D_H

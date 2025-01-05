@@ -53,10 +53,10 @@ Point2D Renderer::projectPoint(const Point3D& point3D, const Point3D& eye, float
     float dz = point3D.getZ() - eye.getZ();
 
     if (dz <= 0) {
-        throw std::runtime_error("Projection impossible : le point est derrière l'œil.");
+        std::cout << "Projection impossible : le point est derrière l'œil.\n";
     }
 
-    float scale = projectionPlaneDistance / dz;
+    float scale = projectionPlaneDistance / (projectionPlaneDistance + dz);
     return Point2D(dx * scale + width_/2, dy * scale + height_/2);
 }
 
@@ -77,7 +77,7 @@ std::vector<Triangle2D> Renderer::getProjectedTrianglesFromCubes(const Scene3D& 
 
     if (scene.hasCube()) {
         const auto& cube = scene.getCube();
-        for (size_t i = 0; i < 6; ++i) { // Iterate over cube faces
+        for (size_t i = 0; i < 6; ++i) {
             const auto& face = cube.getFace(i);
             const auto& t1 = face.getFirstTriangle();
             const auto& t2 = face.getSecondTriangle();
@@ -147,18 +147,18 @@ void Renderer::renderCube(const std::shared_ptr<Pave3D>& cube, const Point2D& tr
     for (size_t i = 0; i < 6; ++i) { // Parcourir toutes les faces du pavé
         const auto& face = cube->getFace(i);
         
-        // Récupérer les deux triangles qui composent la face
         Triangle3D t1 = face.getFirstTriangle();
         Triangle3D t2 = face.getSecondTriangle();
 
         t1.applyTranslationZ(translationZ);
         t2.applyTranslationZ(translationZ);
 
-        // Projeter les triangles en 2D
-        auto triangle1 = projectTriangle(t1, scene.getEye(), scene.getProjectionPlaneDistance());
-        auto triangle2 = projectTriangle(t2, scene.getEye(), scene.getProjectionPlaneDistance());
+        Triangle2D triangle1 = projectTriangle(t1, scene.getEye(), scene.getProjectionPlaneDistance());
+        Triangle2D triangle2 = projectTriangle(t2, scene.getEye(), scene.getProjectionPlaneDistance());
 
-        // Appliquer la translation et dessiner le premier triangle
+        // drawFilledTriangle(triangle1);
+        // drawFilledTriangle(triangle2);
+
         const auto& p1 = triangle1.getP1() + translation;
         const auto& p2 = triangle1.getP2() + translation;
         const auto& p3 = triangle1.getP3() + translation;
@@ -170,7 +170,6 @@ void Renderer::renderCube(const std::shared_ptr<Pave3D>& cube, const Point2D& tr
         SDL_RenderDrawLine(renderer_, p2.getX(), p2.getY(), p3.getX(), p3.getY());
         SDL_RenderDrawLine(renderer_, p3.getX(), p3.getY(), p1.getX(), p1.getY());
 
-        // Appliquer la translation et dessiner le second triangle
         const auto& p4 = triangle2.getP1() + translation;
         const auto& p5 = triangle2.getP2() + translation;
         const auto& p6 = triangle2.getP3() + translation;
@@ -185,22 +184,24 @@ void Renderer::renderCube(const std::shared_ptr<Pave3D>& cube, const Point2D& tr
 }
 
 void Renderer::renderSphere(const std::shared_ptr<Sphere3D>& sphere, const Point2D& translation, float translationZ, const Scene3D& scene) {
-    // Obtenez les quads de la sphère
+
     const auto& quads = sphere->getQuads();
 
     for (const auto& quad : quads) {
-        // Récupérez les deux triangles qui forment le quad
+
         Triangle3D t1 = quad.getFirstTriangle();
         Triangle3D t2 = quad.getSecondTriangle();
 
         t1.applyTranslationZ(translationZ);
         t2.applyTranslationZ(translationZ);
         
-        // Projetez les triangles en 2D
-        auto triangle1 = projectTriangle(t1, scene.getEye(), scene.getProjectionPlaneDistance());
-        auto triangle2 = projectTriangle(t2, scene.getEye(), scene.getProjectionPlaneDistance());
 
-        // Appliquez la translation et dessinez le premier triangle
+        Triangle2D triangle1 = projectTriangle(t1, scene.getEye(), scene.getProjectionPlaneDistance());
+        Triangle2D triangle2 = projectTriangle(t2, scene.getEye(), scene.getProjectionPlaneDistance());
+
+        // drawFilledTriangle(triangle1);
+        // drawFilledTriangle(triangle2);
+
         const auto& p1 = triangle1.getP1() + translation;
         const auto& p2 = triangle1.getP2() + translation;
         const auto& p3 = triangle1.getP3() + translation;
@@ -212,7 +213,6 @@ void Renderer::renderSphere(const std::shared_ptr<Sphere3D>& sphere, const Point
         SDL_RenderDrawLine(renderer_, p2.getX(), p2.getY(), p3.getX(), p3.getY());
         SDL_RenderDrawLine(renderer_, p3.getX(), p3.getY(), p1.getX(), p1.getY());
 
-        // Appliquez la translation et dessinez le second triangle
         const auto& p4 = triangle2.getP1() + translation;
         const auto& p5 = triangle2.getP2() + translation;
         const auto& p6 = triangle2.getP3() + translation;
@@ -223,5 +223,70 @@ void Renderer::renderSphere(const std::shared_ptr<Sphere3D>& sphere, const Point
         SDL_RenderDrawLine(renderer_, p4.getX(), p4.getY(), p5.getX(), p5.getY());
         SDL_RenderDrawLine(renderer_, p5.getX(), p5.getY(), p6.getX(), p6.getY());
         SDL_RenderDrawLine(renderer_, p6.getX(), p6.getY(), p4.getX(), p4.getY());
+    }
+}
+
+// Fonction utilitaire : dessiner un triangle rempli
+void Renderer::drawFilledTriangle(const Triangle2D& triangle) {
+    const auto& p1 = triangle.getP1();
+    const auto& p2 = triangle.getP2();
+    const auto& p3 = triangle.getP3();
+    const auto& color = triangle.getColor();
+
+    std::array<Point2D, 3> points = {p1, p2, p3};
+    std::sort(points.begin(), points.end(), [](const Point2D& a, const Point2D& b) {
+        return a.getY() < b.getY();
+    });
+
+    const Point2D& pTop = points[0];
+    const Point2D& pMiddle = points[1];
+    const Point2D& pBottom = points[2];
+
+    auto fillFlatBottom = [&](const Point2D& v1, const Point2D& v2, const Point2D& v3) {
+        if (std::fabs(v2.getY() - v1.getY()) < 1e-6 || std::fabs(v3.getY() - v1.getY()) < 1e-6) return;
+
+        float invSlope1 = (v2.getX() - v1.getX()) / (v2.getY() - v1.getY());
+        float invSlope2 = (v3.getX() - v1.getX()) / (v3.getY() - v1.getY());
+
+        float curX1 = v1.getX();
+        float curX2 = v1.getX();
+
+        for (int y = std::round(v1.getY()); y <= std::round(v2.getY()); y++) {
+            SDL_SetRenderDrawColor(renderer_, color.getRouge(), color.getVert(), color.getBleu(), 255);
+            SDL_RenderDrawLine(renderer_, std::round(curX1), y, std::round(curX2), y);
+            curX1 += invSlope1;
+            curX2 += invSlope2;
+        }
+    };
+
+    auto fillFlatTop = [&](const Point2D& v1, const Point2D& v2, const Point2D& v3) {
+        if (std::fabs(v3.getY() - v1.getY()) < 1e-6 || std::fabs(v3.getY() - v2.getY()) < 1e-6) return;
+
+        float invSlope1 = (v3.getX() - v1.getX()) / (v3.getY() - v1.getY());
+        float invSlope2 = (v3.getX() - v2.getX()) / (v3.getY() - v2.getY());
+
+        float curX1 = v3.getX();
+        float curX2 = v3.getX();
+
+        for (int y = std::round(v3.getY()); y >= std::round(v1.getY()); y--) {
+            SDL_SetRenderDrawColor(renderer_, color.getRouge(), color.getVert(), color.getBleu(), 255);
+            SDL_RenderDrawLine(renderer_, std::round(curX1), y, std::round(curX2), y);
+            curX1 -= invSlope1;
+            curX2 -= invSlope2;
+        }
+    };
+
+    if (std::fabs(pMiddle.getY() - pBottom.getY()) < 1e-6) {
+        fillFlatBottom(pTop, pMiddle, pBottom);
+    } else if (std::fabs(pTop.getY() - pMiddle.getY()) < 1e-6) {
+        fillFlatTop(pTop, pMiddle, pBottom);
+    } else {
+        Point2D pSplit(
+            pTop.getX() + ((pMiddle.getY() - pTop.getY()) / (pBottom.getY() - pTop.getY())) * (pBottom.getX() - pTop.getX()),
+            pMiddle.getY()
+        );
+
+        fillFlatBottom(pTop, pMiddle, pSplit);
+        fillFlatTop(pMiddle, pSplit, pBottom);
     }
 }

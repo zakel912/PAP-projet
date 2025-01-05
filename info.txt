@@ -3,29 +3,3 @@ https://www.youtube.com/watch?v=ynCxnR1i0QY (5:00)
 https://www.youtube.com/watch?v=t7Ztio8cwqM&t=56s
 https://www.youtube.com/watch?v=PahbNFypubE video sur le sujet & code C++
 https://www.youtube.com/watch?v=k5wtuKWmV48 videos sur le sujet assez longue & code C (22:20)
-
-
-Compilation :
-// to compile :  g++-g-Wall-Wextra-o prog *.cpp $(pkg-config--cflags--libs sdl2)
-
-Choix :
-
-Float pour les coordonnées d'un point :
-Si votre projet implique des transformations ou des calculs 3D qui ne nécessitent pas une grande précision (comme des rendus graphiques pour des jeux ou des simulations en temps réel), float est généralement un bon choix car il offre un bon compromis entre performance et mémoire.
-Choisissez float si la performance est prioritaire et que la perte de précision est acceptable.
-
-
-Pour un projet structuré en plusieurs fichiers, vous pourriez aussi organiser ainsi :
-
-main.cpp : pour le fichier principal.
-Scene3D.cpp : pour la gestion de la scène.
-Geometry.cpp : pour les classes géométriques (Point3D, Triangle3D, etc.).
-Renderer.cpp : pour les fonctions de rendu et de projection.
-Un exemple de structure de fichier pourrait donc être :
-
-main.cpp
-Scene3D.cpp et Scene3D.h
-Geometry.cpp et Geometry.h
-Renderer.cpp et Renderer.h
-
-! Se renseigner comment utiliser la bibliothèque SDL pour faire l'affichage

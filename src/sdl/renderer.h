@@ -129,9 +129,29 @@ public:
      */
     SDL_Renderer* getRenderer() const { return renderer_; }
 
+    /**
+     * @brief Rend le pavé 3D en le projetant en 2D et en le dessinant sur l'écran.
+     * @param cube Un pointeur partagé vers l'objet Pave3D à rendre.
+     * @param translation2D La translation en 2D à appliquer (déplacement sur l'écran).
+     * @param translationZ La translation en profondeur (axe Z) à appliquer.
+     * @param scene La scène 3D contenant les informations sur la caméra et la projection.
+     */
     void renderCube(const std::shared_ptr<Pave3D>& cube, const Point2D& translation2D, float translationZ, const Scene3D& scene);
+    
+    /**
+     * @brief Rend la sphère 3D en la projetant en 2D et en la dessinant sur l'écran.
+     * @param sphere Un pointeur partagé vers l'objet Sphere3D à rendre.
+     * @param translation La translation en 2D à appliquer (déplacement sur l'écran).
+     * @param translationZ La translation en profondeur (axe Z) à appliquer.
+     * @param scene La scène 3D contenant les informations sur la caméra et la projection.
+     */
     void renderSphere(const std::shared_ptr<Sphere3D>& sphere, const Point2D& translation, float translationZ, const Scene3D& scene);
-
+    
+    /**
+     * @brief Dessine un triangle 2D rempli à l'écran.
+     * @param triangle Le triangle 2D à dessiner, incluant ses sommets et sa couleur.
+     */
+    void drawFilledTriangle(const Triangle2D& triangle);
 };
 
 #endif // RENDERER_H

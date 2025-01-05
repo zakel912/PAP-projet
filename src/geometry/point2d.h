@@ -143,6 +143,12 @@ class Point2D {
             return *this;        
         };
 
+        /**
+         * @brief Surcharge de l'opérateur d'insertion pour afficher les coordonnées d'un point 2D.
+         * @param os Le flux de sortie dans lequel écrire les informations du point.
+         * @param point Le point 2D à afficher.
+         * @return Une référence au flux de sortie `std::ostream` pour permettre le chaînage.
+         */
         friend std::ostream& operator<<(std::ostream& os, const Point2D& point);
 };
 

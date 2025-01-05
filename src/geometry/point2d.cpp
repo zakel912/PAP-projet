@@ -34,8 +34,6 @@ bool Point2D::areCollinear(const Point2D& p1, const Point2D& p2, const Point2D& 
     return (dx1 * dy2 - dy1 * dx2) < TOLERANCE;
 }
 
-
-
 std::ostream& operator<<(std::ostream& os, const Point2D& point) {
     os << "(" << point.getX() << ", " << point.getY() << ")";
     return os;

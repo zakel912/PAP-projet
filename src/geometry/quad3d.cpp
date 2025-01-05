@@ -125,14 +125,12 @@ void Quad3D::orient(const Point3D& eye) {
     triangles_[0].orient(eye);
     triangles_[1].orient(eye);
 
-    // Vérifie et ajuste si nécessaire pour maintenir une orientation cohérente.
     auto normal1 = triangles_[0].getNormale();
     auto normal2 = triangles_[1].getNormale();
 
     if (normal1.dotProduct(normal2) < 0) {
-        triangles_[1].swapVertices(1, 3); // Inverse l'ordre pour aligner les normales.
+        triangles_[1].swapVertices(1, 3);
     }
-
 }
 
 Point3D Quad3D::center() const {
@@ -153,10 +151,8 @@ std::ostream& operator<<(std::ostream& os, const Quad3D& quad) {
 }
 
 void Quad3D::rotate(float angle, char axis) {
-    // Calcule le centre du quadrilatère
     Point3D quadCenter = center();
 
-    // Applique la rotation aux deux triangles
     triangles_[0].rotate(angle, axis, quadCenter);
     triangles_[1].rotate(angle, axis, quadCenter);
 }

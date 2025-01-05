@@ -46,25 +46,19 @@ private:
 public:
     /**
      * @brief Constructeur par défaut de la classe Pave3D.
-     *
      * Initialise un pavé avec des faces standard et une couleur par défaut (noir).
      */
     Pave3D();
 
     /**
      * @brief Constructeur paramétré de la classe Pave3D.
-     *
-     * Ce constructeur permet de définir un pavé à partir de ses six faces.
-     *
      * @param faces Tableau contenant les six faces du pavé (ordre : avant, arrière, gauche, droite, haut, bas).
-     *
      * @throw std::runtime_error Si les faces ne forment pas un pavé valide.
      */
     Pave3D(const std::array<Quad3D, 6>& faces);
 
     /**
      * @brief Constructeur paramétré avec des quadrilatères individuels.
-     *
      * @param front_quad Face avant du pavé.
      * @param back_quad Face arrière du pavé.
      * @param left_quad Face gauche du pavé.
@@ -76,7 +70,6 @@ public:
 
     /**
      * @brief Constructeur paramétré avec dimensions et origine.
-     *
      * @param origin Le point d'origine du pavé.
      * @param length La longueur du pavé.
      * @param width La largeur du pavé.
@@ -87,14 +80,12 @@ public:
 
     /**
      * @brief Constructeur par copie de la classe Pave3D.
-     *
      * @param other Le pavé à copier.
      */
     Pave3D(const Pave3D& other);
 
     /**
      * @brief Accesseur pour une face du pavé.
-     *
      * @param index Index de la face (0 à 5 : avant, arrière, gauche, droite, haut, bas).
      * @return La face demandée (Quad3D).
      * @throw std::out_of_range Si l'index est hors des limites.
@@ -103,7 +94,6 @@ public:
 
     /**
      * @brief Accesseur modifiable pour une face du pavé.
-     *
      * @param index Index de la face (0 à 5).
      * @return Une référence modifiable vers la face demandée.
      */
@@ -111,7 +101,6 @@ public:
 
     /**
      * @brief Obtient les faces visibles du pavé pour un point d'observation donné.
-     *
      * @param eye La position de l'œil (observateur).
      * @return Un vecteur contenant les faces visibles (Quad3D).
      */
@@ -119,7 +108,6 @@ public:
 
     /**
      * @brief Modifie la couleur d'une face spécifique du pavé.
-     *
      * @param index L'indice de la face (de 0 à 5).
      * @param color La nouvelle couleur à appliquer à la face.
      * @throws std::out_of_range Si l'indice est hors des limites.
@@ -128,7 +116,6 @@ public:
 
     /**
      * @brief Retourne la couleur de la face spécifique.
-     *
      * @param index L'indice de la face (de 0 à 5).
      * @return La couleur de la face.
      * @throws std::out_of_range Si l'indice est hors des limites.
@@ -137,23 +124,18 @@ public:
 
     /**
      * @brief Calcule le volume du pavé.
-     *
      * @return Le volume du pavé (float).
      */
     float volume() const;
 
     /**
      * @brief Calcule la surface totale du pavé.
-     *
      * @return La surface totale du pavé (float).
      */
     float surfaceArea() const;
 
     /**
      * @brief Vérifie si deux pavés sont égaux.
-     *
-     * Deux pavés sont considérés comme égaux si toutes leurs faces et leur couleur sont identiques.
-     *
      * @param other L'autre pavé à comparer.
      * @return true si les pavés sont égaux, false sinon.
      */
@@ -161,14 +143,12 @@ public:
 
     /**
      * @brief Translate le pavé dans l'espace 3D.
-     *
      * @param offset Le décalage à appliquer (Point3D).
      */
     void translate(const Point3D& offset);
 
     /**
      * @brief Translate le pavé selon une distance projetée.
-     *
      * @param offset Le décalage à appliquer (Point3D).
      * @param projectionDistance La distance du plan de projection.
      */
@@ -176,7 +156,6 @@ public:
 
     /**
      * @brief Effectue une rotation du pavé autour d'un axe donné.
-     *
      * @param angle L'angle de rotation en radians.
      * @param axis L'axe de rotation ('x', 'y' ou 'z').
      * @param center Le centre de rotation.
@@ -185,28 +164,31 @@ public:
 
     /**
      * @brief Calcule le centre géométrique du pavé.
-     *
      * @return Le centre géométrique du pavé (Point3D).
      */
     Point3D center() const;
 
     /**
      * @brief Calcule la profondeur moyenne du pavé.
-     *
      * @return La profondeur moyenne (float).
      */
     float averageDepth() const;
 
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher un pavé.
-     *
      * @param os Le flux de sortie.
      * @param pave Le pavé à afficher.
      * @return Le flux de sortie modifié.
      */
     friend std::ostream& operator<<(std::ostream& os, const Pave3D& pave);
     
+    /**
+     * @brief Opérateur d'affectation par défaut pour la classe Pave3D.
+     * @param other Le pavé source à copier.
+     * @return Une référence à cet objet après l'affectation.
+     */
     Pave3D& operator=(const Pave3D& other) = default;
+
 };
 
 #endif // PAVE3D_H

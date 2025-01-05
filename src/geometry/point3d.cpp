@@ -70,14 +70,6 @@ bool operator!=(const Point3D& p1, const Point3D& p2) {
     return !(p1 == p2);
 }
 
-Point3D Point3D::normalize() const {
-    float magnitude = norm();
-    if (magnitude < TOLERANCE) {
-        return Point3D(0, 0, 0);
-    }
-    return *this / magnitude;
-}
-
 Point3D Point3D::adjustedTranslation(const Point3D& offset, float projectionDistance) const {
     float depthFactor = projectionDistance / (projectionDistance + this->getZ());
     return *this + offset * depthFactor;

@@ -68,7 +68,6 @@ float Triangle2D::area() const {
 bool Triangle2D::contains(const Point2D& point) const {
     float totalArea = area();
 
-    // Calcul des aires en utilisant directement les sommets
     float area1 = std::fabs((point.getX() * (p2.getY() - p3.getY()) +
                              p2.getX() * (p3.getY() - point.getY()) +
                              p3.getX() * (point.getY() - p2.getY())) / 2.0f);

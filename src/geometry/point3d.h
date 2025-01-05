@@ -68,25 +68,19 @@ class Point3D {
          * @brief Modifie la coordonnée x.
          * @param newX La nouvelle valeur pour la coordonnée x.
          */
-        void setX(float newX) {
-            x = newX;
-        }
+        void setX(float newX) { x = newX; }
 
         /**
          * @brief Modifie la coordonnée y.
          * @param newY La nouvelle valeur pour la coordonnée y.
          */
-        void setY(float newY) {
-            y = newY;
-        }
+        void setY(float newY) { y = newY; }
 
         /**
          * @brief Modifie la coordonnée z.
          * @param newZ La nouvelle valeur pour la coordonnée z.
          */
-        void setZ(float newZ) {
-            z = newZ;
-        }
+        void setZ(float newZ) { z = newZ; }
 
         /**
          * @brief Calcule la distance (euclidienne) entre ce point et un autre point donné.
@@ -214,15 +208,67 @@ class Point3D {
         }
 
         /**
-         * @brief Normalise le vecteur représenté par le point.
-         * @return Un point normalisé (longueur égale à 1).
+         * @brief Applique une translation ajustée à un point en fonction de la distance de projection.
+         * @param offset Le vecteur de décalage à appliquer au point.
+         * @param projectionDistance La distance de projection utilisée pour ajuster la translation.
+         * @return Un nouvel objet Point3D représentant le point après ajustement.
          */
-        Point3D normalize() const ;
-
         Point3D adjustedTranslation(const Point3D& offset, float projectionDistance) const;
-        
+                
+        /**
+         * @brief Surcharge de l'opérateur d'insertion pour afficher les coordonnées d'un point 3D.
+         * @param os Le flux de sortie dans lequel écrire les informations du point.
+         * @param point Le point 3D à afficher.
+         * @return Une référence au flux de sortie `std::ostream` pour permettre le chaînage.
+         */
         friend std::ostream& operator<<(std::ostream& os, const Point3D& point);
 
-}; 
+        /**
+         * @brief Effectue une rotation d'un point autour d'un axe donné en prenant un centre spécifié.
+         * @param angle L'angle de rotation en radians.
+         * @param axis L'axe de rotation (`'x'`, `'y'`, ou `'z'`).
+         * @param center Le point central autour duquel la rotation est effectuée.
+         */
+        void rotate(float angle, char axis, const Point3D& center) {
+
+            float x = this->x - center.getX();
+            float y = this->y - center.getY();
+            float z = this->z - center.getZ();
+
+            float sinA = std::sin(angle);
+            float cosA = std::cos(angle);
+
+            switch (axis) {
+                case 'x': {
+                    float newY = y * cosA - z * sinA;
+                    float newZ = y * sinA + z * cosA;
+                    y = newY;
+                    z = newZ;
+                    break;
+                }
+                case 'y': {
+                    float newX = x * cosA + z * sinA;
+                    float newZ = -x * sinA + z * cosA;
+                    x = newX;
+                    z = newZ;
+                    break;
+                }
+                case 'z': {
+                    float newX = x * cosA - y * sinA;
+                    float newY = x * sinA + y * cosA;
+                    x = newX;
+                    y = newY;
+                    break;
+                }
+                default:
+                    throw std::invalid_argument("Invalid axis for rotation");
+            }
+
+            this->x = x + center.getX();
+            this->y = y + center.getY();
+            this->z = z + center.getZ();
+        }
+
+};
 
 #endif 
