@@ -21,3 +21,7 @@ g++ main_scene3d.cpp ../geometry/pave3d.cpp ../geometry/sphere3d.cpp ../geometry
 meson compile -C build
 
 ./build/3d_scene
+
+g++ -o pave3d_test main_pave3d.cpp ./geometry/pave3d.cpp ./geometry/quad3d.cpp ./geometry/triangle3d.cpp ./geometry/point3d.cpp ./geometry/point2d.cpp couleur.cpp -lSDL2
+
+g++ -o sphere3d_test main_sphere3d.cpp ./geometry/sphere3d.cpp ./geometry/pave3d.cpp ./geometry/quad3d.cpp ./geometry/triangle3d.cpp ./geometry/point3d.cpp ./geometry/point2d.cpp couleur.cpp -lSDL2
