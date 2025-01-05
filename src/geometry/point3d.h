@@ -219,7 +219,8 @@ class Point3D {
          */
         Point3D normalize() const ;
 
-
+        Point3D adjustedTranslation(const Point3D& offset, float projectionDistance) const;
+        
         friend std::ostream& operator<<(std::ostream& os, const Point3D& point);
 
 }; 

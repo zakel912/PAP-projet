@@ -122,10 +122,6 @@ bool Quad3D::operator==(const Quad3D& other) const {
 }
 
 void Quad3D::orient(const Point3D& eye) {
-    std::cout << "Avant orientation :\n";
-    std::cout << "  Normale T1 : " << triangles_[0].getNormale() << "\n";
-    std::cout << "  Normale T2 : " << triangles_[1].getNormale() << "\n";
-
     triangles_[0].orient(eye);
     triangles_[1].orient(eye);
 
@@ -137,9 +133,6 @@ void Quad3D::orient(const Point3D& eye) {
         triangles_[1].swapVertices(1, 3); // Inverse l'ordre pour aligner les normales.
     }
 
-    std::cout << "Après orientation :\n";
-    std::cout << "  Normale T1 : " << triangles_[0].getNormale() << "\n";
-    std::cout << "  Normale T2 : " << triangles_[1].getNormale() << "\n";
 }
 
 Point3D Quad3D::center() const {

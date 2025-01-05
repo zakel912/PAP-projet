@@ -1,11 +1,15 @@
 #include "scene3d.h"
 #include <algorithm>
+#include "../geometry/point3d.h"
 #include <stdexcept>
 #include <iostream>
+#include "../geometry/geometry_utils.h"
+#include <memory>
 
-// Constructeur
+// Constructor
 Scene3D::Scene3D(const Point3D& eye, const Point3D& look_at, float projection_plane_distance)
-    : eye_(eye), look_at_(look_at), projection_plane_distance_(projection_plane_distance) {
+    : cube_(nullptr), sphere_(nullptr), hasCube_(false), hasSphere_(false),
+      eye_(eye), look_at_(look_at), projection_plane_distance_(projection_plane_distance) {
     if (projection_plane_distance_ <= TOLERANCE) {
         throw std::invalid_argument("La distance du plan de projection doit être strictement positive.");
     }
@@ -16,94 +20,41 @@ Scene3D::Scene3D(const Point3D& eye, const Point3D& look_at, float projection_pl
     std::cout << "Scene3D initialized.\n";
 }
 
-// Définir un cube
-void Scene3D::addCube(const Pave3D& cube) {
+// Check if a face is visible
+bool Scene3D::isFaceVisible(const Quad3D& quad, const Point3D& eye) const {
+    Point3D normal = quad.getNormal();
+    Point3D toEye = eye - quad.getCentroid();
+    return normal.dotProduct(toEye) > -TOLERANCE;
+}
+
+// Add a cube
+void Scene3D::addCube(const std::shared_ptr<Pave3D>& cube) {
     cube_ = cube;
     hasCube_ = true;
-    std::cout << "Cube défini.\n";
-    // Orienter les faces du cube par rapport à l'œil
+
+    // Apply a red color to all faces
     for (size_t i = 0; i < 6; ++i) {
-        cube_.getFace(i).orient(eye_);  // Vérifiez que getFace retourne une référence modifiable
+        cube_->setFaceColor(i, Couleur(255, 0, 0));
+    }
+
+    // Orient the faces toward the eye
+    for (size_t i = 0; i < 6; ++i) {
+        cube_->getFace(i).orient(eye_);
     }
 }
 
-// Définir une sphère
-void Scene3D::addSphere(const Sphere3D& sphere) {
+// Add a sphere
+void Scene3D::addSphere(const std::shared_ptr<Sphere3D>& sphere) {
     sphere_ = sphere;
     hasSphere_ = true;
-    std::cout << "Sphère définie avec rayon : " << sphere.getRadius() << "\n";
-    // Orienter les quadrilatères de la sphère par rapport à l'œil
-    for (auto& quad : sphere_.getQuads()) {  // Assurez-vous que getQuads retourne une référence non-constante
+    std::cout << "Sphère définie avec rayon : " << sphere->getRadius() << "\n";
+
+    for (auto& quad : sphere_->getQuads()) {
         quad.orient(eye_);
     }
 }
 
-// Projection d'un point 3D sur un plan 2D
-Point2D Scene3D::projectPoint(const Point3D& point3D) const {
-    float dx = point3D.getX() - eye_.getX();
-    float dy = point3D.getY() - eye_.getY();
-    float dz = point3D.getZ() - eye_.getZ();
-
-    if (dz <= 0) {
-        std::cerr << "Projection impossible : le point est derrière l'œil.\n"
-                  << "  Point 3D : " << point3D << "\n"
-                  << "  Position de l'œil : " << eye_ << "\n"
-                  << "  dz (distance Z) : " << dz << "\n";
-        throw std::runtime_error("Projection impossible : le point est derrière l'œil.");
-    }
-
-    float scale = projection_plane_distance_ / dz;
-    float x = dx * scale;
-    float y = dy * scale;
-
-    return Point2D(x, y);
-}
-
-// Projette un triangle 3D en 2D
-Triangle2D Scene3D::projectTriangle(const Triangle3D& triangle) const {
-    Point2D p1 = projectPoint(triangle.getP1());
-    Point2D p2 = projectPoint(triangle.getP2());
-    Point2D p3 = projectPoint(triangle.getP3());
-
-    return Triangle2D(p1, p2, p3, triangle.getColor(), triangle.averageDepth());
-}
-
-// Récupère les triangles projetés
-std::vector<Triangle2D> Scene3D::getProjectedTriangles() const {
-    std::vector<Triangle2D> projectedTriangles;
-
-    auto processTriangles = [&](const std::vector<Triangle3D>& triangles) {
-        for (const auto& triangle : triangles) {
-            std::cout << "Traitement du triangle 3D : " << triangle << "\n";
-            if (isVisible(triangle, eye_)) {
-                projectedTriangles.push_back(projectTriangle(triangle));
-                std::cout << "  Triangle projeté avec succès.\n";
-            } else {
-                std::cout << "  Triangle non visible.\n";
-            }
-        }
-    };
-
-    if (hasCube_) {
-        std::cout << "Traitement des faces du cube.\n";
-        for (size_t i = 0; i < 6; ++i) {
-            const Quad3D& face = cube_.getFace(i);
-            processTriangles({face.getFirstTriangle(), face.getSecondTriangle()});
-        }
-    }
-
-    if (hasSphere_) {
-        std::cout << "Traitement des quadrilatères de la sphère.\n";
-        for (const auto& quad : sphere_.getQuads()) {
-            processTriangles({quad.getFirstTriangle(), quad.getSecondTriangle()});
-        }
-    }
-
-    std::cout << "Nombre de triangles projetés : " << projectedTriangles.size() << "\n";
-    return projectedTriangles;
-}
-
-// Modifier la position de l'œil
+// Update the eye position
 void Scene3D::setEye(const Point3D& eye) {
     if (eye.distance(look_at_) < TOLERANCE) {
         throw std::invalid_argument("La position de l'œil et le point de visée ne peuvent pas être les mêmes.");
@@ -111,26 +62,26 @@ void Scene3D::setEye(const Point3D& eye) {
     eye_ = eye;
     std::cout << "Position de l'œil mise à jour : " << eye_ << "\n";
 
-    // Réorienter les objets de la scène
+    // Reorient objects in the scene
     if (hasCube_) {
         for (size_t i = 0; i < 6; ++i) {
-            cube_.getFace(i).orient(eye_);
+            cube_->getFace(i).orient(eye_);
         }
     }
     if (hasSphere_) {
-        for (auto& quad : sphere_.getQuads()) {
+        for (auto& quad : sphere_->getQuads()) {
             quad.orient(eye_);
         }
     }
 }
 
-// Modifier la direction de visée
+// Update the look-at direction
 void Scene3D::setLookAt(const Point3D& look_at) {
     look_at_ = look_at;
     std::cout << "Direction de visée mise à jour : " << look_at_ << "\n";
 }
 
-// Modifier la distance du plan de projection
+// Update the projection plane distance
 void Scene3D::setProjectionPlaneDistance(float distance) {
     if (distance <= TOLERANCE) {
         throw std::invalid_argument("La distance du plan de projection doit être strictement positive.");
@@ -139,35 +90,43 @@ void Scene3D::setProjectionPlaneDistance(float distance) {
     std::cout << "Distance du plan de projection mise à jour : " << projection_plane_distance_ << "\n";
 }
 
-// Vide tous les objets de la scène
+// Clear the scene
 void Scene3D::clear() {
+    cube_ = nullptr;
+    sphere_ = nullptr;
     hasCube_ = false;
     hasSphere_ = false;
     std::cout << "Scène vidée.\n";
 }
 
-// Accesseur pour le cube
-Pave3D& Scene3D::getCube() {
+// Get the cube
+Pave3D& Scene3D::getCube() const {
     if (!hasCube_) {
         throw std::logic_error("Aucun cube n'est défini dans la scène.");
     }
-    return cube_;
+    return *cube_;
 }
 
-// Accesseur pour la sphère
-const Sphere3D& Scene3D::getSphere() const {
+// Get the sphere
+Sphere3D& Scene3D::getSphere() const {
     if (!hasSphere_) {
         throw std::logic_error("Aucune sphère n'est définie dans la scène.");
     }
-    return sphere_;
+    return *sphere_;
 }
 
-// Vérifie si un cube est défini
-bool Scene3D::hasCube() const {
-    return hasCube_;
-}
+// Get visible faces of the cube
+std::vector<Quad3D> Scene3D::getVisibleFaces() const {
+    if (!hasCube_) {
+        throw std::logic_error("Aucun cube n'est défini dans la scène.");
+    }
 
-// Vérifie si une sphère est définie
-bool Scene3D::hasSphere() const {
-    return hasSphere_;
+    std::vector<Quad3D> visibleFaces;
+    for (size_t i = 0; i < 6; ++i) {
+        const Quad3D& face = cube_->getFace(i);
+        if (isFaceVisible(face, eye_)) {
+            visibleFaces.push_back(face);
+        }
+    }
+    return visibleFaces;
 }

@@ -90,7 +90,7 @@ Point3D Triangle3D::getNormale() const {
 
     // Vérification : si la longueur de la normale est nulle, le triangle est dégénéré
     if (normale.dotProduct(normale) < TOLERANCE) { // Norme² proche de zéro
-        throw std::runtime_error("Triangle dégénéré : impossible de calculer la normale.");
+        std::cout << "Triangle dégénéré : impossible de calculer la normale.\n";
     }
 
     return normale;

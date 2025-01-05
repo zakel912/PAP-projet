@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
-#include "pave3d.h"
-#include "geometry_utils.h"
+#include "../pave3d.h"
+#include "../geometry_utils.h"
 
 void testPave3D() {
     // Points pour les tests

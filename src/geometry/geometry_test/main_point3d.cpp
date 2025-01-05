@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
-#include "point3d.h"
-#include "geometry_utils.h"
+#include "../point3d.h"
+#include "../geometry_utils.h"
 
 
 void testPoint3D() {

@@ -12,6 +12,7 @@
 #include "point2d.h"
 #include "../couleur.h"
 #include <iostream>
+#include "geometry_utils.h"
 
 /**
  * @class Triangle2D
@@ -137,6 +138,16 @@ public:
         p2 = p2 + offset;
         p3 = p3 + offset;
     }
+
+    bool operator<(const Triangle2D& other) const {
+        return this->depth < other.depth;
+    }
+
+    static bool areCollinear(const Point2D& p1, const Point2D& p2, const Point2D& p3) {
+        return std::abs((p2.getY() - p1.getY()) * (p3.getX() - p1.getX()) -
+                        (p3.getY() - p1.getY()) * (p2.getX() - p1.getX())) < TOLERANCE;
+    }
+
 
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher les informations du triangle.

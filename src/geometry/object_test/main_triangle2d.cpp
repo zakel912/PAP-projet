@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 #include <iostream>
-#include "geometry/triangle2d.h" // Incluez votre classe Triangle2D ici
-#include "geometry/point2d.h"    // Incluez votre classe Point2D ici
-#include "couleur.h"    // Incluez votre classe Couleur ici
+#include "../triangle2d.h" // Incluez votre classe Triangle2D ici
+#include "../point2d.h"    // Incluez votre classe Point2D ici
+#include "../../couleur.h"    // Incluez votre classe Couleur ici
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;

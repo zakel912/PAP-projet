@@ -1,6 +1,6 @@
 #include <cassert>
 #include <iostream>
-#include "quad3d.h"
+#include "../quad3d.h"
 
 void testQuad3D() {
     // Points pour les tests

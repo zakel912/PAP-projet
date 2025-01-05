@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
-#include "triangle3d.h"
-#include "geometry_utils.h"
+#include "../triangle3d.h"
+#include "../geometry_utils.h"
 
 void testTriangle3D() {
     // Points pour les tests

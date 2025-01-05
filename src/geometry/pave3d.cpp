@@ -3,21 +3,19 @@
 #include <iostream>
 
 // Constructeur par défaut
-Pave3D::Pave3D()
-     {
-    faces[0] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(0, 1, 0), Couleur(255,255,255));
-    faces[1] = Quad3D(Point3D(0, 0, 1), Point3D(1, 0, 1), Point3D(1, 1, 1), Point3D(0, 1, 1), Couleur(255,255,255));
-    faces[2] = Quad3D(Point3D(0, 0, 0), Point3D(0, 1, 0), Point3D(0, 1, 1), Point3D(0, 0, 1), Couleur(255,255,255));
-    faces[3] = Quad3D(Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(1, 0, 1), Couleur(255,255,255));
-    faces[4] = Quad3D(Point3D(0, 1, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(0, 1, 1), Couleur(255,255,255));
-    faces[5] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 0, 1), Point3D(0, 0, 1), Couleur(255,255,255));
+Pave3D::Pave3D() {
+    faces[0] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(0, 1, 0), Couleur(255, 255, 255));
+    faces[1] = Quad3D(Point3D(0, 0, 1), Point3D(1, 0, 1), Point3D(1, 1, 1), Point3D(0, 1, 1), Couleur(255, 255, 255));
+    faces[2] = Quad3D(Point3D(0, 0, 0), Point3D(0, 1, 0), Point3D(0, 1, 1), Point3D(0, 0, 1), Couleur(255, 255, 255));
+    faces[3] = Quad3D(Point3D(1, 0, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(1, 0, 1), Couleur(255, 255, 255));
+    faces[4] = Quad3D(Point3D(0, 1, 0), Point3D(1, 1, 0), Point3D(1, 1, 1), Point3D(0, 1, 1), Couleur(255, 255, 255));
+    faces[5] = Quad3D(Point3D(0, 0, 0), Point3D(1, 0, 0), Point3D(1, 0, 1), Point3D(0, 0, 1), Couleur(255, 255, 255));
 
     validateGeometry();
 }
 
 // Constructeur paramétré
-Pave3D::Pave3D(const std::array<Quad3D, 6>& faces)
-    : faces(faces) {
+Pave3D::Pave3D(const std::array<Quad3D, 6>& faces) : faces(faces) {
     validateGeometry();
 }
 
@@ -47,12 +45,19 @@ Pave3D::Pave3D(const Point3D& origin, float length, float width, float height, c
 }
 
 // Constructeur par copie
-Pave3D::Pave3D(const Pave3D& other)
-    : faces(other.faces) {}
+Pave3D::Pave3D(const Pave3D& other) : faces(other.faces) {}
 
 // Accesseur pour une face
 const Quad3D& Pave3D::getFace(size_t index) const {
-    if (index >= faces.size() || index < 0) {
+    if (index >= faces.size()) {
+        throw std::out_of_range("Index hors limites pour les faces du pavé.");
+    }
+    return faces[index];
+}
+
+// Accesseur modifiable pour une face
+Quad3D& Pave3D::getFace(size_t index) {
+    if (index >= faces.size()) {
         throw std::out_of_range("Index hors limites pour les faces du pavé.");
     }
     return faces[index];
@@ -129,6 +134,19 @@ Point3D Pave3D::center() const {
     return (minPoint + maxPoint) * 0.5f;
 }
 
+float Pave3D::averageDepth() const {
+    float totalDepth = 0.0f;
+    int vertexCount = 0;
+
+    for (const auto& face : faces) {
+        totalDepth += face.getFirstTriangle().averageDepth();
+        totalDepth += face.getSecondTriangle().averageDepth();
+        vertexCount += 6; // 3 sommets par triangle, 2 triangles par face
+    }
+
+    return totalDepth / vertexCount;
+}
+
 // Surcharge de l'opérateur de flux
 std::ostream& operator<<(std::ostream& os, const Pave3D& pave) {
     os << "Pave3D :\n";
@@ -136,4 +154,58 @@ std::ostream& operator<<(std::ostream& os, const Pave3D& pave) {
         os << "  Face " << i + 1 << ": " << pave.faces[i] << "\n";
     }
     return os;
+}
+
+// Calcule les faces visibles
+std::vector<Quad3D> Pave3D::getVisibleFaces(const Point3D& eye) const {
+    std::vector<Quad3D> visibleFaces;
+    for (const auto& face : faces) {
+        Point3D normal = face.getNormal();
+        Point3D toEye = eye - face.center();
+
+        if (normal.dotProduct(toEye) > 0) {
+            visibleFaces.push_back(face);
+        }
+    }
+    return visibleFaces;
+}
+
+// Définir la couleur d'une face
+void Pave3D::setFaceColor(size_t index, const Couleur& color) {
+    if (index >= faces.size()) {
+        throw std::out_of_range("Index hors limites pour les faces du pavé.");
+    }
+    faces[index].setColor(color);
+}
+
+// Retourner la couleur d'une face
+Couleur Pave3D::getFaceColor(size_t index) const {
+    if (index >= faces.size()) {
+        throw std::out_of_range("Index hors limites pour les faces du pavé.");
+    }
+    return faces[index].getColor();
+}
+
+void Pave3D::translate(const Point3D& offset, float projectionDistance) {
+    for (auto& face : faces) {
+        Triangle3D t1 = face.getFirstTriangle();
+        Triangle3D t2 = face.getSecondTriangle();
+
+        t1.setP1(t1.getP1().adjustedTranslation(offset, projectionDistance));
+        t1.setP2(t1.getP2().adjustedTranslation(offset, projectionDistance));
+        t1.setP3(t1.getP3().adjustedTranslation(offset, projectionDistance));
+
+        t2.setP1(t2.getP1().adjustedTranslation(offset, projectionDistance));
+        t2.setP2(t2.getP2().adjustedTranslation(offset, projectionDistance));
+        t2.setP3(t2.getP3().adjustedTranslation(offset, projectionDistance));
+
+        face = Quad3D(t1, t2);
+    }
+}
+
+// Translate le pavé
+void Pave3D::translate(const Point3D& offset) {
+    for (auto& face : faces) {
+        face.translate(offset); // Appliquer la translation à chaque face
+    }
 }

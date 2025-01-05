@@ -1,76 +1,204 @@
-#include "renderer.h"
-#include "scene3d.h"
-#include "../geometry/pave3d.h"
-#include <iostream>
+#include "sdl/renderer.h"
+#include "scene/scene3d.h"
+#include "geometry/pave3d.h"
+#include "geometry/sphere3d.h"
 #include <SDL2/SDL.h>
+#include <iostream>
+#include <memory> // Pour std::make_shared
+#include <cmath>  // Pour M_PI
 
-// Configuration initiale
-struct Config {
-    int screenWidth = 800;
-    int screenHeight = 600;
-    int pixelSize = 10;
-    Point3D cameraPosition = Point3D(0, 0, 5);
-    Point3D lookAtPosition = Point3D(0, 0, 0);
-    float projectionPlaneDistance = 5.0f;
-};
+// Dimensions de l'écran
+const int SCREEN_WIDTH = 800;
+const int SCREEN_HEIGHT = 600;
 
-// Fonction principale
-int main(int argc, char* argv[]) {
+// Pas de mouvement et de rotation
+const int MOVE_STEP = 10;
+const float ROTATE_STEP = M_PI / 18; // 10 degrés en radians
+
+/**
+ * @brief Fonction principale.
+ */
+int main() {
     try {
-        // Configuration par défaut
-        Config config;
-
-        // Lecture des arguments (si fournis)
-        if (argc > 1) config.screenWidth = std::stoi(argv[1]);
-        if (argc > 2) config.screenHeight = std::stoi(argv[2]);
-        if (argc > 3) config.pixelSize = std::stoi(argv[3]);
-        if (argc > 4) config.cameraPosition = Point3D(std::stof(argv[4]), std::stof(argv[5]), std::stof(argv[6]));
-        if (argc > 7) config.lookAtPosition = Point3D(std::stof(argv[7]), std::stof(argv[8]), std::stof(argv[9]));
-        if (argc > 10) config.projectionPlaneDistance = std::stof(argv[10]);
-
         // Initialisation du renderer
-        Renderer renderer(config.screenWidth, config.screenHeight, config.pixelSize);
+        Renderer renderer(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-        // Initialisation de la scène
-        Scene3D scene(config.cameraPosition, config.lookAtPosition, config.projectionPlaneDistance);
+        // Initialisation de la scène avec une caméra
+        Scene3D scene(
+            Point3D(0, 0, -200),   // Position de l'œil
+            Point3D(0, 0, 0),      // Point de visée
+            100.0f                 // Distance du plan de projection
+        );
 
-        // Ajout d'un cube
-        Pave3D cube(
-            Quad3D(Point3D(-1, -1, 2), Point3D(1, -1, 2), Point3D(1, 1, 2), Point3D(-1, 1, 2), Couleur(255, 0, 0)),
-            Quad3D(Point3D(-1, -1, 4), Point3D(1, -1, 4), Point3D(1, 1, 4), Point3D(-1, 1, 4), Couleur(255, 0, 0)),
-            Quad3D(Point3D(-1, -1, 2), Point3D(-1, 1, 2), Point3D(-1, 1, 4), Point3D(-1, -1, 4), Couleur(0, 255, 0)),
-            Quad3D(Point3D(1, -1, 2), Point3D(1, 1, 2), Point3D(1, 1, 4), Point3D(1, -1, 4), Couleur(0, 255, 0)),
-            Quad3D(Point3D(-1, 1, 2), Point3D(1, 1, 2), Point3D(1, 1, 4), Point3D(-1, 1, 4), Couleur(0, 0, 255)),
-            Quad3D(Point3D(-1, -1, 2), Point3D(1, -1, 2), Point3D(1, -1, 4), Point3D(-1, -1, 4), Couleur(0, 0, 255))
+        // Ajout d'un pavé à la scène
+        auto cube = std::make_shared<Pave3D>(
+            Point3D(-25, -25, 50), // Origine du pavé
+            100, 100, 100,         // Dimensions : longueur, largeur, hauteur
+            Couleur(255, 0, 0)     // Couleur rouge
         );
         scene.addCube(cube);
 
+        // Ajout d'une sphère à la scène
+        auto sphere = std::make_shared<Sphere3D>(
+            Point3D(50, 50, 100),  // Centre
+            50,                    // Rayon
+            16                     // Subdivisions
+        );
+        scene.addSphere(sphere);
+
+        // Variables de translation spécifiques
+        Point2D cubeTranslation(0, 0);      // Translation spécifique au cube
+        Point2D sphereTranslation(0, 0);    // Translation spécifique à la sphère
+        float cubeTranslationZ = 0;      // Translation spécifique au cube en Z
+        float sphereTranslationZ = 0;    // Translation spécifique à la sphère en Z
+
+        // Variable pour gérer la sélection d'objet
+        int selectedObject = 0; // 0 pour le cube, 1 pour la sphère
+
+        // Boucle principale
         bool running = true;
         SDL_Event event;
 
         while (running) {
+            // Gestion des événements
             while (SDL_PollEvent(&event)) {
                 if (event.type == SDL_QUIT) {
                     running = false;
-                }
-                if (event.type == SDL_KEYDOWN) {
+                } else if (event.type == SDL_KEYDOWN) {
                     switch (event.key.keysym.sym) {
-                        case SDLK_w: scene.setEye(scene.getEye() + Point3D(0, 1, 0)); break;
-                        case SDLK_s: scene.setEye(scene.getEye() + Point3D(0, -1, 0)); break;
-                        case SDLK_a: scene.setEye(scene.getEye() + Point3D(-1, 0, 0)); break;
-                        case SDLK_d: scene.setEye(scene.getEye() + Point3D(1, 0, 0)); break;
-                        case SDLK_q: scene.setEye(scene.getEye() + Point3D(0, 0, -1)); break;
-                        case SDLK_e: scene.setEye(scene.getEye() + Point3D(0, 0, 1)); break;
+                        // Changer l'objet sélectionné
+                        case SDLK_TAB:
+                            selectedObject = (selectedObject + 1) % 2;
+                            break;
+
+                        // Translation en X et Y
+                        case SDLK_UP:
+                            if (selectedObject == 0) {
+                                cubeTranslation = cubeTranslation + Point2D(0, -MOVE_STEP);
+                            } else {
+                                sphereTranslation = sphereTranslation + Point2D(0, -MOVE_STEP);
+                            }
+                            break;
+                        case SDLK_DOWN:
+                            if (selectedObject == 0) {
+                                cubeTranslation = cubeTranslation + Point2D(0, MOVE_STEP);
+                            } else {
+                                sphereTranslation = sphereTranslation + Point2D(0, MOVE_STEP);
+                            }
+                            break;
+                        case SDLK_LEFT:
+                            if (selectedObject == 0) {
+                                cubeTranslation = cubeTranslation + Point2D(-MOVE_STEP, 0);
+                            } else {
+                                sphereTranslation = sphereTranslation + Point2D(-MOVE_STEP, 0);
+                            }
+                            break;
+                        case SDLK_RIGHT:
+                            if (selectedObject == 0) {
+                                cubeTranslation = cubeTranslation + Point2D(MOVE_STEP, 0);
+                            } else {
+                                sphereTranslation = sphereTranslation + Point2D(MOVE_STEP, 0);
+                            }
+                            break;
+                        case SDLK_k: // Translation en Z positif (vers l'observateur)
+                            if (selectedObject == 0) {
+                                cubeTranslationZ += MOVE_STEP;
+                            } else {
+                                sphereTranslationZ += MOVE_STEP;
+                            }
+                            break;
+                        case SDLK_l: // Translation en Z négatif (éloignement)
+                            if (selectedObject == 0) {
+                                cubeTranslationZ -= MOVE_STEP;
+                            } else {
+                                sphereTranslationZ -= MOVE_STEP;
+                            }
+                            break;
+
+
+                        // Rotation en X
+                        case SDLK_a:
+                            if (selectedObject == 0) {
+                                cube->rotate(ROTATE_STEP, 'x', cube->center());
+                            } else {
+                                for (auto& quad : sphere->getQuads()) {
+                                    quad.rotate(ROTATE_STEP, 'x', sphere->getCenter());
+                                }
+                            }
+                            break;
+                        case SDLK_z:
+                            if (selectedObject == 0) {
+                                cube->rotate(-ROTATE_STEP, 'x', cube->center());
+                            } else {
+                                for (auto& quad : sphere->getQuads()) {
+                                    quad.rotate(-ROTATE_STEP, 'x', sphere->getCenter());
+                                }
+                            }
+                            break;
+
+                        // Rotation en Y
+                        case SDLK_e:
+                            if (selectedObject == 0) {
+                                cube->rotate(ROTATE_STEP, 'y', cube->center());
+                            } else {
+                                for (auto& quad : sphere->getQuads()) {
+                                    quad.rotate(ROTATE_STEP, 'y', sphere->getCenter());
+                                }
+                            }
+                            break;
+                        case SDLK_r:
+                            if (selectedObject == 0) {
+                                cube->rotate(-ROTATE_STEP, 'y', cube->center());
+                            } else {
+                                for (auto& quad : sphere->getQuads()) {
+                                    quad.rotate(-ROTATE_STEP, 'y', sphere->getCenter());
+                                }
+                            }
+                            break;
+
+                        // Translation de la caméra
+                        case SDLK_w:
+                            scene.setEye(scene.getEye() + Point3D(0, MOVE_STEP, 0));
+                            break;
+                        case SDLK_x:
+                            scene.setEye(scene.getEye() + Point3D(0, -MOVE_STEP, 0));
+                            break;
+                        case SDLK_c:
+                            scene.setEye(scene.getEye() + Point3D(0, 0, MOVE_STEP));
+                            break;
+                        case SDLK_v:
+                            scene.setEye(scene.getEye() + Point3D(0, 0, -MOVE_STEP));
+                            break;
+                        case SDLK_b:
+                            scene.setEye(scene.getEye() + Point3D(MOVE_STEP, 0, 0));
+                            break;
+                        case SDLK_n:
+                            scene.setEye(scene.getEye() + Point3D(-MOVE_STEP, 0, 0));
+                            break;
+
+                        // Quitter le programme
+                        case SDLK_ESCAPE:
+                            running = false;
+                            break;
                     }
                 }
             }
 
-            renderer.clear({0, 0, 0, 255});
-            renderer.renderScene(scene);
+            // Effacer l'écran
+            renderer.clear({0, 0, 0, 255}); // Fond noir
+
+            // Rendre le cube
+            renderer.renderCube(cube, cubeTranslation, cubeTranslationZ, scene);
+
+            // Rendre la sphère
+            renderer.renderSphere(sphere, sphereTranslation, sphereTranslationZ, scene);
+
+            // Mettre à jour l'affichage
             renderer.present();
         }
     } catch (const std::exception& e) {
-        std::cerr << "Erreur : " << e.what() << std::endl;
+        // Gestion des erreurs
+        std::cerr << "Erreur : " << e.what() << "\n";
         return -1;
     }
 

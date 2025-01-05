@@ -1,11 +1,11 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <algorithm>
-#include "geometry/pave3d.h"
-#include "geometry/point3d.h"
-#include "geometry/point2d.h"
-#include "geometry/quad3d.h"
-#include "couleur.h"
+#include "../sphere3d.h"
+#include "../point3d.h"
+#include "../point2d.h"
+#include "../quad3d.h"
+#include "../../couleur.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -23,13 +23,12 @@ Point2D projectPoint(const Point3D& point3D) {
                    static_cast<int>(-point3D.getY() * scale + SCREEN_HEIGHT / 2));
 }
 
-void renderPave(SDL_Renderer* renderer, const Pave3D& pave, const Point3D& cameraPosition) {
+void renderSphere(SDL_Renderer* renderer, Sphere3D& sphere, const Point3D& cameraPosition, const Point2D& translation2D) {
     std::vector<std::pair<float, const Quad3D*>> faceDepths;
 
     // Collect faces with their average depth
-    for (size_t i = 0; i < 6; ++i) {
-        const Quad3D& face = pave.getFace(i);
-        faceDepths.emplace_back(face.averageDepth(), &face);
+    for (const auto& quad : sphere.getQuads()) {
+        faceDepths.emplace_back(quad.averageDepth(), &quad);
     }
 
     // Sort faces by depth (furthest first)
@@ -46,14 +45,10 @@ void renderPave(SDL_Renderer* renderer, const Pave3D& pave, const Point3D& camer
         int redIntensity = std::clamp(255 - static_cast<int>(triangle.averageDepth() * 0.5), 0, 255);
         Couleur faceColor = (dotProduct > 0) ? Couleur(redIntensity, 0, 0) : Couleur(0, 0, redIntensity);
 
-        // Project the vertices
-        Point2D p1 = projectPoint(triangle.getP1());
-        Point2D p2 = projectPoint(triangle.getP2());
-        Point2D p3 = projectPoint(triangle.getP3());
-
-        // Log the projected points for debugging
-        std::cout << "Projected Triangle: (" << p1.getX() << ", " << p1.getY() << ") -> ("
-                  << p2.getX() << ", " << p2.getY() << ") -> (" << p3.getX() << ", " << p3.getY() << ")\n";
+        // Project the vertices and apply the 2D translation
+        Point2D p1 = projectPoint(triangle.getP1()) + translation2D;
+        Point2D p2 = projectPoint(triangle.getP2()) + translation2D;
+        Point2D p3 = projectPoint(triangle.getP3()) + translation2D;
 
         // Sort vertices by Y-coordinate
         if (p2.getY() < p1.getY()) std::swap(p1, p2);
@@ -97,7 +92,7 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    SDL_Window* window = SDL_CreateWindow("Pave3D Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
+    SDL_Window* window = SDL_CreateWindow("Sphere3D Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                           SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
         std::cerr << "Error creating SDL window: " << SDL_GetError() << "\n";
@@ -113,8 +108,9 @@ int main(int argc, char* argv[]) {
         return -1;
     }
 
-    Pave3D pave(Point3D(-100, -100, -100), 100, 100, 100, Couleur(255, 255, 255));
-    Point3D cameraPosition(0, 0, 0);
+    Sphere3D sphere(Point3D(0, 0, 0), 50, 10); // Sphere with center (0,0,0), radius 50, and 10 subdivisions
+    Point3D cameraPosition(0, 0, -150);
+    Point2D translation2D(0, 0);
 
     bool running = true;
     SDL_Event event;
@@ -124,31 +120,38 @@ int main(int argc, char* argv[]) {
             if (event.type == SDL_QUIT) {
                 running = false;
             } else if (event.type == SDL_KEYDOWN) {
-                Point3D paveCenter = pave.center();
                 switch (event.key.keysym.sym) {
                     case SDLK_UP:
-                        pave.translate(Point3D(0, MOVE_STEP, 0));
+                        translation2D = translation2D + Point2D(0, -MOVE_STEP);
                         break;
                     case SDLK_DOWN:
-                        pave.translate(Point3D(0, -MOVE_STEP, 0));
+                        translation2D = translation2D + Point2D(0, MOVE_STEP);
                         break;
                     case SDLK_LEFT:
-                        pave.translate(Point3D(-MOVE_STEP, 0, 0));
+                        translation2D = translation2D + Point2D(-MOVE_STEP, 0);
                         break;
                     case SDLK_RIGHT:
-                        pave.translate(Point3D(MOVE_STEP, 0, 0));
+                        translation2D = translation2D + Point2D(MOVE_STEP, 0);
                         break;
                     case SDLK_q:
-                        pave.rotate(ROTATE_STEP, 'x', paveCenter);
+                        for (auto& quad : sphere.getQuads()) {
+                            quad.rotate(ROTATE_STEP, 'x', sphere.getCenter());
+                        }
                         break;
                     case SDLK_e:
-                        pave.rotate(-ROTATE_STEP, 'x', paveCenter);
+                        for (auto& quad : sphere.getQuads()) {
+                            quad.rotate(-ROTATE_STEP, 'x', sphere.getCenter());
+                        }
                         break;
                     case SDLK_a:
-                        pave.rotate(ROTATE_STEP, 'y', paveCenter);
+                        for (auto& quad : sphere.getQuads()) {
+                            quad.rotate(ROTATE_STEP, 'y', sphere.getCenter());
+                        }
                         break;
                     case SDLK_d:
-                        pave.rotate(-ROTATE_STEP, 'y', paveCenter);
+                        for (auto& quad : sphere.getQuads()) {
+                            quad.rotate(-ROTATE_STEP, 'y', sphere.getCenter());
+                        }
                         break;
                 }
             }
@@ -157,7 +160,7 @@ int main(int argc, char* argv[]) {
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        renderPave(renderer, pave, cameraPosition);
+        renderSphere(renderer, sphere, cameraPosition, translation2D);
 
         SDL_RenderPresent(renderer);
     }

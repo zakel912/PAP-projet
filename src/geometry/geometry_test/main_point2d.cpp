@@ -1,6 +1,6 @@
 #include <cassert>
 #include <iostream>
-#include "point2d.h"
+#include "../point2d.h"
 
 void testPoint2D() {
     // Test du constructeur par défaut

@@ -83,6 +83,9 @@ public:
      */
     Quad3D(const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4, const Couleur& color);
 
+    /**
+     * @brief Détruit le quadrilatère.
+     */
     ~Quad3D(){}
 
     /**
@@ -209,6 +212,14 @@ public:
     bool equals(const Quad3D& other) const;
 
     /**
+     * @brief Calcule la normale au quadrilatère.
+     * @return Point3D Normale calculée à partir du premier triangle.
+     */
+    Point3D getNormal() const {
+        return getFirstTriangle().getNormale();
+    }
+
+    /**
      * @brief Surcharge de l'opérateur d'égalité pour les quadrilatères.
      * 
      * @param other L'autre quadrilatère à comparer.
@@ -245,16 +256,43 @@ public:
      */
     Point3D center() const;
 
+    /**
+     * @brief Effectue une rotation du quadrilatère autour d'un axe donné.
+     * @param angle Angle de rotation en radians.
+     * @param axis Axe de rotation ('x', 'y' ou 'z').
+     */
     void rotate(float angle, char axis);
 
+    /**
+     * @brief Effectue une rotation autour d'un axe et d'un centre donnés.
+     * @param angle Angle de rotation en radians.
+     * @param axis Axe de rotation ('x', 'y' ou 'z').
+     * @param center Centre de rotation.
+     */
     void rotate(float angle, char axis, const Point3D& center);
 
-    // quad3d.h
     /**
      * @brief Calculates the average depth of the quad.
      * @return The average depth of the two triangles composing the quad.
      */
     float averageDepth() const;
+
+    /**
+     * @brief Calcule le centroïde du quadrilatère.
+     * @return Point3D Centroïde moyen des triangles.
+     */
+    Point3D getCentroid() const {
+
+        Point3D centroid1 = triangles_[0].getCentroid();
+        Point3D centroid2 = triangles_[1].getCentroid();
+
+        return (centroid1 + centroid2) * 0.5;
+    }
+
+    bool operator<(const Quad3D& other) const {
+        return this->averageDepth() < other.averageDepth();
+    }
+
 
     /**
      * @brief Surcharge de l'opérateur de flux pour afficher les informations d'un quadrilatère.
@@ -264,6 +302,9 @@ public:
      * @return std::ostream& Le flux de sortie modifié.
      */
     friend std::ostream& operator<<(std::ostream& os, const Quad3D& quad);
+
+    Quad3D& operator=(const Quad3D&) = default;
+
 };
 
 #endif // QUAD3D_H

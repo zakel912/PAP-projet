@@ -18,9 +18,9 @@
  */
 class Couleur {
 private:
-    int rouge; ///< Composante rouge de la couleur (0-255).
-    int vert;  ///< Composante verte de la couleur (0-255).
-    int bleu;  ///< Composante bleue de la couleur (0-255).
+    int rouge; // Composante rouge de la couleur (0-255).
+    int vert;  // Composante verte de la couleur (0-255).
+    int bleu;  // Composante bleue de la couleur (0-255).
 
     /**
      * @brief Valide une composante RVB.
@@ -118,6 +118,7 @@ public:
      * @param other La couleur à copier.
      */
     Couleur& operator=(const Couleur& other);
+
 };
 
 // Surcharge des opérateurs

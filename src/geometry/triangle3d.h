@@ -87,6 +87,24 @@ class Triangle3D {
         const Point3D& getP3() const;
 
         /**
+         * @brief Setteur pour le premier sommet.
+         * @return Le premier sommet du triangle.
+         */
+        void setP1(Point3D newP1) { p1 = newP1; }
+
+        /**
+         * @brief Setteur pour le deuxième sommet.
+         * @return Le deuxième sommet du triangle.
+         */
+        void setP2(Point3D newP2) { p2 = newP2; }
+
+        /**
+         * @brief Setteur pour le troisième sommet.
+         * @return Le troisième sommet du triangle.
+         */
+        void setP3(Point3D newP3) { p3 = newP3; }
+
+        /**
          * @brief Accesseur pour la couleur du triangle.
          * @return La couleur du triangle.
          */
@@ -245,7 +263,14 @@ class Triangle3D {
          */
         void rotate(float angle, char axis, const Point3D& center);
 
-};
+        void applyTranslationZ(float translationZ) {
+            p1.setZ(p1.getZ() + translationZ);
+            p2.setZ(p2.getZ() + translationZ);
+            p3.setZ(p3.getZ() + translationZ);
+        }
+
+
+};  
 
 #endif
 

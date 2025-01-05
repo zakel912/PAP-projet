@@ -78,6 +78,11 @@ Point3D Point3D::normalize() const {
     return *this / magnitude;
 }
 
+Point3D Point3D::adjustedTranslation(const Point3D& offset, float projectionDistance) const {
+    float depthFactor = projectionDistance / (projectionDistance + this->getZ());
+    return *this + offset * depthFactor;
+}
+
 std::ostream& operator<<(std::ostream& os, const Point3D& point) {
     os << "(" << point.getX() << ", " << point.getY() << ", " << point.getZ() << ")";
     return os;

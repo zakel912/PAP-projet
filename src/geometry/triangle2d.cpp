@@ -5,7 +5,7 @@
 
 // Constructeur par défaut
 Triangle2D::Triangle2D()
-    : p1(Point2D(0, 0)), p2(Point2D(0, 0)), p3(Point2D(0, 0)), color(Couleur(0, 0, 0)), depth(0.0f) {}
+    : p1(Point2D(0, 0)), p2(Point2D(0, 0)), p3(Point2D(0, 0)), color(Couleur(255, 255, 255)), depth(0.0f) {}
 
 // Constructeur avec trois sommets et une couleur RVB
 Triangle2D::Triangle2D(const Point2D& point1, const Point2D& point2, const Point2D& point3, int rouge, int vert, int bleu, float depthValue)
@@ -14,7 +14,7 @@ Triangle2D::Triangle2D(const Point2D& point1, const Point2D& point2, const Point
         throw std::runtime_error("Les valeurs RVB doivent être comprises entre 0 et 255.");
     }
     if (Point2D::distance(p1, p2) == 0 || Point2D::distance(p1, p3) == 0 || Point2D::areCollinear(p1, p2, p3)) {
-        throw std::runtime_error("Les trois points doivent former un triangle valide.");
+        std::cout << "Les trois points doivent former un triangle valide.\n";
     }
 }
 

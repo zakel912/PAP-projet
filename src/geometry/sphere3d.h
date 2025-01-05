@@ -36,7 +36,7 @@ private:
      * Cette méthode utilise une approche basée sur les coordonnées sphériques
      * pour créer les quadrilatères approximant la sphère.
      */
-    void generateQuads(int numSlices, int numStacks, const Couleur& color = Couleur(0, 0, 0));
+    void generateQuads(int numSlices, int numStacks, const Couleur& color = Couleur(255, 255, 255));
 
 
 public:
@@ -122,6 +122,16 @@ public:
      * @return La surface totale de la sphère.
      */
     float surfaceArea() const;
+
+    /**
+     * @brief Fait pivoter la sphère autour d'un axe donné.
+     * @param angle L'angle de rotation (en radians).
+     * @param axis L'axe de rotation ('x', 'y', 'z').
+     * @param origin Le point autour duquel effectuer la rotation.
+     */
+    void rotate(float angle, char axis, const Point3D& origin);
+
+    Sphere3D& operator=(const Sphere3D& other) = default;
 };
 
 #endif

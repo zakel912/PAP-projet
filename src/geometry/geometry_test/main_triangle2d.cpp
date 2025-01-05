@@ -1,7 +1,7 @@
 #include <cassert>
 #include <iostream>
-#include "triangle2d.h"
-#include "geometry_utils.h"
+#include "../triangle2d.h"
+#include "../geometry_utils.h"
 
 void testTriangle2D() {
     // Points pour les tests
@@ -14,7 +14,7 @@ void testTriangle2D() {
     assert(defaultTriangle.getP1() == Point2D(0, 0));
     assert(defaultTriangle.getP2() == Point2D(0, 0));
     assert(defaultTriangle.getP3() == Point2D(0, 0));
-    assert(defaultTriangle.getColor() == Couleur(0, 0, 0));
+    assert(defaultTriangle.getColor() == Couleur(255, 255, 255));
     assert(std::abs(defaultTriangle.getDepth()) < TOLERANCE);
 
     // Test du constructeur avec points, couleur et profondeur

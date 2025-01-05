@@ -135,3 +135,9 @@ void Sphere3D::generateQuads(int numSlices, int numStacks, const Couleur& color)
 
     std::cout << "Generated " << quads.size() << " quads for the sphere.\n";
 }
+
+void Sphere3D::rotate(float angle, char axis, const Point3D& origin) {
+    for (auto& quad : quads) {
+        quad.rotate(angle, axis, origin); // Applique la rotation à chaque quadrilatère
+    }
+}

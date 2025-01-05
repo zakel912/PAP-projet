@@ -1,10 +1,10 @@
 #include <SDL2/SDL.h>
 #include <iostream>
 #include <cmath>
-#include "geometry/triangle3d.h"
-#include "geometry/point3d.h"
-#include "geometry/point2d.h"
-#include "couleur.h"
+#include "../triangle3d.h"
+#include "../point3d.h"
+#include "../point2d.h"
+#include "../../couleur.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
