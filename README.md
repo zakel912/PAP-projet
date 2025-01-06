@@ -1,6 +1,6 @@
 # **PAP Project 5**
 
-Ce projet visualise des objets 3D, comme des pavés et des sphères, avec SDL2 pour le rendu.
+Ce projet permet la visualisation d'bjets 3D, comme des pavés et des sphères, avec SDL2 pour le rendu.
 
 ---
 
