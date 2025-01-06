@@ -8,14 +8,14 @@
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
-const float PROJECTION_DISTANCE = 300.0f; // Increased projection distance
+const float PROJECTION_DISTANCE = 300.0f;
 const int MOVE_STEP = 10;
 const float ROTATE_STEP = 0.1f;
 
 Point2D projectPoint(const Point3D& point3D) {
     float denominator = PROJECTION_DISTANCE + point3D.getZ();
     if (denominator == 0) {
-        throw std::runtime_error("Division by zero during projection.");
+        throw std::runtime_error("Division par zéro lors de la projection.");
     }
     float scale = PROJECTION_DISTANCE / denominator;
     return Point2D(static_cast<int>(point3D.getX() * scale + SCREEN_WIDTH / 2),
@@ -69,21 +69,21 @@ void renderQuad(SDL_Renderer* renderer, const Quad3D& quad, const Point3D& camer
 
 int main(int argc, char* argv[]) {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-        std::cerr << "Error initializing SDL: " << SDL_GetError() << "\n";
+        std::cerr << "Erreur : impossible d'initialiser SDL: " << SDL_GetError() << "\n";
         return -1;
     }
 
     SDL_Window* window = SDL_CreateWindow("Quad3D Test", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
                                           SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (!window) {
-        std::cerr << "Error creating SDL window: " << SDL_GetError() << "\n";
+        std::cerr << "Erreur : impossible de créer la fenêtre SDL: " << SDL_GetError() << "\n";
         SDL_Quit();
         return -1;
     }
 
     SDL_Renderer* renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (!renderer) {
-        std::cerr << "Error creating SDL renderer: " << SDL_GetError() << "\n";
+        std::cerr << "Erreur : impossible de créer le renderer SDL: " << SDL_GetError() << "\n";
         SDL_DestroyWindow(window);
         SDL_Quit();
         return -1;

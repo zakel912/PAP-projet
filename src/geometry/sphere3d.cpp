@@ -79,12 +79,22 @@ float Sphere3D::surfaceArea() const {
 // Génération des quadrilatères
 void Sphere3D::generateQuads(int numSlices, int numStacks, const Couleur& color) {
     quads.clear();
-
     const float pi = M_PI;
-
     if (numSlices <= 0 || numStacks <= 0) {
-        throw std::invalid_argument("numSlices and numStacks must be greater than 0.");
+        throw std::invalid_argument("numSlices et numStacks doivent être supérieurs à 0.");
     }
+
+    auto computePoint = [this](float theta, float phi) -> Point3D {
+        return Point3D(
+            center.getX() + radius * sin(theta) * cos(phi),
+            center.getY() + radius * cos(theta),
+            center.getZ() + radius * sin(theta) * sin(phi)
+        );
+    };
+
+    auto shouldSkipQuad = [](const Point3D& p1, const Point3D& p2, const Point3D& p3, const Point3D& p4) -> bool {
+        return p1.distance(p2) < TOLERANCE || p2.distance(p3) < TOLERANCE || p3.distance(p4) < TOLERANCE || p4.distance(p1) < TOLERANCE;
+    };
 
     for (int i = 0; i < numStacks; ++i) {
         float theta1 = i * (pi / numStacks);
@@ -94,40 +104,19 @@ void Sphere3D::generateQuads(int numSlices, int numStacks, const Couleur& color)
             float phi1 = j * (2 * pi / numSlices);
             float phi2 = (j + 1) * (2 * pi / numSlices);
 
-            Point3D p1(
-                center.getX() + radius * sin(theta1) * cos(phi1),
-                center.getY() + radius * cos(theta1),
-                center.getZ() + radius * sin(theta1) * sin(phi1)
-            );
+            Point3D p1 = computePoint(theta1, phi1);
+            Point3D p2 = computePoint(theta2, phi1);
+            Point3D p3 = computePoint(theta2, phi2);
+            Point3D p4 = computePoint(theta1, phi2);
 
-            Point3D p2(
-                center.getX() + radius * sin(theta2) * cos(phi1),
-                center.getY() + radius * cos(theta2),
-                center.getZ() + radius * sin(theta2) * sin(phi1)
-            );
-
-            Point3D p3(
-                center.getX() + radius * sin(theta2) * cos(phi2),
-                center.getY() + radius * cos(theta2),
-                center.getZ() + radius * sin(theta2) * sin(phi2)
-            );
-
-            Point3D p4(
-                center.getX() + radius * sin(theta1) * cos(phi2),
-                center.getY() + radius * cos(theta1),
-                center.getZ() + radius * sin(theta1) * sin(phi2)
-            );
-
-            if (p1.distance(p2) < TOLERANCE || p2.distance(p3) < TOLERANCE ||
-                p3.distance(p4) < TOLERANCE || p4.distance(p1) < TOLERANCE) {
+            if (shouldSkipQuad(p1, p2, p3, p4)) {
                 continue;
             }
 
             quads.emplace_back(Quad3D(p1, p2, p3, p4, color));
         }
     }
-
-    std::cout << quads.size() << " Générés pour la sphere.\n";
+    std::cout << quads.size() << " quads générés pour la sphère.\n";
 }
 
 void Sphere3D::rotate(float angle, char axis, const Point3D& origin) {

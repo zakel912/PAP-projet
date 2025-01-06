@@ -53,7 +53,8 @@ Point2D Renderer::projectPoint(const Point3D& point3D, const Point3D& eye, float
     float dz = point3D.getZ() - eye.getZ();
 
     if (dz <= 0) {
-        std::cout << "Projection impossible : le point est derrière l'œil.\n";
+        // std::cout << "Projection impossible : le point est derrière l'œil.\n";
+        throw std::runtime_error("Projection impossible : le point est derrière l'œil.\n");
     }
 
     float scale = projectionPlaneDistance / (projectionPlaneDistance + dz);
@@ -143,150 +144,125 @@ void Renderer::renderScene(const Scene3D& scene, const Point2D& translation2D) {
     }
 }
 
-void Renderer::renderCube(const std::shared_ptr<Pave3D>& cube, const Point2D& translation,float translationZ, const Scene3D& scene) {
-    for (size_t i = 0; i < 6; ++i) { // Parcourir toutes les faces du pavé
-        const auto& face = cube->getFace(i);
-        
-        Triangle3D t1 = face.getFirstTriangle();
-        Triangle3D t2 = face.getSecondTriangle();
+// Fonction pour rendre un triangle avec translation et projection
+void Renderer::renderTriangle(const Triangle3D& triangle, const Couleur& color, const Point2D& translation, float translationZ, const Scene3D& scene) {
+    Triangle3D transformedTriangle = triangle;
+    transformedTriangle.applyTranslationZ(translationZ);
 
-        t1.applyTranslationZ(translationZ);
-        t2.applyTranslationZ(translationZ);
+    Point2D p1 = projectPoint(transformedTriangle.getP1(), scene.getEye(), scene.getProjectionPlaneDistance()) + translation;
+    Point2D p2 = projectPoint(transformedTriangle.getP2(), scene.getEye(), scene.getProjectionPlaneDistance()) + translation;
+    Point2D p3 = projectPoint(transformedTriangle.getP3(), scene.getEye(), scene.getProjectionPlaneDistance()) + translation;
 
-        Triangle2D triangle1 = projectTriangle(t1, scene.getEye(), scene.getProjectionPlaneDistance());
-        Triangle2D triangle2 = projectTriangle(t2, scene.getEye(), scene.getProjectionPlaneDistance());
+    drawFilledTriangle(renderer_, p1, p2, p3, color);
+}
 
-        // drawFilledTriangle(triangle1);
-        // drawFilledTriangle(triangle2);
+// Render a single triangle with calculated color
+void Renderer::renderTriangleWithColor(const Triangle3D& triangle, const Point2D& translation, float translationZ, const Scene3D& scene) {
+    Triangle3D transformedTriangle = triangle;
+    transformedTriangle.applyTranslationZ(translationZ);
 
-        const auto& p1 = triangle1.getP1() + translation;
-        const auto& p2 = triangle1.getP2() + translation;
-        const auto& p3 = triangle1.getP3() + translation;
+    // Projeter les sommets et appliquer la translation 2D
+    Point2D p1 = projectPoint(transformedTriangle.getP1(), scene.getEye(), scene.getProjectionPlaneDistance()) + translation;
+    Point2D p2 = projectPoint(transformedTriangle.getP2(), scene.getEye(), scene.getProjectionPlaneDistance()) + translation;
+    Point2D p3 = projectPoint(transformedTriangle.getP3(), scene.getEye(), scene.getProjectionPlaneDistance()) + translation;
 
-        const auto& color1 = triangle1.getColor();
+    Couleur faceColor = computeTriangleColor(transformedTriangle);
 
-        SDL_SetRenderDrawColor(renderer_, color1.getRouge(), color1.getVert(), color1.getBleu(), 255);
-        SDL_RenderDrawLine(renderer_, p1.getX(), p1.getY(), p2.getX(), p2.getY());
-        SDL_RenderDrawLine(renderer_, p2.getX(), p2.getY(), p3.getX(), p3.getY());
-        SDL_RenderDrawLine(renderer_, p3.getX(), p3.getY(), p1.getX(), p1.getY());
+    drawFilledTriangle(renderer_, p1, p2, p3, faceColor);
+}
 
-        const auto& p4 = triangle2.getP1() + translation;
-        const auto& p5 = triangle2.getP2() + translation;
-        const auto& p6 = triangle2.getP3() + translation;
+// Compute color for a triangle based on its centroid
+Couleur Renderer::computeTriangleColor(const Triangle3D& triangle) const {
+    Point3D centroid = triangle.getCentroid();
 
-        const auto& color2 = triangle2.getColor();
+    float xyExcentricity = std::sqrt(centroid.getX() * centroid.getX() + centroid.getY() * centroid.getY());
+    float zClarity = std::abs(centroid.getZ());
+    float yHeight = std::abs(centroid.getY());
 
-        SDL_SetRenderDrawColor(renderer_, color2.getRouge(), color2.getVert(), color2.getBleu(), 255);
-        SDL_RenderDrawLine(renderer_, p4.getX(), p4.getY(), p5.getX(), p5.getY());
-        SDL_RenderDrawLine(renderer_, p5.getX(), p5.getY(), p6.getX(), p6.getY());
-        SDL_RenderDrawLine(renderer_, p6.getX(), p6.getY(), p4.getX(), p4.getY());
+    float maxXY = 100.0f;
+    float maxY = 100.0f;
+    float maxZ = 100.0f;
+
+    float xyFactor = std::clamp((xyExcentricity / maxXY), 0.0f, 1.0f);
+    float yFactor = std::clamp(1.0f - (yHeight / maxY), 0.0f, 1.0f);
+    float zFactor = std::clamp((zClarity / maxZ), 0.0f, 1.0f);
+
+    int redIntensity = static_cast<int>(0 * yFactor);
+    int greenIntensity = static_cast<int>(255 * (yFactor + xyFactor + zFactor) / 3.0f);
+    int blueIntensity = static_cast<int>(0 * zFactor);
+
+    return Couleur(redIntensity, greenIntensity, blueIntensity);
+}
+
+// Fonction pour dessiner un triangle rempli
+void Renderer::drawFilledTriangle(SDL_Renderer* renderer, const Point2D& p1, const Point2D& p2, const Point2D& p3, const Couleur& color) {
+    SDL_SetRenderDrawColor(renderer, color.getRouge(), color.getVert(), color.getBleu(), 255);
+
+    auto interpolate = [](int y1, int x1, int y2, int x2, int y) -> int {
+        if (y2 == y1) return x1;
+        return x1 + (x2 - x1) * (y - y1) / (y2 - y1);
+    };
+
+    // Trier les sommets par coordonnée Y
+    Point2D sorted[3] = {p1, p2, p3};
+    std::sort(sorted, sorted + 3, [](const Point2D& a, const Point2D& b) { return a.getY() < b.getY(); });
+
+    const Point2D& pTop = sorted[0];
+    const Point2D& pMiddle = sorted[1];
+    const Point2D& pBottom = sorted[2];
+
+    // Dessiner la partie supérieure
+    for (int y = pTop.getY(); y <= pMiddle.getY(); ++y) {
+        int xStart = interpolate(pTop.getY(), pTop.getX(), pMiddle.getY(), pMiddle.getX(), y);
+        int xEnd = interpolate(pTop.getY(), pTop.getX(), pBottom.getY(), pBottom.getX(), y);
+        if (xStart > xEnd) std::swap(xStart, xEnd);
+        SDL_RenderDrawLine(renderer, xStart, y, xEnd, y);
+    }
+
+    // Dessiner la partie inférieure
+    for (int y = pMiddle.getY(); y <= pBottom.getY(); ++y) {
+        int xStart = interpolate(pMiddle.getY(), pMiddle.getX(), pBottom.getY(), pBottom.getX(), y);
+        int xEnd = interpolate(pTop.getY(), pTop.getX(), pBottom.getY(), pBottom.getX(), y);
+        if (xStart > xEnd) std::swap(xStart, xEnd);
+        SDL_RenderDrawLine(renderer, xStart, y, xEnd, y);
     }
 }
 
+// Rendu d'un cube
+void Renderer::renderCube(const std::shared_ptr<Pave3D>& cube, const Point2D& translation, float translationZ, const Scene3D& scene) {
+    std::vector<std::pair<float, const Quad3D*>> faceDepths;
+    
+    for (size_t i = 0; i < 6; ++i) {
+        const Quad3D& face = cube->getFace(i);
+        faceDepths.emplace_back(face.averageDepth(), &face);
+    }
+    std::sort(faceDepths.begin(), faceDepths.end(), std::greater<>());
+
+    float maxDepth = std::max_element(faceDepths.begin(), faceDepths.end(), [](const auto& a, const auto& b) {
+        return a.first < b.first;
+    })->first;
+
+    for (const auto& [depth, face] : faceDepths) {
+        float normalizedDepth = std::clamp(depth / maxDepth, 0.0f, 1.0f);
+        int redIntensity = static_cast<int>(255 * (1 - normalizedDepth));
+        Couleur faceColor(redIntensity, 0, 0);
+        renderTriangle(face->getFirstTriangle(), faceColor, translation, translationZ, scene);
+        renderTriangle(face->getSecondTriangle(), faceColor, translation, translationZ, scene);
+    }
+}
+
+// Rendu d'une sphère
 void Renderer::renderSphere(const std::shared_ptr<Sphere3D>& sphere, const Point2D& translation, float translationZ, const Scene3D& scene) {
 
-    const auto& quads = sphere->getQuads();
+    std::vector<std::pair<float, const Quad3D*>> faceDepths;
 
-    for (const auto& quad : quads) {
-
-        Triangle3D t1 = quad.getFirstTriangle();
-        Triangle3D t2 = quad.getSecondTriangle();
-
-        t1.applyTranslationZ(translationZ);
-        t2.applyTranslationZ(translationZ);
-        
-
-        Triangle2D triangle1 = projectTriangle(t1, scene.getEye(), scene.getProjectionPlaneDistance());
-        Triangle2D triangle2 = projectTriangle(t2, scene.getEye(), scene.getProjectionPlaneDistance());
-
-        // drawFilledTriangle(triangle1);
-        // drawFilledTriangle(triangle2);
-
-        const auto& p1 = triangle1.getP1() + translation;
-        const auto& p2 = triangle1.getP2() + translation;
-        const auto& p3 = triangle1.getP3() + translation;
-
-        const auto& color1 = triangle1.getColor();
-
-        SDL_SetRenderDrawColor(renderer_, color1.getRouge(), color1.getVert(), color1.getBleu(), 255);
-        SDL_RenderDrawLine(renderer_, p1.getX(), p1.getY(), p2.getX(), p2.getY());
-        SDL_RenderDrawLine(renderer_, p2.getX(), p2.getY(), p3.getX(), p3.getY());
-        SDL_RenderDrawLine(renderer_, p3.getX(), p3.getY(), p1.getX(), p1.getY());
-
-        const auto& p4 = triangle2.getP1() + translation;
-        const auto& p5 = triangle2.getP2() + translation;
-        const auto& p6 = triangle2.getP3() + translation;
-
-        const auto& color2 = triangle2.getColor();
-
-        SDL_SetRenderDrawColor(renderer_, color2.getRouge(), color2.getVert(), color2.getBleu(), 255);
-        SDL_RenderDrawLine(renderer_, p4.getX(), p4.getY(), p5.getX(), p5.getY());
-        SDL_RenderDrawLine(renderer_, p5.getX(), p5.getY(), p6.getX(), p6.getY());
-        SDL_RenderDrawLine(renderer_, p6.getX(), p6.getY(), p4.getX(), p4.getY());
+    for (const auto& quad : sphere->getQuads()) {
+        faceDepths.emplace_back(quad.averageDepth(), &quad);
     }
-}
+    std::sort(faceDepths.begin(), faceDepths.end(), std::greater<>());
 
-// Fonction utilitaire : dessiner un triangle rempli
-void Renderer::drawFilledTriangle(const Triangle2D& triangle) {
-    const auto& p1 = triangle.getP1();
-    const auto& p2 = triangle.getP2();
-    const auto& p3 = triangle.getP3();
-    const auto& color = triangle.getColor();
-
-    std::array<Point2D, 3> points = {p1, p2, p3};
-    std::sort(points.begin(), points.end(), [](const Point2D& a, const Point2D& b) {
-        return a.getY() < b.getY();
-    });
-
-    const Point2D& pTop = points[0];
-    const Point2D& pMiddle = points[1];
-    const Point2D& pBottom = points[2];
-
-    auto fillFlatBottom = [&](const Point2D& v1, const Point2D& v2, const Point2D& v3) {
-        if (std::fabs(v2.getY() - v1.getY()) < 1e-6 || std::fabs(v3.getY() - v1.getY()) < 1e-6) return;
-
-        float invSlope1 = (v2.getX() - v1.getX()) / (v2.getY() - v1.getY());
-        float invSlope2 = (v3.getX() - v1.getX()) / (v3.getY() - v1.getY());
-
-        float curX1 = v1.getX();
-        float curX2 = v1.getX();
-
-        for (int y = std::round(v1.getY()); y <= std::round(v2.getY()); y++) {
-            SDL_SetRenderDrawColor(renderer_, color.getRouge(), color.getVert(), color.getBleu(), 255);
-            SDL_RenderDrawLine(renderer_, std::round(curX1), y, std::round(curX2), y);
-            curX1 += invSlope1;
-            curX2 += invSlope2;
-        }
-    };
-
-    auto fillFlatTop = [&](const Point2D& v1, const Point2D& v2, const Point2D& v3) {
-        if (std::fabs(v3.getY() - v1.getY()) < 1e-6 || std::fabs(v3.getY() - v2.getY()) < 1e-6) return;
-
-        float invSlope1 = (v3.getX() - v1.getX()) / (v3.getY() - v1.getY());
-        float invSlope2 = (v3.getX() - v2.getX()) / (v3.getY() - v2.getY());
-
-        float curX1 = v3.getX();
-        float curX2 = v3.getX();
-
-        for (int y = std::round(v3.getY()); y >= std::round(v1.getY()); y--) {
-            SDL_SetRenderDrawColor(renderer_, color.getRouge(), color.getVert(), color.getBleu(), 255);
-            SDL_RenderDrawLine(renderer_, std::round(curX1), y, std::round(curX2), y);
-            curX1 -= invSlope1;
-            curX2 -= invSlope2;
-        }
-    };
-
-    if (std::fabs(pMiddle.getY() - pBottom.getY()) < 1e-6) {
-        fillFlatBottom(pTop, pMiddle, pBottom);
-    } else if (std::fabs(pTop.getY() - pMiddle.getY()) < 1e-6) {
-        fillFlatTop(pTop, pMiddle, pBottom);
-    } else {
-        Point2D pSplit(
-            pTop.getX() + ((pMiddle.getY() - pTop.getY()) / (pBottom.getY() - pTop.getY())) * (pBottom.getX() - pTop.getX()),
-            pMiddle.getY()
-        );
-
-        fillFlatBottom(pTop, pMiddle, pSplit);
-        fillFlatTop(pMiddle, pSplit, pBottom);
+    for (const auto& [depth, face] : faceDepths) {
+        renderTriangleWithColor(face->getFirstTriangle(), translation, translationZ, scene);
+        renderTriangleWithColor(face->getSecondTriangle(), translation, translationZ, scene);
     }
 }

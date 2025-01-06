@@ -78,8 +78,8 @@ float Pave3D::volume() const {
 
 // Calcul de la surface totale
 float Pave3D::surfaceArea() const {
-    static float cachedArea = -1.0f;  // Cache initial
-    if (cachedArea < 0) {  // Si le cache n'est pas valide
+    static float cachedArea = -1.0f;
+    if (cachedArea < 0) {
         cachedArea = 0.0f;
         for (const auto& face : faces) {
             cachedArea += face.surface();
@@ -90,14 +90,13 @@ float Pave3D::surfaceArea() const {
 
 // Validation de la géométrie du pavé
 void Pave3D::validateGeometry() const {
-    // Vérification des dimensions des faces opposées
+
     if (faces[0].surface() != faces[1].surface() ||
         faces[2].surface() != faces[3].surface() ||
         faces[4].surface() != faces[5].surface()) {
         std::cerr << "[Avertissement] Les faces opposées du pavé ne correspondent pas en surface.\n";
     }
 
-    // Vérification des faces dégénérées
     for (size_t i = 0; i < faces.size(); ++i) {
         if (faces[i].getFirstTriangle().isDegenerate() || faces[i].getSecondTriangle().isDegenerate()) {
             std::cerr << "[Avertissement] La face " << i + 1 << " du pavé est dégénérée et sera ignorée dans le rendu.\n";

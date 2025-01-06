@@ -87,7 +87,7 @@ Point3D Triangle3D::getNormale() const {
 
     Point3D normale = u.crossProduct(v);
 
-    if (normale.dotProduct(normale) < TOLERANCE) { // Norme² proche de zéro
+    if (normale.dotProduct(normale) < TOLERANCE) {
         std::cout << "Triangle dégénéré : impossible de calculer la normale.\n";
     }
     return normale;

@@ -1,8 +1,8 @@
 #include <SDL2/SDL.h>
 #include <iostream>
-#include "../triangle2d.h" // Incluez votre classe Triangle2D ici
-#include "../point2d.h"    // Incluez votre classe Point2D ici
-#include "../../couleur.h"    // Incluez votre classe Couleur ici
+#include "../triangle2d.h"
+#include "../point2d.h"
+#include "../../couleur.h"
 
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
@@ -14,7 +14,6 @@ void renderTriangle(SDL_Renderer* renderer, const Triangle2D& triangle) {
                                       triangle.getColor().getBleu(),
                                       255);
 
-    // Tracer les lignes entre les sommets
     Point2D p1 = triangle.getP1();
     Point2D p2 = triangle.getP2();
     Point2D p3 = triangle.getP3();
@@ -74,14 +73,11 @@ int main(int argc, char* argv[]) {
             }
         }
 
-        // Efface l'écran
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
 
-        // Affiche le triangle
         renderTriangle(renderer, triangle);
 
-        // Présente le rendu
         SDL_RenderPresent(renderer);
     }
 

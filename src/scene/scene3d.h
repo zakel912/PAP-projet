@@ -12,7 +12,7 @@
 
 /**
  * @class Scene3D
- * @brief Classe pour représenter une scène en 3D et gérer la projection en 2D.
+ * @brief Classe pour représenter une scène en 3D.
  */
 class Scene3D {
 private:
@@ -125,7 +125,12 @@ public:
      * @return True if the face is visible, false otherwise.
      */
     bool isFaceVisible(const Quad3D& quad, const Point3D& eye) const;
-    
+
+    /**
+     * @brief Effectue une rotation de la caméra autour de son point de visée.
+     * @param angle L'angle de rotation en radians.
+     * @param axis L'axe autour duquel effectuer la rotation ('x', 'y' ou 'z').
+     */    
     void rotateCamera(float angle, char axis) {
 
         Point3D direction = eye_ - look_at_;

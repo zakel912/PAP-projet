@@ -3,8 +3,7 @@
  * @brief Déclaration de la classe Pave3D pour représenter un pavé dans l'espace 3D.
  *
  * Cette classe représente un pavé, ou parallélipipède rectangle, défini par six faces planes (des Quad3D)
- * et une couleur associée. Elle fournit des méthodes pour manipuler et interroger ses propriétés géométriques,
- * telles que le volume et la surface totale.
+ * et une couleur associée. Elle fournit des méthodes pour manipuler et interroger ses propriétés géométriques.
  */
 
 #ifndef PAVE3D_H

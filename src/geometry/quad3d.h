@@ -301,6 +301,29 @@ public:
      */
     Quad3D& operator=(const Quad3D&) = default;
 
+    /**
+     * @brief Calcule la distance moyenne entre les sommets du quad et un point donné.
+     * @param point Le point de référence pour lequel calculer la distance moyenne.
+     * @return La distance moyenne entre les sommets du quad et le point donné.
+     */
+    float averageDistanceTo(const Point3D& point) const {
+
+        const Triangle3D& t1 = getFirstTriangle();
+        const Triangle3D& t2 = getSecondTriangle();
+
+        // Calculer la distance moyenne pour chaque triangle
+        float totalDistance = 0.0f;
+        totalDistance += t1.getP1().distance(point);
+        totalDistance += t1.getP2().distance(point);
+        totalDistance += t1.getP3().distance(point);
+        totalDistance += t2.getP1().distance(point);
+        totalDistance += t2.getP2().distance(point);
+        totalDistance += t2.getP3().distance(point);
+
+
+        return totalDistance / 6.0f;
+    }
+
 };
 
 #endif // QUAD3D_H

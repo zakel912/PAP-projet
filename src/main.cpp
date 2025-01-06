@@ -33,16 +33,16 @@ int main() {
         // Ajout d'un pavé à la scène
         auto cube = std::make_shared<Pave3D>(
             Point3D(-25, -25, 50), // Origine du pavé
-            100, 100, 100,         // Dimensions : longueur, largeur, hauteur
+            200, 200, 200,         // Dimensions : longueur, largeur, hauteur
             Couleur(255, 0, 0)     // Couleur rouge
         );
         scene.addCube(cube);
 
         // Ajout d'une sphère à la scène
         auto sphere = std::make_shared<Sphere3D>(
-            Point3D(50, 50, 100),  // Centre
-            50,                    // Rayon
-            16                     // Subdivisions
+            Point3D(-150, -50, 50),  // Centre
+            100,                    // Rayon
+            40                     // Subdivisions
         );
         scene.addSphere(sphere);
 

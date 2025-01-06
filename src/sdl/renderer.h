@@ -146,12 +146,44 @@ public:
      * @param scene La scène 3D contenant les informations sur la caméra et la projection.
      */
     void renderSphere(const std::shared_ptr<Sphere3D>& sphere, const Point2D& translation, float translationZ, const Scene3D& scene);
-    
+
     /**
-     * @brief Dessine un triangle 2D rempli à l'écran.
-     * @param triangle Le triangle 2D à dessiner, incluant ses sommets et sa couleur.
+     * @brief Dessine un triangle rempli avec la couleur spécifiée.
+     * @param renderer Pointeur vers le SDL_Renderer utilisé pour le rendu.
+     * @param p1 Premier sommet du triangle en 2D.
+     * @param p2 Deuxième sommet du triangle en 2D.
+     * @param p3 Troisième sommet du triangle en 2D.
+     * @param color Couleur du triangle.
      */
-    void drawFilledTriangle(const Triangle2D& triangle);
+    void drawFilledTriangle(SDL_Renderer* renderer, const Point2D& p1, const Point2D& p2, const Point2D& p3, const Couleur& color);
+
+    /**
+     * @brief Rendu d'un triangle 3D après application de la translation et de la projection.
+     * @param triangle Triangle 3D à rendre.
+     * @param color Couleur du triangle.
+     * @param translation Translation 2D à appliquer après la projection.
+     * @param translationZ Translation en Z à appliquer avant la projection.
+     * @param scene Scène 3D contenant les informations de caméra et de projection.
+     */
+    void renderTriangle(const Triangle3D& triangle, const Couleur& color, const Point2D& translation, float translationZ, const Scene3D& scene);
+
+    /**
+     * @brief Rendu d'un triangle 3D avec calcul automatique de la couleur.
+     * @param triangle Triangle 3D à rendre.
+     * @param translation Translation 2D à appliquer après la projection.
+     * @param translationZ Translation en Z à appliquer avant la projection.
+     * @param scene Scène 3D contenant les informations de caméra et de projection.
+     */
+    void renderTriangleWithColor(const Triangle3D& triangle, const Point2D& translation, float translationZ, const Scene3D& scene);
+
+    /**
+     * @brief Calcule la couleur d'un triangle 3D en fonction de divers paramètres.
+     * @param triangle Triangle 3D dont la couleur doit être calculée.
+     * @return Couleur calculée pour le triangle.
+     */
+    Couleur computeTriangleColor(const Triangle3D& triangle) const;
+
+
 };
 
 #endif // RENDERER_H

@@ -13,9 +13,9 @@ Triangle2D::Triangle2D(const Point2D& point1, const Point2D& point2, const Point
     if (rouge < 0 || rouge > 255 || vert < 0 || vert > 255 || bleu < 0 || bleu > 255) {
         throw std::runtime_error("Les valeurs RVB doivent être comprises entre 0 et 255.");
     }
-    if (Point2D::distance(p1, p2) == 0 || Point2D::distance(p1, p3) == 0 || Point2D::areCollinear(p1, p2, p3)) {
-        std::cout << "Les trois points doivent former un triangle valide.\n";
-    }
+    // if (Point2D::distance(p1, p2) == 0 || Point2D::distance(p1, p3) == 0 || Point2D::areCollinear(p1, p2, p3)) {
+    //     std::cout << "Les trois points doivent former un triangle valide.\n";
+    // }
 }
 
 // Constructeur avec trois sommets et une couleur (objet Couleur)
