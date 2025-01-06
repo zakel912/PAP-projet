@@ -1,0 +1,26 @@
+var searchData=
+[
+  ['samesurface_0',['sameSurface',['../classQuad3D.html#af80b66aeb47ce72af9f4331ca29673c5',1,'Quad3D']]],
+  ['setbleu_1',['setBleu',['../classCouleur.html#a5b9588d8ea08cb737942cbfe154b6fb0',1,'Couleur']]],
+  ['setcenter_2',['setCenter',['../classSphere3D.html#a4d41183bd6fd5699391cdf05890ec377',1,'Sphere3D']]],
+  ['setcolor_3',['setcolor',['../classQuad3D.html#a6fb456bb9ff25f668051a67fa9444c76',1,'Quad3D::setColor(int rouge, int vert, int bleu)'],['../classQuad3D.html#a951ecb388f54d919290cc94d2a109130',1,'Quad3D::setColor(const Couleur &amp;color)'],['../classTriangle3D.html#a6946c4eed1f3aed54a8b0894d6c3c486',1,'Triangle3D::setColor(int rouge, int vert, int bleu)'],['../classTriangle3D.html#a74fd16697cec97e60c05d59a8c982111',1,'Triangle3D::setColor(const Couleur &amp;color)'],['../classTriangle2D.html#a4b86d435422a8562327bcf9e279d208f',1,'Triangle2D::setColor(int rouge, int vert, int bleu)'],['../classTriangle2D.html#a519ed7ad20cfcad85b0604da8080a678',1,'Triangle2D::setColor(const Couleur &amp;color)']]],
+  ['setcolorbleu_4',['setcolorbleu',['../classTriangle3D.html#a247c768eb49f98f7015d5c05cbfe8002',1,'Triangle3D::setColorBleu()'],['../classQuad3D.html#a01d2f98eb0da2b8b80eb49d492b6e3f5',1,'Quad3D::setColorBleu()']]],
+  ['setcolorrouge_5',['setcolorrouge',['../classTriangle3D.html#a2fc895e232494fd40bfbf437d7b1b508',1,'Triangle3D::setColorRouge()'],['../classQuad3D.html#a946bc7c6afb36eab95f64bd1f9a2fc06',1,'Quad3D::setColorRouge()']]],
+  ['setcolorvert_6',['setcolorvert',['../classTriangle3D.html#ad51587e3fe1b849dda91d0c128bf229b',1,'Triangle3D::setColorVert()'],['../classQuad3D.html#a1ca33340c8ec63e4c5047c17e844c379',1,'Quad3D::setColorVert()']]],
+  ['setdepth_7',['setDepth',['../classTriangle2D.html#a844bba5b42d99dc5963228f0dfa39ab5',1,'Triangle2D']]],
+  ['setfacecolor_8',['setFaceColor',['../classPave3D.html#aec63d0a6a1842e22fea988a42a977fa5',1,'Pave3D']]],
+  ['setp1_9',['setP1',['../classTriangle3D.html#aba3820a9c1d617508e5305a694886915',1,'Triangle3D']]],
+  ['setp2_10',['setP2',['../classTriangle3D.html#aa80d89d5edf2072be4ac6cdc96a417d8',1,'Triangle3D']]],
+  ['setp3_11',['setP3',['../classTriangle3D.html#a1aaf8d67a632609bdd0039fefe061f5d',1,'Triangle3D']]],
+  ['setquadcolor_12',['setQuadColor',['../classSphere3D.html#ac2a91474bdd322d5fe2305e3f97a8603',1,'Sphere3D']]],
+  ['setradius_13',['setRadius',['../classSphere3D.html#a2e3552a253a5eff78c6174499b53eefc',1,'Sphere3D']]],
+  ['setrouge_14',['setRouge',['../classCouleur.html#aae8e39d675a84ae97769b885eb96f41e',1,'Couleur']]],
+  ['setvert_15',['setVert',['../classCouleur.html#ac1254404b8771cb9624d4269ddacb732',1,'Couleur']]],
+  ['setx_16',['setx',['../classPoint2D.html#a9be08ef88aef6f3aa0ccb549b7e8ecb1',1,'Point2D::setX()'],['../classPoint3D.html#a933094eca71bb0baeb61b5f8df97a586',1,'Point3D::setX()']]],
+  ['sety_17',['sety',['../classPoint2D.html#a4e83b9b782727da9d3c58b61f5bc6b70',1,'Point2D::setY()'],['../classPoint3D.html#a234a60132081b969fe519fe5fb71763b',1,'Point3D::setY(float newY)']]],
+  ['setz_18',['setZ',['../classPoint3D.html#a21cb11dd2ec125c551bec7cc36f87990',1,'Point3D']]],
+  ['sphere3d_19',['sphere3d',['../classSphere3D.html',1,'Sphere3D'],['../classSphere3D.html#ac07c649e78f48236a0294680a3da08a7',1,'Sphere3D::Sphere3D(const Point3D &amp;center=Point3D(), float radius=1, int subdivisions=1)'],['../classSphere3D.html#a2558372c0133cdf558f406a07805c107',1,'Sphere3D::Sphere3D(const Sphere3D &amp;other)']]],
+  ['surface_20',['surface',['../classQuad3D.html#a52ac3f27957b9f0b29ec9a5acf61f3e1',1,'Quad3D']]],
+  ['surfacearea_21',['surfacearea',['../classPave3D.html#a6b12f3ab14b631f357ae5526979f7f4f',1,'Pave3D::surfaceArea()'],['../classSphere3D.html#a53a5d64ae0777060439f375223917b02',1,'Sphere3D::surfaceArea()']]],
+  ['swapvertices_22',['swapVertices',['../classTriangle3D.html#a020c7a2c9a966249a66cd57cf05fcd89',1,'Triangle3D']]]
+];

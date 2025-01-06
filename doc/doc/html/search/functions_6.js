@@ -1,5 +1,4 @@
 var searchData=
 [
-  ['_7epoint3d_0',['~Point3D',['../classPoint3D.html#a47f0d69b52d05981af482d60e9a09af5',1,'Point3D']]],
-  ['_7etriangle3d_1',['~Triangle3D',['../classTriangle3D.html#a8d43f89e45cfaaf7624c657faf9023e5',1,'Triangle3D']]]
+  ['hascommonside_0',['hascommonside',['../classTriangle3D.html#ad6ae32b4f7d49c61c4b73238ae9c407f',1,'Triangle3D::hasCommonSide(const Triangle3D &amp;other) const'],['../classTriangle3D.html#ab772656f3385b1e931025c4fae5c573a',1,'Triangle3D::hasCommonSide(const Triangle3D &amp;t1, const Triangle3D &amp;t2)'],['../classQuad3D.html#a8667d8cadea42025f01c2a342019fe4e',1,'Quad3D::hasCommonSide(const Quad3D &amp;other) const'],['../classQuad3D.html#a2ddfedae40595b88b10ba2e3f4739b08',1,'Quad3D::hasCommonSide(const Quad3D &amp;q1, const Quad3D &amp;q2)']]]
 ];

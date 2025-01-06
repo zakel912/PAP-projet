@@ -1,9 +1,9 @@
 var searchData=
 [
-  ['getp1_0',['getP1',['../classTriangle3D.html#a909d2034bdb6b5b3c0f7087cf279165f',1,'Triangle3D']]],
-  ['getp2_1',['getP2',['../classTriangle3D.html#ab463795636b5fd060ea7d6b24bcc4bc8',1,'Triangle3D']]],
-  ['getp3_2',['getP3',['../classTriangle3D.html#a272c7cdf3122141a240dd22f3c2009f5',1,'Triangle3D']]],
-  ['getx_3',['getX',['../classPoint3D.html#a7e7c489a82520d995567c5c37aa489fd',1,'Point3D']]],
-  ['gety_4',['getY',['../classPoint3D.html#a1e713f986363d4251d6dd89c0a41274b',1,'Point3D']]],
-  ['getz_5',['getZ',['../classPoint3D.html#a0533e8ea4da5f081cd27531177f2d059',1,'Point3D']]]
+  ['center_0',['center',['../classQuad3D.html#a2b8d6222e28eacfe205dc14be98a93b8',1,'Quad3D::center()'],['../classPave3D.html#ac7f867fc4bb494d92730e760cba2475f',1,'Pave3D::center()']]],
+  ['clear_1',['clear',['../classRenderer.html#a57141a44123ebfa6af0b60f3f463a863',1,'Renderer']]],
+  ['computetrianglecolor_2',['computeTriangleColor',['../classRenderer.html#a574982959f8ac693b1ad07d7aacb4cb2',1,'Renderer']]],
+  ['contains_3',['contains',['../classTriangle2D.html#a3c9eebadf4bd878a4b0b1c6695e52fe8',1,'Triangle2D']]],
+  ['couleur_4',['couleur',['../classCouleur.html#ab21bfa16598227eeac36120c48bb2f59',1,'Couleur::Couleur(int rouge=255, int vert=255, int bleu=255)'],['../classCouleur.html#a9ec819f1cab69e9f7b986aacd14ab7da',1,'Couleur::Couleur(const Couleur &amp;other)']]],
+  ['crossproduct_5',['crossproduct',['../classPoint3D.html#a47e041ffa70de2f766781e4ac8006a95',1,'Point3D::crossProduct(const Point3D &amp;other) const'],['../classPoint3D.html#a8aed48b7770e20dfd2a9a9162b4a9745',1,'Point3D::crossProduct(const Point3D &amp;p1, const Point3D &amp;p2)']]]
 ];
