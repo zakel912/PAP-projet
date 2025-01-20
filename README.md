@@ -8,20 +8,21 @@ Ce projet permet la visualisation d'bjets 3D, comme des pavés et des sphères, 
 
 ### **Compiler les tests des classes objets (Point2d, Point3d, Triangle2D, etc..)**
 Chaque test est dans `src/geometry/geometry_test`. Exemple :
+
 ```bash
-g++ main_point2d.cpp point2d.cpp -o main
+g++ main_point2d.cpp ../point2d.cpp -o main
 
-g++ main_point3d.cpp point3d.cpp -o main
+g++ main_point3d.cpp ../point3d.cpp -o main
 
-g++ main_triangle2d.cpp triangle2d.cpp point2d.cpp ../couleur.cpp -o main
+g++ main_triangle2d.cpp ../triangle2d.cpp ../point2d.cpp ../couleur.cpp -o main
 
-g++ main_triangle3d.cpp triangle3d.cpp point3d.cpp ../couleur.cpp -o main
+g++ main_triangle3d.cpp ../triangle3d.cpp ../point3d.cpp ../../couleur.cpp -o main
 
-g++ main_quad3d.cpp quad3d.cpp triangle3d.cpp point3d.cpp ../couleur.cpp -o main
+g++ main_quad3d.cpp ../quad3d.cpp ../triangle3d.cpp ../point3d.cpp ../../couleur.cpp -o main
 
-g++ main_sphere3d.cpp sphere3d.cpp quad3d.cpp triangle3d.cpp point3d.cpp ../couleur.cpp -o main
+g++ main_sphere3d.cpp ../sphere3d.cpp ../quad3d.cpp ../triangle3d.cpp ../point3d.cpp ../../couleur.cpp -o main
 
-g++ main_pave3d.cpp pave3d.cpp quad3d.cpp triangle3d.cpp point3d.cpp ../couleur.cpp -o main./main
+g++ main_pave3d.cpp p../ave3d.cpp ../quad3d.cpp ../triangle3d.cpp ../point3d.cpp ../../couleur.cpp -o main
 ```
 
 ### **Compiler les tests d'affichage des objets (Un cube, Une sphère, etc..)**
@@ -42,8 +43,11 @@ g++ main_scene3d.cpp ../geometry/pave3d.cpp ../geometry/sphere3d.cpp ../geometry
 
 ### **Compiler le programme principale src/main.cpp**
 ```bash
-g++ -o main main.cpp sdl/renderer.cpp scene/scene3d.cpp geometry/pave3d.cpp geometry/sphere3d.cpp geometry/point3d.cpp geometry/point2d.cpp geometry/quad3d.cpp geometry/triangle3d.cpp couleur.cpp -lSDL2
-./main
+g++ -o main main.cpp sdl/renderer.cpp scene/scene3d.cpp geometry/pave3d.cpp geometry/sphere3d.cpp geometry/point3d.cpp geometry/point2d.cpp geometry/quad3d.cpp geometry/triangle3d.cpp geometry/triangle2d.cpp couleur.cpp -lSDL2
+
+(ou plus simple)
+```bash
+g++ -o main main.cpp sdl/renderer.cpp scene/scene3d.cpp geometry/*.cpp couleur.cpp -lSDL2
 ```
 
 ### Dépendances
